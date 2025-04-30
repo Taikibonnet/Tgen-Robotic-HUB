@@ -1,0 +1,34 @@
+{
+  "name": "tgen-robotics-hub",
+  "version": "1.0.0",
+  "description": "Comprehensive online encyclopedia for robotics enthusiasts",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "data:import": "node seeder.js -i",
+    "data:destroy": "node seeder.js -d"
+  },
+  "author": "Tgen Robotics",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.1055.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.14.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.1.4",
+    "multer": "^1.4.4",
+    "sharp": "^0.29.3",
+    "slugify": "^1.6.5",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "concurrently": "^6.5.1",
+    "nodemon": "^2.0.15"
+  }
+}
