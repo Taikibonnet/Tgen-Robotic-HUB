@@ -1,104 +1,4 @@
-// robot-management.js - Functionality for the Admin Robot Management page
-
-// Sample robot data for demonstration
-// In production, this would be fetched from your backend API
-const sampleRobots = [
-    {
-        id: 1,
-        name: "Spot",
-        slug: "spot",
-        manufacturer: {
-            name: "Boston Dynamics",
-            country: "USA"
-        },
-        categories: ["Industrial", "Quadruped", "Autonomous"],
-        summary: "Spot is an agile mobile robot that navigates terrain with unprecedented mobility.",
-        media: {
-            featuredImage: {
-                url: "images/sample/spot.jpg",
-                alt: "Boston Dynamics Spot"
-            }
-        },
-        status: "published",
-        createdAt: "2025-01-15T10:30:00Z"
-    },
-    {
-        id: 2,
-        name: "ASIMO",
-        slug: "asimo",
-        manufacturer: {
-            name: "Honda",
-            country: "Japan"
-        },
-        categories: ["Humanoid", "Research"],
-        summary: "ASIMO is one of the most advanced humanoid robots in the world.",
-        media: {
-            featuredImage: {
-                url: "images/sample/asimo.jpg",
-                alt: "Honda ASIMO"
-            }
-        },
-        status: "published",
-        createdAt: "2025-01-10T14:20:00Z"
-    },
-    {
-        id: 3,
-        name: "Waymo",
-        slug: "waymo",
-        manufacturer: {
-            name: "Waymo",
-            country: "USA"
-        },
-        categories: ["Autonomous", "Vehicle"],
-        summary: "Waymo's autonomous driving technology is designed to navigate safely through complex traffic situations.",
-        media: {
-            featuredImage: {
-                url: "images/sample/waymo.jpg",
-                alt: "Waymo Self-Driving Car"
-            }
-        },
-        status: "draft",
-        createdAt: "2025-01-20T09:15:00Z"
-    },
-    {
-        id: 4,
-        name: "Atlas",
-        slug: "atlas",
-        manufacturer: {
-            name: "Boston Dynamics",
-            country: "USA"
-        },
-        categories: ["Humanoid", "Research"],
-        summary: "Atlas is the most dynamic humanoid robot in the world.",
-        media: {
-            featuredImage: {
-                url: "images/sample/atlas.jpg",
-                alt: "Boston Dynamics Atlas"
-            }
-        },
-        status: "published",
-        createdAt: "2025-01-05T11:45:00Z"
-    },
-    {
-        id: 5,
-        name: "Pepper",
-        slug: "pepper",
-        manufacturer: {
-            name: "SoftBank Robotics",
-            country: "Japan"
-        },
-        categories: ["Humanoid", "Service"],
-        summary: "Pepper is designed to recognize human emotions and adapt its behavior accordingly.",
-        media: {
-            featuredImage: {
-                url: "images/sample/pepper.jpg",
-                alt: "SoftBank Robotics Pepper"
-            }
-        },
-        status: "archived",
-        createdAt: "2024-12-15T10:30:00Z"
-    }
-];
+// robot-management-enhanced.js - Enhanced version that integrates with DataManager
 
 // DOM Elements
 const robotTableBody = document.getElementById('robot-table-body');
@@ -108,6 +8,7 @@ const modalClose = document.getElementById('modal-close');
 const cancelBtn = document.getElementById('cancel-btn');
 const robotForm = document.getElementById('robot-form');
 const modalTitle = document.getElementById('modal-title');
+const paginationContainer = document.getElementById('pagination');
 
 // Tab navigation
 const modalTabs = document.querySelectorAll('.modal-tab');
@@ -122,18 +23,44 @@ let keywordTags = [];
 // Current robot being edited (null for new robots)
 let currentRobotId = null;
 
+// Pagination variables
+let currentPage = 1;
+const itemsPerPage = 10;
+
+// File upload storage
+let uploadedFiles = {
+    featuredImage: null,
+    additionalImages: [],
+    videos: [],
+    applicationImages: {}
+};
+
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
     loadRobotTable();
     setupEventListeners();
     setupFormElements();
+    updatePagination();
 });
 
-// Load robots into the table
+// Load robots into the table with pagination
 function loadRobotTable() {
+    // Clear the table
     robotTableBody.innerHTML = '';
     
-    sampleRobots.forEach(robot => {
+    // Get all robots
+    const allRobots = DataManager.getAllRobots();
+    
+    // Sort by most recently updated
+    allRobots.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
+    
+    // Calculate pagination
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedRobots = allRobots.slice(startIndex, endIndex);
+    
+    // Create rows
+    paginatedRobots.forEach(robot => {
         const row = createRobotTableRow(robot);
         robotTableBody.appendChild(row);
     });
@@ -147,22 +74,36 @@ function createRobotTableRow(robot) {
     const date = new Date(robot.createdAt);
     const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     
-    // Use a placeholder image if no featured image is available
-    const imageUrl = robot.media?.featuredImage?.url || 'images/robot-placeholder.jpg';
+    // Get image URL - check for media ID first (for uploaded images)
+    let imageUrl = 'images/robot-placeholder.jpg';
+    
+    if (robot.media && robot.media.featuredImage) {
+        if (robot.media.featuredImage.mediaId) {
+            const media = DataManager.getMediaById(robot.media.featuredImage.mediaId);
+            if (media) {
+                imageUrl = media.data;
+            }
+        } else if (robot.media.featuredImage.url) {
+            imageUrl = robot.media.featuredImage.url;
+        }
+    }
     
     // Status badge class
-    const statusClass = `status-${robot.status}`;
+    const statusClass = `status-${robot.status || 'draft'}`;
     
     row.innerHTML = `
         <td><img src="${imageUrl}" alt="${robot.name}" class="robot-thumbnail"></td>
         <td>${robot.name}</td>
         <td>${robot.manufacturer.name}</td>
-        <td>${robot.categories.join(', ')}</td>
-        <td><span class="status-badge ${statusClass}">${capitalizeFirstLetter(robot.status)}</span></td>
+        <td>${robot.categories ? robot.categories.join(', ') : ''}</td>
+        <td><span class="status-badge ${statusClass}">${capitalizeFirstLetter(robot.status || 'draft')}</span></td>
         <td>${formattedDate}</td>
         <td class="robot-actions-cell">
             <div class="action-icon edit-icon" data-id="${robot.id}" title="Edit">
                 <i class="fas fa-edit"></i>
+            </div>
+            <div class="action-icon preview-icon" data-slug="${robot.slug}" title="View">
+                <i class="fas fa-eye"></i>
             </div>
             <div class="action-icon delete-icon" data-id="${robot.id}" title="Delete">
                 <i class="fas fa-trash-alt"></i>
@@ -171,6 +112,29 @@ function createRobotTableRow(robot) {
     `;
     
     return row;
+}
+
+// Update pagination controls
+function updatePagination() {
+    const allRobots = DataManager.getAllRobots();
+    const totalPages = Math.ceil(allRobots.length / itemsPerPage);
+    
+    paginationContainer.innerHTML = '';
+    
+    for (let i = 1; i <= totalPages; i++) {
+        const pageItem = document.createElement('div');
+        pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        pageItem.textContent = i;
+        pageItem.addEventListener('click', () => {
+            currentPage = i;
+            loadRobotTable();
+            updatePagination();
+        });
+        paginationContainer.appendChild(pageItem);
+    }
+    
+    // Hide pagination if only one page
+    paginationContainer.style.display = totalPages <= 1 ? 'none' : 'flex';
 }
 
 // Setup event listeners
@@ -184,10 +148,11 @@ function setupEventListeners() {
     modalClose.addEventListener('click', closeRobotForm);
     cancelBtn.addEventListener('click', closeRobotForm);
     
-    // Edit and delete buttons in the table
+    // Edit, preview and delete buttons in the table
     robotTableBody.addEventListener('click', (e) => {
         const editIcon = e.target.closest('.edit-icon');
         const deleteIcon = e.target.closest('.delete-icon');
+        const previewIcon = e.target.closest('.preview-icon');
         
         if (editIcon) {
             const robotId = parseInt(editIcon.dataset.id);
@@ -197,6 +162,11 @@ function setupEventListeners() {
         if (deleteIcon) {
             const robotId = parseInt(deleteIcon.dataset.id);
             confirmDeleteRobot(robotId);
+        }
+        
+        if (previewIcon) {
+            const slug = previewIcon.dataset.slug;
+            window.open(`robot-detail.html?slug=${slug}`, '_blank');
         }
     });
     
@@ -302,7 +272,15 @@ function setupFormElements() {
     // Remove application button
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-application')) {
-            e.target.closest('.application-item').remove();
+            const applicationItem = e.target.closest('.application-item');
+            const index = applicationItem.dataset.index;
+            
+            // Remove any stored images for this application
+            if (uploadedFiles.applicationImages[index]) {
+                delete uploadedFiles.applicationImages[index];
+            }
+            
+            applicationItem.remove();
             updateApplicationNumbers();
         }
     });
@@ -357,9 +335,27 @@ function setupFileUploads() {
     const featuredImagePreview = document.getElementById('featured-image-preview');
     
     featuredImageUpload.addEventListener('click', () => {
-        // In a real implementation, this would open a file dialog
-        // For demonstration, we'll simulate a file upload
-        simulateFileUpload(featuredImagePreview, true);
+        createFileInput((file, base64) => {
+            // Store the file
+            uploadedFiles.featuredImage = {
+                file,
+                base64
+            };
+            
+            // Show preview
+            featuredImagePreview.innerHTML = `
+                <div class="media-item">
+                    <img src="${base64}" alt="${file.name}">
+                    <div class="media-remove" data-type="featured">&times;</div>
+                </div>
+            `;
+            
+            // Add remove functionality
+            featuredImagePreview.querySelector('.media-remove').addEventListener('click', () => {
+                uploadedFiles.featuredImage = null;
+                featuredImagePreview.innerHTML = '';
+            });
+        });
     });
     
     // Additional images upload
@@ -367,7 +363,40 @@ function setupFileUploads() {
     const additionalImagesPreview = document.getElementById('additional-images-preview');
     
     additionalImagesUpload.addEventListener('click', () => {
-        simulateFileUpload(additionalImagesPreview, false);
+        createFileInput((file, base64) => {
+            // Store the file
+            const fileIndex = uploadedFiles.additionalImages.length;
+            uploadedFiles.additionalImages.push({
+                file,
+                base64
+            });
+            
+            // Create preview item
+            const mediaItem = document.createElement('div');
+            mediaItem.className = 'media-item';
+            mediaItem.dataset.index = fileIndex;
+            
+            mediaItem.innerHTML = `
+                <img src="${base64}" alt="${file.name}">
+                <div class="media-remove" data-type="additional" data-index="${fileIndex}">&times;</div>
+            `;
+            
+            additionalImagesPreview.appendChild(mediaItem);
+            
+            // Add remove functionality
+            mediaItem.querySelector('.media-remove').addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                uploadedFiles.additionalImages.splice(index, 1);
+                mediaItem.remove();
+                
+                // Update indices for all remaining items
+                const items = additionalImagesPreview.querySelectorAll('.media-item');
+                items.forEach((item, i) => {
+                    item.dataset.index = i;
+                    item.querySelector('.media-remove').dataset.index = i;
+                });
+            });
+        });
     });
     
     // Videos upload
@@ -375,42 +404,124 @@ function setupFileUploads() {
     const videosPreview = document.getElementById('videos-preview');
     
     videosUpload.addEventListener('click', () => {
-        simulateFileUpload(videosPreview, false, true);
+        createFileInput((file, base64) => {
+            // Only accept video files
+            if (!file.type.startsWith('video/')) {
+                alert('Please select a video file.');
+                return;
+            }
+            
+            // Store the file
+            const fileIndex = uploadedFiles.videos.length;
+            uploadedFiles.videos.push({
+                file,
+                base64
+            });
+            
+            // Create preview item (thumbnail for video)
+            const mediaItem = document.createElement('div');
+            mediaItem.className = 'media-item';
+            mediaItem.dataset.index = fileIndex;
+            
+            // Use a video placeholder image
+            mediaItem.innerHTML = `
+                <img src="images/video-placeholder.jpg" alt="${file.name}">
+                <div class="media-remove" data-type="video" data-index="${fileIndex}">&times;</div>
+                <div class="media-label">${file.name}</div>
+            `;
+            
+            videosPreview.appendChild(mediaItem);
+            
+            // Style the label
+            const label = mediaItem.querySelector('.media-label');
+            label.style.position = 'absolute';
+            label.style.bottom = '0';
+            label.style.left = '0';
+            label.style.right = '0';
+            label.style.background = 'rgba(0,0,0,0.7)';
+            label.style.color = 'white';
+            label.style.padding = '5px';
+            label.style.fontSize = '10px';
+            label.style.whiteSpace = 'nowrap';
+            label.style.overflow = 'hidden';
+            label.style.textOverflow = 'ellipsis';
+            
+            // Add remove functionality
+            mediaItem.querySelector('.media-remove').addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                uploadedFiles.videos.splice(index, 1);
+                mediaItem.remove();
+                
+                // Update indices for all remaining items
+                const items = videosPreview.querySelectorAll('.media-item');
+                items.forEach((item, i) => {
+                    item.dataset.index = i;
+                    item.querySelector('.media-remove').dataset.index = i;
+                });
+            });
+        }, 'video/*');  // Accept only video files
+    });
+    
+    // Handle application image uploads
+    document.addEventListener('click', (e) => {
+        const uploadBtn = e.target.closest('.application-image-upload');
+        if (!uploadBtn) return;
+        
+        const applicationItem = uploadBtn.closest('.application-item');
+        const index = applicationItem.dataset.index;
+        const previewContainer = applicationItem.querySelector('.application-image-preview');
+        
+        createFileInput((file, base64) => {
+            // Store the file
+            uploadedFiles.applicationImages[index] = {
+                file,
+                base64
+            };
+            
+            // Show preview
+            previewContainer.innerHTML = `
+                <div class="media-item">
+                    <img src="${base64}" alt="${file.name}">
+                    <div class="media-remove" data-type="application" data-index="${index}">&times;</div>
+                </div>
+            `;
+            
+            // Add remove functionality
+            previewContainer.querySelector('.media-remove').addEventListener('click', () => {
+                delete uploadedFiles.applicationImages[index];
+                previewContainer.innerHTML = '';
+            });
+        });
     });
 }
 
-// Simulate file upload for demonstration
-function simulateFileUpload(previewContainer, isSingle = false, isVideo = false) {
-    // In a real implementation, this would handle actual file uploads
-    // For demonstration, we'll just add a placeholder
+// Create a file input element and trigger click
+function createFileInput(onFileSelected, accept = 'image/*') {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = accept;
+    input.style.display = 'none';
+    document.body.appendChild(input);
     
-    // Clear preview if it's for a single image
-    if (isSingle) {
-        previewContainer.innerHTML = '';
-    }
-    
-    const mediaItem = document.createElement('div');
-    mediaItem.className = 'media-item';
-    
-    if (isVideo) {
-        mediaItem.innerHTML = `
-            <img src="images/video-placeholder.jpg" alt="Video Placeholder">
-            <div class="media-remove">&times;</div>
-        `;
-    } else {
-        mediaItem.innerHTML = `
-            <img src="images/robot-placeholder.jpg" alt="Image Placeholder">
-            <div class="media-remove">&times;</div>
-        `;
-    }
-    
-    previewContainer.appendChild(mediaItem);
-    
-    // Add remove functionality
-    mediaItem.querySelector('.media-remove').addEventListener('click', (e) => {
-        e.stopPropagation();
-        mediaItem.remove();
+    input.addEventListener('change', () => {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                onFileSelected(file, base64);
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Remove the input element
+        document.body.removeChild(input);
     });
+    
+    // Trigger click
+    input.click();
 }
 
 // Add a new application field
@@ -446,11 +557,6 @@ function addApplicationField() {
     `;
     
     applicationsContainer.appendChild(applicationItem);
-    
-    // Add click handler for the image upload
-    applicationItem.querySelector('.application-image-upload').addEventListener('click', function() {
-        simulateFileUpload(applicationItem.querySelector('.application-image-preview'), true);
-    });
 }
 
 // Update application numbers after removing one
@@ -470,12 +576,13 @@ function openRobotForm(robotId = null) {
     robotForm.reset();
     resetTags();
     resetPreviews();
+    resetUploads();
     
     // Set modal title
     if (robotId) {
         modalTitle.textContent = 'Edit Robot';
         // Find the robot data
-        const robot = sampleRobots.find(r => r.id === robotId);
+        const robot = DataManager.getRobotById(robotId);
         if (robot) {
             fillFormWithRobotData(robot);
         }
@@ -493,6 +600,16 @@ function openRobotForm(robotId = null) {
     robotModal.classList.add('active');
 }
 
+// Clear all uploaded files
+function resetUploads() {
+    uploadedFiles = {
+        featuredImage: null,
+        additionalImages: [],
+        videos: [],
+        applicationImages: {}
+    };
+}
+
 // Close the robot form modal
 function closeRobotForm() {
     robotModal.classList.remove('active');
@@ -502,19 +619,21 @@ function closeRobotForm() {
 // Fill form with robot data for editing
 function fillFormWithRobotData(robot) {
     // Basic info
-    document.getElementById('robot-name').value = robot.name;
-    document.getElementById('robot-slug').value = robot.slug;
-    document.getElementById('manufacturer-name').value = robot.manufacturer.name;
+    document.getElementById('robot-name').value = robot.name || '';
+    document.getElementById('robot-slug').value = robot.slug || '';
+    document.getElementById('manufacturer-name').value = robot.manufacturer.name || '';
     document.getElementById('manufacturer-country').value = robot.manufacturer.country || '';
     document.getElementById('manufacturer-website').value = robot.manufacturer.website || '';
     document.getElementById('year-introduced').value = robot.yearIntroduced || '';
-    document.getElementById('robot-status').value = robot.status;
-    document.getElementById('robot-summary').value = robot.summary;
+    document.getElementById('robot-status').value = robot.status || 'draft';
+    document.getElementById('robot-summary').value = robot.summary || '';
     document.getElementById('robot-description').value = robot.description || '';
     
     // Categories
-    categoryTags = [...robot.categories];
-    renderTags(document.getElementById('category-tags'), categoryTags, 'category');
+    if (robot.categories && robot.categories.length) {
+        categoryTags = [...robot.categories];
+        renderTags(document.getElementById('category-tags'), categoryTags, 'category');
+    }
     
     // Specifications
     if (robot.specifications) {
@@ -570,53 +689,118 @@ function fillFormWithRobotData(robot) {
     
     // Media previews
     if (robot.media) {
+        // Featured image
         if (robot.media.featuredImage) {
             const featuredPreview = document.getElementById('featured-image-preview');
-            featuredPreview.innerHTML = `
-                <div class="media-item">
-                    <img src="${robot.media.featuredImage.url}" alt="${robot.media.featuredImage.alt || robot.name}">
-                    <div class="media-remove">&times;</div>
-                </div>
-            `;
+            let imageUrl;
             
-            featuredPreview.querySelector('.media-remove').addEventListener('click', () => {
-                featuredPreview.innerHTML = '';
-            });
+            // Check if it's a media ID or direct URL
+            if (robot.media.featuredImage.mediaId) {
+                const media = DataManager.getMediaById(robot.media.featuredImage.mediaId);
+                if (media) {
+                    imageUrl = media.data;
+                }
+            } else if (robot.media.featuredImage.url) {
+                imageUrl = robot.media.featuredImage.url;
+            }
+            
+            if (imageUrl) {
+                featuredPreview.innerHTML = `
+                    <div class="media-item">
+                        <img src="${imageUrl}" alt="${robot.media.featuredImage.alt || robot.name}">
+                        <div class="media-remove" data-type="featured">&times;</div>
+                    </div>
+                `;
+                
+                featuredPreview.querySelector('.media-remove').addEventListener('click', () => {
+                    featuredPreview.innerHTML = '';
+                });
+            }
         }
         
+        // Additional images
         if (robot.media.images && robot.media.images.length) {
             const imagesPreview = document.getElementById('additional-images-preview');
             imagesPreview.innerHTML = '';
             
-            robot.media.images.forEach(image => {
-                const mediaItem = document.createElement('div');
-                mediaItem.className = 'media-item';
-                mediaItem.innerHTML = `
-                    <img src="${image.url}" alt="${image.alt || robot.name}">
-                    <div class="media-remove">&times;</div>
-                `;
-                imagesPreview.appendChild(mediaItem);
+            robot.media.images.forEach((image, index) => {
+                let imageUrl;
                 
-                mediaItem.querySelector('.media-remove').addEventListener('click', () => {
-                    mediaItem.remove();
-                });
+                // Check if it's a media ID or direct URL
+                if (image.mediaId) {
+                    const media = DataManager.getMediaById(image.mediaId);
+                    if (media) {
+                        imageUrl = media.data;
+                    }
+                } else if (image.url) {
+                    imageUrl = image.url;
+                }
+                
+                if (imageUrl) {
+                    const mediaItem = document.createElement('div');
+                    mediaItem.className = 'media-item';
+                    mediaItem.dataset.index = index;
+                    
+                    mediaItem.innerHTML = `
+                        <img src="${imageUrl}" alt="${image.alt || robot.name}">
+                        <div class="media-remove" data-type="additional" data-index="${index}">&times;</div>
+                    `;
+                    
+                    imagesPreview.appendChild(mediaItem);
+                    
+                    mediaItem.querySelector('.media-remove').addEventListener('click', function() {
+                        mediaItem.remove();
+                    });
+                }
             });
         }
         
+        // Videos
         if (robot.media.videos && robot.media.videos.length) {
             const videosPreview = document.getElementById('videos-preview');
             videosPreview.innerHTML = '';
             
-            robot.media.videos.forEach(video => {
+            robot.media.videos.forEach((video, index) => {
                 const mediaItem = document.createElement('div');
                 mediaItem.className = 'media-item';
+                mediaItem.dataset.index = index;
+                
+                // Use thumbnail if available, otherwise use a placeholder
+                let thumbnailUrl = 'images/video-placeholder.jpg';
+                if (video.thumbnail) {
+                    if (video.thumbnailMediaId) {
+                        const media = DataManager.getMediaById(video.thumbnailMediaId);
+                        if (media) {
+                            thumbnailUrl = media.data;
+                        }
+                    } else {
+                        thumbnailUrl = video.thumbnail;
+                    }
+                }
+                
                 mediaItem.innerHTML = `
-                    <img src="${video.thumbnail || 'images/video-placeholder.jpg'}" alt="${video.title || robot.name}">
-                    <div class="media-remove">&times;</div>
+                    <img src="${thumbnailUrl}" alt="${video.title || robot.name}">
+                    <div class="media-remove" data-type="video" data-index="${index}">&times;</div>
+                    <div class="media-label">${video.title || 'Video ' + (index + 1)}</div>
                 `;
+                
+                // Style the label
+                const label = mediaItem.querySelector('.media-label');
+                label.style.position = 'absolute';
+                label.style.bottom = '0';
+                label.style.left = '0';
+                label.style.right = '0';
+                label.style.background = 'rgba(0,0,0,0.7)';
+                label.style.color = 'white';
+                label.style.padding = '5px';
+                label.style.fontSize = '10px';
+                label.style.whiteSpace = 'nowrap';
+                label.style.overflow = 'hidden';
+                label.style.textOverflow = 'ellipsis';
+                
                 videosPreview.appendChild(mediaItem);
                 
-                mediaItem.querySelector('.media-remove').addEventListener('click', () => {
+                mediaItem.querySelector('.media-remove').addEventListener('click', function() {
                     mediaItem.remove();
                 });
             });
@@ -652,12 +836,7 @@ function fillFormWithRobotData(robot) {
                         <p>Click to upload</p>
                     </div>
                     <div class="media-preview application-image-preview">
-                        ${application.image ? `
-                            <div class="media-item">
-                                <img src="${application.image}" alt="${application.title || 'Application'}">
-                                <div class="media-remove">&times;</div>
-                            </div>
-                        ` : ''}
+                        ${application.image ? getApplicationImagePreview(application, index) : ''}
                     </div>
                 </div>
                 <button type="button" class="btn btn-danger remove-application" style="margin-top: 10px;">Remove Application</button>
@@ -665,16 +844,11 @@ function fillFormWithRobotData(robot) {
             
             applicationsContainer.appendChild(applicationItem);
             
-            // Add click handler for the image upload
-            applicationItem.querySelector('.application-image-upload').addEventListener('click', function() {
-                simulateFileUpload(applicationItem.querySelector('.application-image-preview'), true);
-            });
-            
             // Add remove handler for existing images
             const removeBtn = applicationItem.querySelector('.media-remove');
             if (removeBtn) {
                 removeBtn.addEventListener('click', function() {
-                    this.closest('.media-item').remove();
+                    applicationItem.querySelector('.application-image-preview').innerHTML = '';
                 });
             }
         });
@@ -690,6 +864,32 @@ function fillFormWithRobotData(robot) {
             renderTags(document.getElementById('keyword-tags'), keywordTags, 'keyword');
         }
     }
+}
+
+// Helper function to get application image preview HTML
+function getApplicationImagePreview(application, index) {
+    let imageUrl;
+    
+    // Check if it's a media ID or direct URL
+    if (application.imageMediaId) {
+        const media = DataManager.getMediaById(application.imageMediaId);
+        if (media) {
+            imageUrl = media.data;
+        }
+    } else if (application.image) {
+        imageUrl = application.image;
+    }
+    
+    if (imageUrl) {
+        return `
+            <div class="media-item">
+                <img src="${imageUrl}" alt="${application.title || 'Application'}">
+                <div class="media-remove" data-type="application" data-index="${index}">&times;</div>
+            </div>
+        `;
+    }
+    
+    return '';
 }
 
 // Reset tag arrays and displays
@@ -737,180 +937,336 @@ function resetPreviews() {
             <button type="button" class="btn btn-danger remove-application" style="margin-top: 10px;">Remove Application</button>
         </div>
     `;
-    
-    // Add click handler for the image upload
-    document.querySelector('.application-image-upload').addEventListener('click', function() {
-        simulateFileUpload(document.querySelector('.application-image-preview'), true);
-    });
 }
 
 // Save robot data
-function saveRobot() {
+async function saveRobot() {
     // Get form data
     const name = document.getElementById('robot-name').value;
-    const slug = document.getElementById('robot-slug').value || slugify(name);
+    if (!name) {
+        alert('Robot name is required');
+        return;
+    }
+    
+    const slug = document.getElementById('robot-slug').value || DataManager.slugify(name);
     const manufacturerName = document.getElementById('manufacturer-name').value;
+    if (!manufacturerName) {
+        alert('Manufacturer name is required');
+        return;
+    }
+    
     const manufacturerCountry = document.getElementById('manufacturer-country').value;
     const manufacturerWebsite = document.getElementById('manufacturer-website').value;
     const yearIntroduced = document.getElementById('year-introduced').value;
     const status = document.getElementById('robot-status').value;
     const summary = document.getElementById('robot-summary').value;
-    const description = document.getElementById('robot-description').value;
-    
-    // Create robot object
-    const robotData = {
-        name,
-        slug,
-        manufacturer: {
-            name: manufacturerName,
-            country: manufacturerCountry,
-            website: manufacturerWebsite
-        },
-        yearIntroduced: yearIntroduced ? parseInt(yearIntroduced) : new Date().getFullYear(),
-        categories: categoryTags,
-        summary,
-        description,
-        status,
-        specifications: {
-            physical: {
-                height: {
-                    value: parseFloat(document.getElementById('spec-height').value) || null,
-                    unit: document.getElementById('spec-height-unit').value
-                },
-                width: {
-                    value: parseFloat(document.getElementById('spec-width').value) || null,
-                    unit: document.getElementById('spec-width-unit').value
-                },
-                length: {
-                    value: parseFloat(document.getElementById('spec-length').value) || null,
-                    unit: document.getElementById('spec-length-unit').value
-                },
-                weight: {
-                    value: parseFloat(document.getElementById('spec-weight').value) || null,
-                    unit: document.getElementById('spec-weight-unit').value
-                }
-            },
-            performance: {
-                battery: {
-                    runtime: parseFloat(document.getElementById('spec-battery-runtime').value) || null
-                },
-                speed: {
-                    value: parseFloat(document.getElementById('spec-speed').value) || null,
-                    unit: document.getElementById('spec-speed-unit').value
-                },
-                degreesOfFreedom: parseFloat(document.getElementById('spec-dof').value) || null
-            },
-            sensors: sensorTags.map(sensor => ({ type: sensor })),
-            connectivity: connectivityTags,
-            ipRating: document.getElementById('spec-ip-rating').value
-        },
-        // Media handling would typically involve actual file uploads
-        // For demonstration, we'll just use placeholders
-        media: {
-            featuredImage: document.getElementById('featured-image-preview').innerHTML ? {
-                url: 'images/robot-placeholder.jpg',
-                alt: name
-            } : null,
-            images: Array.from(document.getElementById('additional-images-preview').querySelectorAll('.media-item')).map(() => ({
-                url: 'images/robot-placeholder.jpg',
-                alt: name
-            })),
-            videos: Array.from(document.getElementById('videos-preview').querySelectorAll('.media-item')).map(() => ({
-                url: 'videos/video-placeholder.mp4',
-                title: name,
-                thumbnail: 'images/video-placeholder.jpg'
-            }))
-        },
-        // Applications
-        applications: Array.from(document.querySelectorAll('.application-item')).map(item => {
-            const title = item.querySelector('.application-title').value;
-            if (!title) return null; // Skip empty applications
-            
-            return {
-                title,
-                description: item.querySelector('.application-description').value,
-                image: item.querySelector('.application-image-preview').innerHTML ? 'images/robot-placeholder.jpg' : null
-            };
-        }).filter(app => app !== null), // Remove empty applications
-        
-        // SEO/Meta
-        metaData: {
-            title: document.getElementById('meta-title').value || name,
-            description: document.getElementById('meta-description').value || summary,
-            keywords: keywordTags
-        },
-        
-        // System fields
-        createdAt: new Date().toISOString()
-    };
-    
-    // In a real implementation, this would send data to the backend
-    // For demonstration, we'll update the sample data
-    
-    if (currentRobotId) {
-        // Update existing robot
-        const index = sampleRobots.findIndex(r => r.id === currentRobotId);
-        if (index !== -1) {
-            // Preserve the ID and createdAt of the original robot
-            robotData.id = currentRobotId;
-            robotData.createdAt = sampleRobots[index].createdAt;
-            
-            sampleRobots[index] = robotData;
-            
-            // Show success message
-            alert(`Robot "${name}" updated successfully!`);
-        }
-    } else {
-        // Add new robot
-        robotData.id = Math.max(...sampleRobots.map(r => r.id)) + 1;
-        sampleRobots.push(robotData);
-        
-        // Show success message
-        alert(`Robot "${name}" added successfully!`);
+    if (!summary) {
+        alert('Summary is required');
+        return;
     }
     
-    // Reload the table
-    loadRobotTable();
+    const description = document.getElementById('robot-description').value;
     
-    // Close the form
-    closeRobotForm();
+    // Show loading indicator
+    const saveBtnOriginalText = document.querySelector('.modal-footer .btn-primary').textContent;
+    document.querySelector('.modal-footer .btn-primary').textContent = 'Saving...';
+    document.querySelector('.modal-footer .btn-primary').disabled = true;
+    
+    try {
+        // Process media uploads
+        const media = {
+            featuredImage: null,
+            images: [],
+            videos: []
+        };
+        
+        // Process featured image
+        if (uploadedFiles.featuredImage) {
+            const file = uploadedFiles.featuredImage.file;
+            const base64 = uploadedFiles.featuredImage.base64;
+            
+            // Store in DataManager
+            const mediaId = DataManager.storeMedia(file.name, file.type, base64);
+            
+            media.featuredImage = {
+                mediaId,
+                alt: name
+            };
+        } else if (currentRobotId) {
+            // Keep existing featured image if editing
+            const robot = DataManager.getRobotById(currentRobotId);
+            if (robot && robot.media && robot.media.featuredImage) {
+                media.featuredImage = robot.media.featuredImage;
+            }
+        }
+        
+        // Process additional images
+        const existingImagesContainer = document.getElementById('additional-images-preview');
+        const existingImages = existingImagesContainer.querySelectorAll('.media-item');
+        
+        // Process uploaded images
+        for (const imageData of uploadedFiles.additionalImages) {
+            const file = imageData.file;
+            const base64 = imageData.base64;
+            
+            // Store in DataManager
+            const mediaId = DataManager.storeMedia(file.name, file.type, base64);
+            
+            media.images.push({
+                mediaId,
+                alt: file.name
+            });
+        }
+        
+        // Keep existing images (if editing)
+        if (currentRobotId) {
+            const robot = DataManager.getRobotById(currentRobotId);
+            if (robot && robot.media && robot.media.images) {
+                // Add existing images that are still in the preview
+                // This is a bit complex because we don't have a direct reference, 
+                // so we're checking by position in the preview
+                const existingCount = existingImages.length - uploadedFiles.additionalImages.length;
+                if (existingCount > 0) {
+                    for (let i = 0; i < Math.min(existingCount, robot.media.images.length); i++) {
+                        media.images.push(robot.media.images[i]);
+                    }
+                }
+            }
+        }
+        
+        // Process videos
+        const existingVideosContainer = document.getElementById('videos-preview');
+        const existingVideos = existingVideosContainer.querySelectorAll('.media-item');
+        
+        // Process uploaded videos
+        for (const videoData of uploadedFiles.videos) {
+            const file = videoData.file;
+            const base64 = videoData.base64;
+            
+            // Store in DataManager
+            const mediaId = DataManager.storeMedia(file.name, file.type, base64);
+            
+            media.videos.push({
+                mediaId,
+                title: file.name,
+                description: '',
+                thumbnail: 'images/video-placeholder.jpg'
+            });
+        }
+        
+        // Keep existing videos (if editing)
+        if (currentRobotId) {
+            const robot = DataManager.getRobotById(currentRobotId);
+            if (robot && robot.media && robot.media.videos) {
+                // Add existing videos that are still in the preview
+                const existingCount = existingVideos.length - uploadedFiles.videos.length;
+                if (existingCount > 0) {
+                    for (let i = 0; i < Math.min(existingCount, robot.media.videos.length); i++) {
+                        media.videos.push(robot.media.videos[i]);
+                    }
+                }
+            }
+        }
+        
+        // Process applications
+        const applications = [];
+        const applicationItems = document.querySelectorAll('.application-item');
+        
+        for (const item of applicationItems) {
+            const index = item.dataset.index;
+            const title = item.querySelector('.application-title').value;
+            if (!title) continue; // Skip empty applications
+            
+            const description = item.querySelector('.application-description').value;
+            let imageData = null;
+            
+            // Check for uploaded image
+            if (uploadedFiles.applicationImages[index]) {
+                const file = uploadedFiles.applicationImages[index].file;
+                const base64 = uploadedFiles.applicationImages[index].base64;
+                
+                // Store in DataManager
+                const mediaId = DataManager.storeMedia(file.name, file.type, base64);
+                
+                imageData = { mediaId };
+            } else if (currentRobotId) {
+                // Check for existing image
+                const robot = DataManager.getRobotById(currentRobotId);
+                if (robot && robot.applications && robot.applications[index]) {
+                    imageData = { 
+                        image: robot.applications[index].image,
+                        imageMediaId: robot.applications[index].imageMediaId
+                    };
+                }
+            }
+            
+            applications.push({
+                title,
+                description,
+                ...(imageData || {})
+            });
+        }
+        
+        // Create robot object
+        const robotData = {
+            name,
+            slug,
+            manufacturer: {
+                name: manufacturerName,
+                country: manufacturerCountry,
+                website: manufacturerWebsite
+            },
+            yearIntroduced: yearIntroduced ? parseInt(yearIntroduced) : new Date().getFullYear(),
+            categories: categoryTags,
+            summary,
+            description,
+            status,
+            specifications: {
+                physical: {
+                    height: {
+                        value: parseFloat(document.getElementById('spec-height').value) || null,
+                        unit: document.getElementById('spec-height-unit').value
+                    },
+                    width: {
+                        value: parseFloat(document.getElementById('spec-width').value) || null,
+                        unit: document.getElementById('spec-width-unit').value
+                    },
+                    length: {
+                        value: parseFloat(document.getElementById('spec-length').value) || null,
+                        unit: document.getElementById('spec-length-unit').value
+                    },
+                    weight: {
+                        value: parseFloat(document.getElementById('spec-weight').value) || null,
+                        unit: document.getElementById('spec-weight-unit').value
+                    }
+                },
+                performance: {
+                    battery: {
+                        runtime: parseFloat(document.getElementById('spec-battery-runtime').value) || null
+                    },
+                    speed: {
+                        value: parseFloat(document.getElementById('spec-speed').value) || null,
+                        unit: document.getElementById('spec-speed-unit').value
+                    },
+                    degreesOfFreedom: parseFloat(document.getElementById('spec-dof').value) || null
+                },
+                sensors: sensorTags.map(sensor => ({ type: sensor })),
+                connectivity: connectivityTags,
+                ipRating: document.getElementById('spec-ip-rating').value
+            },
+            media,
+            applications,
+            metaData: {
+                title: document.getElementById('meta-title').value || name,
+                description: document.getElementById('meta-description').value || summary,
+                keywords: keywordTags
+            },
+            stats: {
+                views: 0, 
+                favorites: 0
+            }
+        };
+        
+        // Save the robot
+        if (currentRobotId) {
+            // Update existing robot
+            DataManager.updateRobot(currentRobotId, robotData);
+            showMessage(`Robot "${name}" updated successfully!`);
+        } else {
+            // Add new robot
+            DataManager.createRobot(robotData);
+            showMessage(`Robot "${name}" added successfully!`);
+        }
+        
+        // Reload the table
+        loadRobotTable();
+        updatePagination();
+        
+        // Close the form
+        closeRobotForm();
+    } catch (error) {
+        console.error('Error saving robot:', error);
+        alert(`Error saving robot: ${error.message}`);
+    } finally {
+        // Restore button text
+        document.querySelector('.modal-footer .btn-primary').textContent = saveBtnOriginalText;
+        document.querySelector('.modal-footer .btn-primary').disabled = false;
+    }
 }
 
 // Confirm and delete a robot
 function confirmDeleteRobot(robotId) {
-    const robot = sampleRobots.find(r => r.id === robotId);
+    const robot = DataManager.getRobotById(robotId);
     
     if (!robot) return;
     
     const confirmed = confirm(`Are you sure you want to delete "${robot.name}"? This action cannot be undone.`);
     
     if (confirmed) {
-        const index = sampleRobots.findIndex(r => r.id === robotId);
-        if (index !== -1) {
-            sampleRobots.splice(index, 1);
+        try {
+            DataManager.deleteRobot(robotId);
             
             // Reload the table
             loadRobotTable();
+            updatePagination();
             
             // Show success message
-            alert(`Robot "${robot.name}" deleted successfully!`);
+            showMessage(`Robot "${robot.name}" deleted successfully!`);
+        } catch (error) {
+            console.error('Error deleting robot:', error);
+            alert(`Error deleting robot: ${error.message}`);
         }
     }
 }
 
-// Helper function to create a slug from a string
-function slugify(text) {
-    return text
-        .toString()
-        .toLowerCase()
-        .replace(/\s+/g, '-')         // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')      // Remove all non-word chars
-        .replace(/\-\-+/g, '-')        // Replace multiple - with single -
-        .replace(/^-+/, '')            // Trim - from start of text
-        .replace(/-+$/, '');           // Trim - from end of text
+// Show a temporary message popup
+function showMessage(message, type = 'success', duration = 3000) {
+    // Create message element
+    const messageEl = document.createElement('div');
+    messageEl.className = `message-popup message-${type}`;
+    messageEl.textContent = message;
+    
+    // Style the message
+    messageEl.style.position = 'fixed';
+    messageEl.style.top = '20px';
+    messageEl.style.right = '20px';
+    messageEl.style.padding = '15px 20px';
+    messageEl.style.borderRadius = '5px';
+    messageEl.style.zIndex = '9999';
+    messageEl.style.opacity = '0';
+    messageEl.style.transition = 'opacity 0.3s ease';
+    
+    // Set colors based on type
+    if (type === 'success') {
+        messageEl.style.backgroundColor = 'rgba(32, 227, 178, 0.95)';
+        messageEl.style.color = '#fff';
+    } else if (type === 'error') {
+        messageEl.style.backgroundColor = 'rgba(255, 107, 107, 0.95)';
+        messageEl.style.color = '#fff';
+    } else {
+        messageEl.style.backgroundColor = 'rgba(52, 152, 219, 0.95)';
+        messageEl.style.color = '#fff';
+    }
+    
+    // Add to body
+    document.body.appendChild(messageEl);
+    
+    // Fade in
+    setTimeout(() => {
+        messageEl.style.opacity = '1';
+    }, 10);
+    
+    // Remove after duration
+    setTimeout(() => {
+        messageEl.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(messageEl);
+        }, 300);
+    }, duration);
 }
 
 // Helper function to capitalize first letter
 function capitalizeFirstLetter(string) {
+    if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
