@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Encyclopedia - Tgen Robotics Hub</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        /* Additional Styles for Encyclopedia Page */
+        :root {
+            --primary: #20e3b2;
+            --secondary: #0cebeb;
+            --dark: #121212;
+            --light: #f8f9fa;
+            --accent: #ff6b6b;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--light);
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
+        }
+        
+        .search-filter {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .search-filter input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: var(--light);
+        }
+        
+        .search-filter input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
+        }
+        
+        .robot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .robot-card {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+        
+        .robot-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(32, 227, 178, 0.2);
+        }
+        
+        .robot-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .robot-content {
+            padding: 20px;
+        }
+        
+        .robot-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .robot-desc {
+            font-size: 0.9rem;
+            color: var(--light);
+            opacity: 0.8;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .robot-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--light);
+            opacity: 0.6;
+            font-size: 0.8rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 50px;
+        }
+        
+        .page-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .page-item:hover, .page-item.active {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
+        }
+        
+        /* Encyclopedia Header */
+        .encyclopedia-header {
+            padding: 100px 0 40px;
+            text-align: center;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #121212 100%);
+        }
+        
+        .encyclopedia-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .encyclopedia-description {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .encyclopedia-title {
+                font-size: 2.5rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo.png" alt="Tgen Robotics Hub Logo" class="logo">
+            </a>
+            <nav class="nav-links">
+                <a href="encyclopedia.html" class="active">Encyclopedia</a>
+                <a href="categories.html">Categories</a>
+                <a href="news.html">News</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Encyclopedia Header -->
+    <section class="encyclopedia-header">
+        <div class="container">
+            <h1 class="encyclopedia-title">Robot Encyclopedia</h1>
+            <p class="encyclopedia-description">
+                Explore our comprehensive database of robots from around the world. 
+                Filter by category, manufacturer, or search for specific capabilities.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select class="filter-select" id="category-filter">
+                        <option value="">All Categories</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Humanoid">Humanoid</option>
+                        <option value="Service">Service</option>
+                        <option value="Autonomous">Autonomous</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Agricultural">Agricultural</option>
+                        <option value="Educational">Educational</option>
+                        <option value="Military">Military</option>
+                        <option value="Space">Space</option>
+                        <option value="Underwater">Underwater</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Manufacturer</label>
+                    <select class="filter-select" id="manufacturer-filter">
+                        <option value="">All Manufacturers</option>
+                        <option value="Boston Dynamics">Boston Dynamics</option>
+                        <option value="ABB">ABB</option>
+                        <option value="KUKA">KUKA</option>
+                        <option value="Fanuc">Fanuc</option>
+                        <option value="Honda">Honda</option>
+                        <option value="SoftBank Robotics">SoftBank Robotics</option>
+                        <option value="Universal Robots">Universal Robots</option>
+                        <option value="iRobot">iRobot</option>
+                        <option value="Waymo">Waymo</option>
+                        <option value="NASA">NASA</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group search-filter">
+                    <label class="filter-label">Search</label>
+                    <input type="text" placeholder="Search robots..." id="search-filter">
+                </div>
+            </div>
+            
+            <!-- Robot Grid -->
+            <div class="robot-grid" id="robot-grid">
+                <!-- Robot cards will be loaded here dynamically -->
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <div class="page-item active">1</div>
+                <div class="page-item">2</div>
+                <div class="page-item">3</div>
+                <div class="page-item">4</div>
+                <div class="page-item">5</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Assistant Button -->
+    <div class="ai-assistant">
+        <div class="ai-button" id="ai-button">
+            <div class="ai-icon">🤖</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html">Our Mission</a></li>
+                        <li><a href="team.html">The Team</a></li>
+                        <li><a href="partners.html">Partners</a></li>
+                        <li><a href="careers.html">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="research.html">Research Papers</a></li>
+                        <li><a href="events.html">Robotics Events</a></li>
+                        <li><a href="education.html">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="category.html?cat=industrial">Industrial Robotics</a></li>
+                        <li><a href="category.html?cat=service">Service Robots</a></li>
+                        <li><a href="category.html?cat=humanoid">Humanoids</a></li>
+                        <li><a href="category.html?cat=drone">Drones & UAVs</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="newsletter.html">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/encyclopedia.js"></script>
+</body>
+</html>
