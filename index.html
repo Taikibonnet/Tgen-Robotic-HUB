@@ -4,131 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tgen Robotics Hub - Your Ultimate Robotics Encyclopedia</title>
+    <link rel="stylesheet" href="styles/main.css">
     <style>
-        :root {
-            --primary: #20e3b2;
-            --secondary: #0cebeb;
-            --dark: #121212;
-            --light: #f8f9fa;
-            --accent: #ff6b6b;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #121212;
-            color: var(--light);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        a:hover {
-            color: var(--secondary);
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Header Styles */
-        header {
-            background-color: rgba(18, 18, 18, 0.95);
-            padding: 15px 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-        }
-        
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            height: 60px;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .nav-links a {
-            color: var(--light);
-            font-weight: 500;
-            position: relative;
-        }
-        
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            transition: width 0.3s ease;
-        }
-        
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-        
-        .auth-buttons {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-        
-        .btn-outline {
-            border: 2px solid var(--primary);
-            background: transparent;
-            color: var(--primary);
-        }
-        
-        .btn-outline:hover {
-            background: var(--primary);
-            color: var(--dark);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            color: var(--dark);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
-        }
-        
         /* Hero Section */
         .hero {
             height: 100vh;
@@ -216,77 +93,6 @@
             position: relative;
         }
         
-        .section-title {
-            font-size: 2.5rem;
-            margin-bottom: 60px;
-            text-align: center;
-            position: relative;
-            padding-bottom: 20px;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .robot-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        
-        .robot-card {
-            background: rgba(30, 30, 30, 0.8);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        .robot-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(32, 227, 178, 0.2);
-        }
-        
-        .robot-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        
-        .robot-content {
-            padding: 20px;
-        }
-        
-        .robot-title {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-        
-        .robot-desc {
-            font-size: 0.9rem;
-            color: var(--light);
-            opacity: 0.8;
-            margin-bottom: 15px;
-        }
-        
-        .robot-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--light);
-            opacity: 0.6;
-            font-size: 0.8rem;
-        }
-        
         /* News Section */
         .latest-news {
             padding: 100px 0;
@@ -341,84 +147,16 @@
             margin-bottom: 15px;
         }
         
-        /* AI Assistant */
-        .ai-assistant {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-        }
-        
-        .ai-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(32, 227, 178, 0.4);
-            transition: all 0.3s ease;
-        }
-        
-        .ai-button:hover {
-            transform: scale(1.1);
-        }
-        
-        .ai-icon {
+        /* Mobile Menu Button */
+        .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
             font-size: 1.5rem;
-            color: var(--dark);
+            cursor: pointer;
         }
         
-        /* Footer */
-        footer {
-            background-color: rgba(10, 10, 10, 0.95);
-            padding: 60px 0 20px;
-        }
-        
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .footer-section h3 {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: var(--primary);
-        }
-        
-        .footer-links {
-            list-style: none;
-        }
-        
-        .footer-links li {
-            margin-bottom: 10px;
-        }
-        
-        .footer-links a {
-            color: var(--light);
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
-        
-        .footer-links a:hover {
-            opacity: 1;
-            color: var(--primary);
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.9rem;
-            color: var(--light);
-            opacity: 0.6;
-        }
-        
-        /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 3rem;
@@ -428,8 +166,16 @@
                 display: none;
             }
             
-            .mobile-menu {
+            .mobile-menu-button {
                 display: block;
+            }
+            
+            .auth-buttons {
+                display: none;
+            }
+            
+            .nav-links.mobile-active, .auth-buttons.mobile-active {
+                display: flex;
             }
         }
     </style>
@@ -438,16 +184,54 @@
     <!-- Header -->
     <header>
         <div class="container header-container">
-            <a href="index.html" class="logo-link">
-                <div class="logo-text" style="font-size: 24px; font-weight: 700; color: var(--primary);">Tgen Robotics Hub</div>
+            <a href="index.html">
+                <!-- Inline SVG Logo -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 200" width="200" height="60" class="logo">
+                  <!-- Définition du dégradé -->
+                  <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#0cebeb"/>
+                      <stop offset="100%" stop-color="#20e3b2"/>
+                    </linearGradient>
+                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="2" result="blur"/>
+                      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                    </filter>
+                  </defs>
+                  
+                  <!-- T personnalisé avec barre horizontale étendue -->
+                  <path d="M70,120 Q230,120 310,120 C100,120 110,150 190,160" stroke="url(#logoGradient)" stroke-width="5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                  
+                  <!-- G - encore plus rapproché -->
+                  <path d="M200,145 C200,135 210,130 220,130 C227,130 230,132 230,137 M200,145 C200,155 210,160 220,160 C228,160 231,158 233,153 M221,145 L233,145 M233,145 L233,153" stroke="url(#logoGradient)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                  
+                  <!-- E - encore plus rapproché -->
+                  <path d="M240,130 L240,160 M240,130 L260,130 M240,145 L255,145 M240,160 L260,160" stroke="url(#logoGradient)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                  
+                  <!-- N - encore plus rapproché -->
+                  <path d="M270,130 L270,160 M270,130 L290,160 M290,130 L290,160" stroke="url(#logoGradient)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                  
+                  <!-- HUB text moved down -->
+                  <text x="300" y="162" font-family="Arial, sans-serif" font-size="42" font-weight="bold" letter-spacing="1" text-anchor="left" fill="url(#logoGradient)" filter="url(#glow)">
+                    HUB
+                  </text>
+                  
+                  <!-- ROBOTICS text -->
+                  <text x="240" y="180" font-family="Arial, sans-serif" font-size="16" font-weight="600" letter-spacing="3" text-anchor="middle" fill="url(#logoGradient)">
+                    ROBOTICS
+                  </text>
+                </svg>
             </a>
             <nav class="nav-links">
-                <a href="robots.html">Encyclopedia</a>
+                <a href="encyclopedia.html">Encyclopedia</a>
                 <a href="categories.html">Categories</a>
                 <a href="news.html">News</a>
                 <a href="about.html">About</a>
                 <a href="contact.html">Contact</a>
             </nav>
+            <button class="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="auth-buttons">
                 <a href="login.html" class="btn btn-outline">Log In</a>
                 <a href="signup.html" class="btn btn-primary">Sign Up</a>
@@ -468,7 +252,7 @@
             
             <div class="hero-buttons">
                 <a href="categories.html" class="btn btn-primary">Explore Categories</a>
-                <a href="news.html" class="btn btn-outline" style="margin-left: 15px;">Latest Innovations</a>
+                <a href="encyclopedia.html" class="btn btn-outline" style="margin-left: 15px;">Browse Robots</a>
             </div>
         </div>
     </section>
@@ -481,9 +265,9 @@
             <div class="robot-grid">
                 <!-- Robot Card 1 -->
                 <div class="robot-card">
-                    <img src="https://placehold.co/400x200/1a1a1a/20e3b2?text=Spot" alt="Boston Dynamics Spot" class="robot-image">
+                    <img src="images/sample/spot.jpg" alt="Boston Dynamics Spot" class="robot-image">
                     <div class="robot-content">
-                        <a href="robot-details.html"><h3 class="robot-title">Spot</h3></a>
+                        <a href="robot-detail.html?slug=spot"><h3 class="robot-title">Spot</h3></a>
                         <p class="robot-desc">An agile mobile robot that navigates terrain with unprecedented mobility, allowing you to automate routine inspection tasks and data capture safely.</p>
                         <div class="robot-meta">
                             <span>Boston Dynamics</span>
@@ -494,12 +278,12 @@
                 
                 <!-- Robot Card 2 -->
                 <div class="robot-card">
-                    <img src="https://placehold.co/400x200/1a1a1a/20e3b2?text=ASIMO" alt="ASIMO" class="robot-image">
+                    <img src="images/sample/atlas.jpg" alt="Boston Dynamics Atlas" class="robot-image">
                     <div class="robot-content">
-                        <a href="#"><h3 class="robot-title">ASIMO</h3></a>
-                        <p class="robot-desc">Advanced humanoid robot designed to be a helper to people, with the ability to walk on two legs and perform tasks like picking up objects.</p>
+                        <a href="robot-detail.html?slug=atlas"><h3 class="robot-title">Atlas</h3></a>
+                        <p class="robot-desc">Atlas is the most dynamic humanoid robot, designed to navigate rough terrain and perform complex physical tasks like running, jumping, and backflips.</p>
                         <div class="robot-meta">
-                            <span>Honda</span>
+                            <span>Boston Dynamics</span>
                             <span>Humanoid</span>
                         </div>
                     </div>
@@ -507,20 +291,20 @@
                 
                 <!-- Robot Card 3 -->
                 <div class="robot-card">
-                    <img src="https://placehold.co/400x200/1a1a1a/20e3b2?text=Waymo" alt="Waymo Self-Driving Car" class="robot-image">
+                    <img src="images/sample/anymal.jpg" alt="ANYbotics ANYmal" class="robot-image">
                     <div class="robot-content">
-                        <a href="#"><h3 class="robot-title">Waymo</h3></a>
-                        <p class="robot-desc">Autonomous vehicles equipped with advanced sensors and AI to navigate roads safely without human intervention.</p>
+                        <a href="robot-detail.html?slug=anymal"><h3 class="robot-title">ANYmal</h3></a>
+                        <p class="robot-desc">ANYmal is a four-legged robot designed for autonomous inspection tasks in challenging environments like industrial facilities.</p>
                         <div class="robot-meta">
-                            <span>Waymo</span>
-                            <span>Autonomous Vehicle</span>
+                            <span>ANYbotics</span>
+                            <span>Quadruped</span>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div style="text-align: center; margin-top: 50px;">
-                <a href="robots.html" class="btn btn-outline">View All Robots</a>
+                <a href="encyclopedia.html" class="btn btn-outline">View All Robots</a>
             </div>
         </div>
     </section>
@@ -533,34 +317,34 @@
             <div class="news-container">
                 <!-- News Card 1 -->
                 <div class="news-card">
-                    <img src="https://placehold.co/400x200/1a1a1a/20e3b2?text=Robotics+News" alt="News Image 1" class="news-image">
+                    <img src="images/news/news1.jpg" alt="Soft Robotics Breakthrough" class="news-image">
                     <div class="news-content">
                         <div class="news-date">April 25, 2025</div>
                         <h3 class="news-title">New Breakthrough in Soft Robotics Enables Enhanced Dexterity</h3>
                         <p class="news-excerpt">Researchers have developed a new material that allows soft robots to manipulate objects with unprecedented precision.</p>
-                        <a href="#" class="btn btn-outline">Read More</a>
+                        <a href="news-detail.html?id=1" class="btn btn-outline">Read More</a>
                     </div>
                 </div>
                 
                 <!-- News Card 2 -->
                 <div class="news-card">
-                    <img src="https://placehold.co/400x200/1a1a1a/20e3b2?text=Healthcare+Robotics" alt="News Image 2" class="news-image">
+                    <img src="images/news/news2.jpg" alt="Healthcare Robotics" class="news-image">
                     <div class="news-content">
                         <div class="news-date">April 22, 2025</div>
                         <h3 class="news-title">Robotics Adoption in Healthcare Reaches New Heights</h3>
                         <p class="news-excerpt">Hospitals worldwide are increasing their use of robotic systems for surgery and patient care.</p>
-                        <a href="#" class="btn btn-outline">Read More</a>
+                        <a href="news-detail.html?id=2" class="btn btn-outline">Read More</a>
                     </div>
                 </div>
                 
                 <!-- News Card 3 -->
                 <div class="news-card">
-                    <img src="https://placehold.co/400x200/1a1a1a/20e3b2?text=AI+Robotics" alt="News Image 3" class="news-image">
+                    <img src="images/news/news3.jpg" alt="AI Robotics" class="news-image">
                     <div class="news-content">
                         <div class="news-date">April 18, 2025</div>
                         <h3 class="news-title">AI Advancements Enable Robots to Learn from Natural Language</h3>
                         <p class="news-excerpt">New machine learning techniques allow robots to understand and respond to complex verbal instructions.</p>
-                        <a href="#" class="btn btn-outline">Read More</a>
+                        <a href="news-detail.html?id=3" class="btn btn-outline">Read More</a>
                     </div>
                 </div>
             </div>
@@ -569,7 +353,7 @@
 
     <!-- AI Assistant Button -->
     <div class="ai-assistant">
-        <div class="ai-button">
+        <div class="ai-button" id="ai-button">
             <div class="ai-icon">🤖</div>
         </div>
     </div>
@@ -581,40 +365,40 @@
                 <div class="footer-section">
                     <h3>About</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Our Mission</a></li>
-                        <li><a href="#">The Team</a></li>
-                        <li><a href="#">Partners</a></li>
-                        <li><a href="#">Careers</a></li>
+                        <li><a href="about.html">Our Mission</a></li>
+                        <li><a href="team.html">The Team</a></li>
+                        <li><a href="partners.html">Partners</a></li>
+                        <li><a href="careers.html">Careers</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
                     <h3>Resources</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Robot Database</a></li>
-                        <li><a href="#">Research Papers</a></li>
-                        <li><a href="#">Robotics Events</a></li>
-                        <li><a href="#">Education</a></li>
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="research.html">Research Papers</a></li>
+                        <li><a href="events.html">Robotics Events</a></li>
+                        <li><a href="education.html">Education</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
                     <h3>Categories</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Industrial Robotics</a></li>
-                        <li><a href="#">Service Robots</a></li>
-                        <li><a href="#">Humanoids</a></li>
-                        <li><a href="#">Drones & UAVs</a></li>
+                        <li><a href="categories.html?cat=industrial">Industrial Robotics</a></li>
+                        <li><a href="categories.html?cat=service">Service Robots</a></li>
+                        <li><a href="categories.html?cat=humanoid">Humanoids</a></li>
+                        <li><a href="categories.html?cat=drone">Drones & UAVs</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
                     <h3>Connect</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Newsletter</a></li>
-                        <li><a href="#">Twitter</a></li>
-                        <li><a href="#">LinkedIn</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="newsletter.html">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics">LinkedIn</a></li>
                     </ul>
                 </div>
             </div>
@@ -625,16 +409,18 @@
         </div>
     </footer>
 
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
     <script>
         // Simple animation for the AI assistant button
-        document.querySelector('.ai-button').addEventListener('click', function() {
+        document.getElementById('ai-button').addEventListener('click', function() {
             alert('AI Assistant feature coming soon! This will provide interactive help and information about robots.');
         });
         
         // Search functionality placeholder
         document.querySelector('.search').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                alert('Search functionality will be implemented in the full version.');
+                window.location.href = 'encyclopedia.html?search=' + encodeURIComponent(this.value);
             }
         });
     </script>
