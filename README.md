@@ -1,85 +1,148 @@
 # Tgen Robotics Hub
 
-A comprehensive online encyclopedia for robotics enthusiasts, researchers, and industry professionals. This platform provides detailed information about various robots, the latest developments in robotics, and an interactive user experience enhanced by an AI assistant.
+A comprehensive online encyclopedia for robotics enthusiasts, researchers, and industry professionals. The platform provides detailed information about various robots, news about the latest developments in robotics, and an interactive user experience enhanced by an AI assistant.
 
-## 🤖 Project Overview
+## Features
 
-Tgen Robotics Hub serves as the definitive knowledge base for all things robotics, featuring:
+- **Detailed Robot Database**: Comprehensive information about various robots with specifications, images, and applications
+- **User Accounts**: Personalized experience with favorites and recently viewed history
+- **Admin Dashboard**: Powerful content management system for adding and editing robot entries
+- **News Section**: Latest updates and articles from the robotics world
+- **Interactive AI Assistant**: Context-aware robot guide for better user experience
+- **Responsive Design**: Modern UI that works across all devices
 
-- **Extensive Robot Database**: Detailed profiles with specifications, images, and videos
-- **Interactive AI Assistant**: Context-aware helper for exploring robotics information
-- **User Personalization**: Customized experience based on interests and browsing history
-- **News & Updates**: Latest developments in the world of robotics
-- **Admin Dashboard**: Easy content management system
-
-## ✨ Key Features
-
-- **Comprehensive Robot Profiles**: Detailed specifications, applications, and media
-- **Category-Based Navigation**: Easy exploration by robot type and application
-- **Advanced Search Capabilities**: Find robots and content quickly
-- **Responsive Design**: Optimal experience on all devices
-- **Dark Mode**: Eye-friendly interface for extended browsing
-
-## 🔧 Technical Implementation
-
-### Frontend
-- HTML5, CSS3, JavaScript
-- React.js (planned for interactive components)
+## Tech Stack
 
 ### Backend
-- Node.js & Express
-- MongoDB for database
-- RESTful API architecture
+- Node.js with Express
+- MongoDB with Mongoose
+- JWT Authentication
+- AWS S3 for media storage
 
-### Future Enhancements
-- Interactive 3D Models for robots
-- Community forums and discussions
-- Educational resources and courses
+### Frontend
+- HTML/CSS/JavaScript
+- Modern responsive design
+- Admin dashboard with robot management
 
-## 📌 Current Status
+## Getting Started
 
-This repository contains a working prototype demonstrating the core functionality and design of the Tgen Robotics Hub. It includes:
+### Prerequisites
 
-- Homepage with featured robots
-- Example robot detail page
-- Admin dashboard interface
-- AI assistant component
+- Node.js (v14+)
+- MongoDB (local or Atlas)
+- AWS Account (for S3 media storage)
+- npm or yarn
 
-## 🚀 Roadmap
+### Installation
 
-### Phase 1: Foundation (Current)
-- Core website structure
-- Basic robot database
-- Essential user features
+1. Clone the repository
+   ```
+   git clone https://github.com/Taikibonnet/Tgen-Robotic-HUB.git
+   cd Tgen-Robotic-HUB
+   ```
 
-### Phase 2: Enhanced Features
-- User accounts and personalization
-- Advanced search and filtering
-- Community engagement features
+2. Install dependencies
+   ```
+   npm install
+   ```
 
-### Phase 3: AI Integration
-- AI assistant implementation
-- Advanced visualizations
-- Mobile application development
+3. Create .env file
+   ```
+   cp .env.example .env
+   ```
+   Then edit the .env file with your configuration details:
+   - Set your MongoDB connection URI
+   - Configure a JWT secret
+   - Add AWS credentials if using S3 for media storage
 
-## 💼 Business Potential
+4. Start the server
+   ```
+   npm run server
+   ```
 
-The Tgen Robotics Hub has significant potential for:
+5. Access the application
+   - Main site: http://localhost:5000
+   - Admin dashboard: http://localhost:5000/admin
+   - Default admin login:
+     - Email: tgen.robotics@gmail.com
+     - Password: Admin123!
 
-- **Industry partnerships** with robotics manufacturers
-- **Educational licensing** for schools and universities
-- **Premium subscription** model for advanced features
-- **Advertising** from relevant technology companies
-- **Data insights** on robotics trends and interests
+### Development Mode
 
-## 👥 Target Audience
+To run the server with hot reloading:
 
-- **Industry Professionals**: Engineers, designers, and technologists
-- **Researchers**: Academic and R&D specialists
-- **Educators**: Teachers and professors in STEM fields
-- **Students**: Those studying robotics and related fields
-- **Enthusiasts**: Hobbyists and robotics fans
+```
+npm run dev
+```
+
+## Admin Dashboard
+
+The admin dashboard can be accessed at `/admin` and provides the following functionality:
+
+- Add, edit, and delete robot entries
+- Manage categories and tags
+- Publish news articles
+- Upload and manage media files
+- View site statistics
+- Manage user accounts
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - Login
+- `POST /api/auth/register` - Register a new user
+- `GET /api/auth/me` - Get current user data
+
+### Robots
+- `GET /api/robots` - Get all robots
+- `GET /api/robots/:id` - Get robot by ID or slug
+- `POST /api/robots` - Create a new robot (admin only)
+- `PUT /api/robots/:id` - Update a robot (admin only)
+- `DELETE /api/robots/:id` - Delete a robot (admin only)
+- `GET /api/robots/categories` - Get robot categories
+- `GET /api/robots/popular` - Get popular robots
+- `GET /api/robots/:id/related` - Get related robots
+
+### Users
+- `GET /api/users` - Get all users (admin only)
+- `GET /api/users/:id` - Get user by ID
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user (admin only)
+- `GET /api/users/favorites` - Get user's favorite robots
+- `POST /api/users/favorites/:robotId` - Add robot to favorites
+- `DELETE /api/users/favorites/:robotId` - Remove robot from favorites
+
+## Project Structure
+
+```
+tgen-robotics-hub/
+├── controllers/        # API controllers
+├── middleware/         # Express middleware
+├── models/             # Mongoose models
+├── routes/             # API routes
+├── public/             # Static frontend files
+├── utils/              # Utility functions
+└── uploads/            # Temporary file uploads
+```
+
+## Future Enhancements
+
+1. **Mobile Application**: Develop dedicated iOS and Android apps
+2. **Interactive 3D Models**: Add WebGL-based 3D robot viewers
+3. **Community Features**: Implement forums or discussion boards
+4. **Educational Content**: Add tutorials and courses
+5. **AR/VR Experiences**: Create immersive robot experiences
+6. **Marketplace Integration**: Connect users with robot manufacturers
+7. **Multilingual Support**: Translate content for global audiences
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contributors
+
+- Taiki Bonnet - Project Lead & Developer
 
 ---
 
-&copy; 2025 Tgen Robotics Hub. All rights reserved.
+For more information, visit the [Project Wiki](https://github.com/Taikibonnet/Tgen-Robotic-HUB/wiki) (coming soon).
