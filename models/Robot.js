@@ -1,0 +1,283 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+// Robot Schema Definition
+const RobotSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  slug: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  manufacturer: {
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    country: {
+      type: String,
+      trim: true
+    },
+    website: {
+      type: String,
+      trim: true
+    }
+  },
+  yearIntroduced: {
+    type: Number
+  },
+  categories: [String],
+  summary: {
+    type: String,
+    trim: true
+  },
+  description: {
+    type: String,
+    trim: true
+  },
+  
+  // Specifications - nested object for all technical details
+  specifications: {
+    // Physical characteristics
+    physical: {
+      height: { 
+        value: Number, 
+        unit: {
+          type: String,
+          default: 'm'
+        }
+      },
+      width: { 
+        value: Number, 
+        unit: {
+          type: String,
+          default: 'm'
+        }
+      },
+      length: { 
+        value: Number, 
+        unit: {
+          type: String,
+          default: 'm'
+        }
+      },
+      weight: { 
+        value: Number, 
+        unit: {
+          type: String,
+          default: 'kg'
+        }
+      }
+    },
+    
+    // Performance metrics
+    performance: {
+      battery: { 
+        capacity: Number, 
+        runtime: Number, 
+        chargingTime: Number 
+      },
+      speed: { 
+        value: Number, 
+        unit: {
+          type: String,
+          default: 'm/s'
+        }
+      },
+      payload: { 
+        value: Number, 
+        unit: {
+          type: String,
+          default: 'kg'
+        }
+      },
+      degreesOfFreedom: Number,
+      maxIncline: Number,
+      operatingTemperature: { 
+        min: Number, 
+        max: Number, 
+        unit: {
+          type: String,
+          default: '°C'
+        }
+      }
+    },
+    
+    // Sensors and connectivity
+    sensors: [{
+      type: String,
+      description: String
+    }],
+    connectivity: [String],
+    ipRating: String,
+    
+    // Additional custom specifications
+    customFields: [{
+      name: String,
+      value: String
+    }]
+  },
+  
+  // Media content
+  media: {
+    featuredImage: {
+      url: String,
+      alt: String,
+      caption: String
+    },
+    images: [{
+      url: String,
+      alt: String,
+      caption: String
+    }],
+    videos: [{
+      url: String,
+      title: String,
+      description: String,
+      thumbnail: String
+    }]
+  },
+  
+  // Applications and use cases
+  applications: [{
+    title: String,
+    description: String,
+    image: String
+  }],
+  
+  // Related content
+  relatedRobots: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Robot' 
+  }],
+  
+  // SEO and metadata
+  metaData: {
+    title: String,
+    description: String,
+    keywords: [String]
+  },
+  
+  // System fields
+  status: { 
+    type: String, 
+    enum: ['draft', 'published', 'archived'],
+    default: 'draft'
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  },
+  updatedAt: { 
+    type: Date, 
+    default: Date.now 
+  },
+  createdBy: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
+  },
+  updatedBy: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
+  },
+  
+  // Statistics and metrics
+  stats: {
+    views: { 
+      type: Number, 
+      default: 0 
+    },
+    favorites: { 
+      type: Number, 
+      default: 0 
+    },
+    averageRating: { 
+      type: Number, 
+      default: 0 
+    }
+  }
+});
+
+// Pre-save hook to update the 'updatedAt' field
+RobotSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
+// Method to generate a properly formatted title for SEO
+RobotSchema.methods.generateSeoTitle = function() {
+  return `${this.name} by ${this.manufacturer.name} | Tgen Robotics Hub`;
+};
+
+// Method to generate related robots based on categories
+RobotSchema.methods.findRelatedRobots = async function(limit = 3) {
+  if (!this.categories || this.categories.length === 0) {
+    return [];
+  }
+  
+  try {
+    const relatedRobots = await this.model('Robot').find({
+      _id: { $ne: this._id },
+      categories: { $in: this.categories },
+      status: 'published'
+    })
+    .limit(limit)
+    .select('name slug manufacturer.name categories summary media.featuredImage');
+    
+    return relatedRobots;
+  } catch (error) {
+    console.error('Error finding related robots:', error);
+    return [];
+  }
+};
+
+// Static method to get popular robots
+RobotSchema.statics.getPopularRobots = async function(limit = 5) {
+  try {
+    return await this.find({ status: 'published' })
+      .sort({ 'stats.views': -1 })
+      .limit(limit)
+      .select('name slug manufacturer.name categories summary media.featuredImage stats');
+  } catch (error) {
+    console.error('Error finding popular robots:', error);
+    return [];
+  }
+};
+
+// Static method to search robots
+RobotSchema.statics.searchRobots = async function(query, limit = 10) {
+  try {
+    return await this.find({
+      status: 'published',
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { 'manufacturer.name': { $regex: query, $options: 'i' } },
+        { summary: { $regex: query, $options: 'i' } },
+        { description: { $regex: query, $options: 'i' } },
+        { categories: { $regex: query, $options: 'i' } }
+      ]
+    })
+    .limit(limit)
+    .select('name slug manufacturer.name categories summary media.featuredImage');
+  } catch (error) {
+    console.error('Error searching robots:', error);
+    return [];
+  }
+};
+
+// Indexes for faster querying
+RobotSchema.index({ name: 'text', summary: 'text', description: 'text' });
+RobotSchema.index({ slug: 1 });
+RobotSchema.index({ categories: 1 });
+RobotSchema.index({ 'manufacturer.name': 1 });
+RobotSchema.index({ status: 1 });
+RobotSchema.index({ 'stats.views': -1 });
+
+module.exports = mongoose.model('Robot', RobotSchema);
