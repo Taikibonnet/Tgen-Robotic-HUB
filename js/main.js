@@ -1,370 +1,383 @@
-/* main.css - Core styles for Tgen Robotics Hub website */
+// main.js - Common functionality for Tgen Robotics Hub
 
-:root {
-    --primary: #20e3b2;
-    --secondary: #0cebeb;
-    --dark: #121212;
-    --light: #f8f9fa;
-    --accent: #ff6b6b;
+// DOM Elements
+const mobileMenuButton = document.querySelector('.mobile-menu-button');
+const navLinks = document.querySelector('.nav-links');
+const authButtons = document.querySelector('.auth-buttons');
+const aiButton = document.getElementById('ai-button');
+
+// Initialize the site
+document.addEventListener('DOMContentLoaded', () => {
+    // Set up event listeners
+    setupMenuToggle();
+    setupActiveNavLink();
+    setupAIAssistant();
+    
+    // Check if user is logged in
+    checkUserStatus();
+});
+
+// Mobile menu toggle
+function setupMenuToggle() {
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', () => {
+            navLinks.classList.toggle('mobile-active');
+            authButtons.classList.toggle('mobile-active');
+        });
+    }
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+// Set active nav link based on current page
+function setupActiveNavLink() {
+    // Get the current page path
+    const currentPath = window.location.pathname;
+    
+    // Find the matching nav link and add the active class
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        const linkPath = link.getAttribute('href');
+        
+        if (currentPath.endsWith(linkPath) || 
+            (currentPath.endsWith('/') && linkPath === 'index.html') ||
+            (currentPath.includes(linkPath) && linkPath !== 'index.html')) {
+            link.classList.add('active');
+        }
+    });
 }
 
-body {
-    background-color: #121212;
-    color: var(--light);
-    line-height: 1.6;
-    overflow-x: hidden;
+// AI Assistant functionality
+function setupAIAssistant() {
+    if (aiButton) {
+        aiButton.addEventListener('click', openAIAssistant);
+    }
 }
 
-a {
-    color: var(--primary);
-    text-decoration: none;
-    transition: all 0.3s ease;
+// Open AI Assistant
+function openAIAssistant() {
+    // Simple placeholder implementation
+    showMessage("AI Assistant feature coming soon!", "info");
 }
 
-a:hover {
-    color: var(--secondary);
+// Check user login status
+function checkUserStatus() {
+    // Check for user data in localStorage
+    const userData = localStorage.getItem('tgenUser');
+    
+    if (userData) {
+        const user = JSON.parse(userData);
+        updateUserUI(user);
+    }
 }
 
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* Header Styles */
-header {
-    background-color: rgba(18, 18, 18, 0.95);
-    padding: 15px 0;
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-}
-
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    height: 60px;
-}
-
-.nav-links {
-    display: flex;
-    gap: 30px;
-}
-
-.nav-links a {
-    color: var(--light);
-    font-weight: 500;
-    position: relative;
-}
-
-.nav-links a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -5px;
-    left: 0;
-    background: linear-gradient(90deg, var(--secondary), var(--primary));
-    transition: width 0.3s ease;
-}
-
-.nav-links a:hover::after, .nav-links a.active::after {
-    width: 100%;
-}
-
-.nav-links a.active {
-    color: var(--primary);
-}
-
-.auth-buttons {
-    display: flex;
-    gap: 15px;
-}
-
-.btn {
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-block;
-}
-
-.btn-outline {
-    border: 2px solid var(--primary);
-    background: transparent;
-    color: var(--primary);
-}
-
-.btn-outline:hover {
-    background: var(--primary);
-    color: var(--dark);
-}
-
-.btn-primary {
-    background: linear-gradient(90deg, var(--secondary), var(--primary));
-    color: var(--dark);
-    border: none;
-}
-
-.btn-primary:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
-}
-
-/* Main Content Area */
-.main-content {
-    padding: 100px 0 60px;
-    min-height: calc(100vh - 300px);
-}
-
-.section-title {
-    font-size: 2.5rem;
-    margin-bottom: 60px;
-    text-align: center;
-    position: relative;
-    padding-bottom: 20px;
-}
-
-.section-title::after {
-    content: '';
-    position: absolute;
-    width: 100px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--secondary), var(--primary));
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* AI Assistant */
-.ai-assistant {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 1000;
-}
-
-.ai-button {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--secondary), var(--primary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 5px 20px rgba(32, 227, 178, 0.4);
-    transition: all 0.3s ease;
-}
-
-.ai-button:hover {
-    transform: scale(1.1);
-}
-
-.ai-icon {
-    font-size: 1.5rem;
-    color: var(--dark);
-}
-
-/* Footer */
-footer {
-    background-color: rgba(10, 10, 10, 0.95);
-    padding: 60px 0 20px;
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 40px;
-    margin-bottom: 40px;
-}
-
-.footer-section h3 {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    color: var(--primary);
-}
-
-.footer-links {
-    list-style: none;
-}
-
-.footer-links li {
-    margin-bottom: 10px;
-}
-
-.footer-links a {
-    color: var(--light);
-    opacity: 0.7;
-    transition: all 0.3s ease;
-}
-
-.footer-links a:hover {
-    opacity: 1;
-    color: var(--primary);
-}
-
-.copyright {
-    text-align: center;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.9rem;
-    color: var(--light);
-    opacity: 0.6;
-}
-
-/* Loader */
-.loader-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200px;
-}
-
-.loader {
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(32, 227, 178, 0.2);
-    border-radius: 50%;
-    border-top-color: var(--primary);
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Messages */
-.message {
-    padding: 15px 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.message-success {
-    background-color: rgba(32, 227, 178, 0.2);
-    color: var(--primary);
-}
-
-.message-error {
-    background-color: rgba(255, 107, 107, 0.2);
-    color: var(--accent);
-}
-
-.message-info {
-    background-color: rgba(42, 157, 255, 0.2);
-    color: #2a9dff;
-}
-
-/* No Results */
-.no-results {
-    text-align: center;
-    padding: 50px 0;
-    width: 100%;
-}
-
-.no-results h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: var(--primary);
-}
-
-.no-results p {
-    color: var(--gray);
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
+// Update UI based on user login status
+function updateUserUI(user) {
+    const authButtonsContainer = document.querySelector('.auth-buttons');
+    
+    if (!authButtonsContainer) return;
+    
+    // Replace login/signup buttons with user info
+    authButtonsContainer.innerHTML = `
+        <div class="user-dropdown">
+            <div class="user-info">
+                <span>${user.firstName}</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a href="profile.html">Profile</a>
+                ${user.role === 'admin' ? '<a href="admin-dashboard.html">Admin Dashboard</a>' : ''}
+                <a href="#" id="logout-btn">Logout</a>
+            </div>
+        </div>
+    `;
+    
+    // Add click handler for dropdown toggle
+    const userInfo = document.querySelector('.user-info');
+    if (userInfo) {
+        userInfo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelector('.dropdown-menu').classList.toggle('active');
+        });
     }
     
-    .mobile-menu-button {
-        display: block;
-        background: none;
-        border: none;
-        color: var(--light);
-        font-size: 1.5rem;
-        cursor: pointer;
+    // Add click handler for logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
     }
     
-    .nav-links.mobile-active {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 80px;
-        left: 0;
-        width: 100%;
-        background-color: rgba(18, 18, 18, 0.95);
-        padding: 20px;
-        z-index: 1000;
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+        const dropdown = document.querySelector('.dropdown-menu');
+        if (dropdown && dropdown.classList.contains('active')) {
+            dropdown.classList.remove('active');
+        }
+    });
+}
+
+// Logout function
+function logout() {
+    // Remove user data from localStorage
+    localStorage.removeItem('tgenUser');
+    
+    // Reload the page
+    window.location.reload();
+}
+
+// Login function (called from login page)
+function login(email, password) {
+    // In a real application, this would make an API call
+    // For demo purposes, we'll use the sample user data
+    
+    // Find user with matching credentials
+    const user = window.robotsData.users.find(u => 
+        u.email === email && u.password === password
+    );
+    
+    if (user) {
+        // Store user data in localStorage (excluding password)
+        const userData = { ...user };
+        delete userData.password;
+        
+        localStorage.setItem('tgenUser', JSON.stringify(userData));
+        
+        return { success: true, user: userData };
     }
     
-    .auth-buttons {
-        display: none;
+    return { success: false, message: "Invalid email or password" };
+}
+
+// Register function (called from signup page)
+function register(userData) {
+    // In a real application, this would make an API call
+    // For demo purposes, we'll simulate user registration
+    
+    // Check if email already exists
+    const emailExists = window.robotsData.users.some(u => u.email === userData.email);
+    
+    if (emailExists) {
+        return { success: false, message: "Email already in use" };
     }
     
-    .auth-buttons.mobile-active {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 20px;
+    // Create new user
+    const newUser = {
+        id: window.robotsData.users.length + 1,
+        email: userData.email,
+        password: userData.password,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        role: 'user',
+        profileImage: 'images/avatars/default.jpg',
+        preferences: {
+            theme: 'dark',
+            favoriteCategories: []
+        },
+        activity: {
+            favoriteRobots: [],
+            recentlyViewed: []
+        }
+    };
+    
+    // Add to users array
+    window.robotsData.users.push(newUser);
+    
+    // Store user data in localStorage (excluding password)
+    const userDataToStore = { ...newUser };
+    delete userDataToStore.password;
+    
+    localStorage.setItem('tgenUser', JSON.stringify(userDataToStore));
+    
+    return { success: true, user: userDataToStore };
+}
+
+// Get current user
+function getCurrentUser() {
+    const userData = localStorage.getItem('tgenUser');
+    
+    if (userData) {
+        return JSON.parse(userData);
     }
     
-    .section-title {
-        font-size: 2rem;
+    return null;
+}
+
+// Add to user's recently viewed robots
+function addToRecentlyViewed(robotId) {
+    const user = getCurrentUser();
+    
+    if (!user) return;
+    
+    // Get numeric robot ID
+    robotId = parseInt(robotId);
+    
+    // Create new recently viewed entry
+    const newEntry = {
+        robotId,
+        timestamp: new Date().toISOString()
+    };
+    
+    // If user doesn't have activity or recentlyViewed, initialize them
+    if (!user.activity) user.activity = {};
+    if (!user.activity.recentlyViewed) user.activity.recentlyViewed = [];
+    
+    // Remove if already exists
+    user.activity.recentlyViewed = user.activity.recentlyViewed.filter(
+        item => item.robotId !== robotId
+    );
+    
+    // Add to beginning of array
+    user.activity.recentlyViewed.unshift(newEntry);
+    
+    // Keep only the 10 most recent
+    if (user.activity.recentlyViewed.length > 10) {
+        user.activity.recentlyViewed = user.activity.recentlyViewed.slice(0, 10);
+    }
+    
+    // Update localStorage
+    localStorage.setItem('tgenUser', JSON.stringify(user));
+}
+
+// Toggle robot favorite status
+function toggleFavorite(robotId) {
+    const user = getCurrentUser();
+    
+    if (!user) return { success: false, message: "You must be logged in to favorite robots" };
+    
+    // Get numeric robot ID
+    robotId = parseInt(robotId);
+    
+    // If user doesn't have activity or favoriteRobots, initialize them
+    if (!user.activity) user.activity = {};
+    if (!user.activity.favoriteRobots) user.activity.favoriteRobots = [];
+    
+    // Check if robot is already in favorites
+    const index = user.activity.favoriteRobots.indexOf(robotId);
+    
+    if (index === -1) {
+        // Add to favorites
+        user.activity.favoriteRobots.push(robotId);
+        
+        // Update localStorage
+        localStorage.setItem('tgenUser', JSON.stringify(user));
+        
+        return { success: true, added: true };
+    } else {
+        // Remove from favorites
+        user.activity.favoriteRobots.splice(index, 1);
+        
+        // Update localStorage
+        localStorage.setItem('tgenUser', JSON.stringify(user));
+        
+        return { success: true, added: false };
     }
 }
 
-@media (max-width: 576px) {
-    .ai-button {
-        width: 50px;
-        height: 50px;
+// Check if a robot is in user's favorites
+function isRobotFavorited(robotId) {
+    const user = getCurrentUser();
+    
+    if (!user || !user.activity || !user.activity.favoriteRobots) {
+        return false;
     }
     
-    .ai-icon {
-        font-size: 1.2rem;
+    // Get numeric robot ID
+    robotId = parseInt(robotId);
+    
+    return user.activity.favoriteRobots.includes(robotId);
+}
+
+// Show a temporary message
+function showMessage(message, type = 'info', duration = 3000) {
+    // Check if a message is already showing
+    const existingMessage = document.querySelector('.message-popup');
+    if (existingMessage) {
+        existingMessage.remove();
     }
     
-    .footer-grid {
-        grid-template-columns: 1fr;
+    // Create message element
+    const messageElement = document.createElement('div');
+    messageElement.className = `message-popup message-${type} fade-in`;
+    messageElement.textContent = message;
+    
+    // Add to body
+    document.body.appendChild(messageElement);
+    
+    // Position in top-right corner
+    messageElement.style.position = 'fixed';
+    messageElement.style.top = '100px';
+    messageElement.style.right = '20px';
+    messageElement.style.padding = '15px 25px';
+    messageElement.style.borderRadius = '5px';
+    messageElement.style.zIndex = '2000';
+    messageElement.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+    
+    // Set background color based on type
+    if (type === 'success') {
+        messageElement.style.backgroundColor = 'rgba(32, 227, 178, 0.9)';
+    } else if (type === 'error') {
+        messageElement.style.backgroundColor = 'rgba(255, 107, 107, 0.9)';
+    } else {
+        messageElement.style.backgroundColor = 'rgba(42, 157, 255, 0.9)';
     }
+    
+    // Remove after duration
+    setTimeout(() => {
+        messageElement.style.opacity = '0';
+        messageElement.style.transition = 'opacity 0.5s ease-in-out';
+        
+        // Remove from DOM after fade out
+        setTimeout(() => {
+            messageElement.remove();
+        }, 500);
+    }, duration);
 }
 
-/* Mobile Menu Button */
-.mobile-menu-button {
-    display: none;
+// Parse URL parameters
+function getUrlParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    
+    if (!queryString) return params;
+    
+    const pairs = queryString.split('&');
+    
+    for (const pair of pairs) {
+        const [key, value] = pair.split('=');
+        if (key) {
+            params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        }
+    }
+    
+    return params;
 }
 
-@media (max-width: 768px) {
-    .mobile-menu-button {
-        display: block;
-    }
+// Format date
+function formatDate(dateString) {
+    if (!dateString) return '';
+    
+    const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) return '';
+    
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
 }
+
+// Make global functions available
+window.tgenApp = {
+    login,
+    register,
+    logout,
+    getCurrentUser,
+    addToRecentlyViewed,
+    toggleFavorite,
+    isRobotFavorited,
+    showMessage,
+    getUrlParams,
+    formatDate
+};
