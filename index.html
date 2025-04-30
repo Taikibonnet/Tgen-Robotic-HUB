@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tgen Robotics Hub - Your Ultimate Robotics Encyclopedia</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Hero Section */
         .hero {
@@ -24,7 +25,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('images/background.jpg') center/cover no-repeat;
+            background: url('images/background-pattern.png') center/cover no-repeat;
             opacity: 0.1;
             z-index: 0;
         }
@@ -185,46 +186,10 @@
     <header>
         <div class="container header-container">
             <a href="index.html">
-                <!-- Inline SVG Logo -->
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 200" width="200" height="60" class="logo">
-                  <!-- Définition du dégradé -->
-                  <defs>
-                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stop-color="#0cebeb"/>
-                      <stop offset="100%" stop-color="#20e3b2"/>
-                    </linearGradient>
-                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="2" result="blur"/>
-                      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                    </filter>
-                  </defs>
-                  
-                  <!-- T personnalisé avec barre horizontale étendue -->
-                  <path d="M70,120 Q230,120 310,120 C100,120 110,150 190,160" stroke="url(#logoGradient)" stroke-width="5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                  
-                  <!-- G - encore plus rapproché -->
-                  <path d="M200,145 C200,135 210,130 220,130 C227,130 230,132 230,137 M200,145 C200,155 210,160 220,160 C228,160 231,158 233,153 M221,145 L233,145 M233,145 L233,153" stroke="url(#logoGradient)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                  
-                  <!-- E - encore plus rapproché -->
-                  <path d="M240,130 L240,160 M240,130 L260,130 M240,145 L255,145 M240,160 L260,160" stroke="url(#logoGradient)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                  
-                  <!-- N - encore plus rapproché -->
-                  <path d="M270,130 L270,160 M270,130 L290,160 M290,130 L290,160" stroke="url(#logoGradient)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                  
-                  <!-- HUB text moved down -->
-                  <text x="300" y="162" font-family="Arial, sans-serif" font-size="42" font-weight="bold" letter-spacing="1" text-anchor="left" fill="url(#logoGradient)" filter="url(#glow)">
-                    HUB
-                  </text>
-                  
-                  <!-- ROBOTICS text -->
-                  <text x="240" y="180" font-family="Arial, sans-serif" font-size="16" font-weight="600" letter-spacing="3" text-anchor="middle" fill="url(#logoGradient)">
-                    ROBOTICS
-                  </text>
-                </svg>
+                <img src="images/logo.png" alt="Tgen Robotics Hub Logo" class="logo">
             </a>
             <nav class="nav-links">
                 <a href="encyclopedia.html">Encyclopedia</a>
-                <a href="categories.html">Categories</a>
                 <a href="news.html">News</a>
                 <a href="about.html">About</a>
                 <a href="contact.html">Contact</a>
@@ -246,13 +211,15 @@
             <p>Your comprehensive guide to the world of robots: past achievements, current innovations, and future possibilities.</p>
             
             <div class="search-container">
-                <input type="text" class="search" placeholder="Search for robots, technologies, or applications...">
-                <div class="search-icon">🔍</div>
+                <input type="text" class="search" id="hero-search" placeholder="Search for robots, technologies, or applications...">
+                <div class="search-icon">
+                    <i class="fas fa-search"></i>
+                </div>
             </div>
             
             <div class="hero-buttons">
-                <a href="categories.html" class="btn btn-primary">Explore Categories</a>
-                <a href="encyclopedia.html" class="btn btn-outline" style="margin-left: 15px;">Browse Robots</a>
+                <a href="encyclopedia.html" class="btn btn-primary">Explore Encyclopedia</a>
+                <a href="news.html" class="btn btn-outline" style="margin-left: 15px;">Latest Innovations</a>
             </div>
         </div>
     </section>
@@ -262,44 +229,10 @@
         <div class="container">
             <h2 class="section-title">Featured Robots</h2>
             
-            <div class="robot-grid">
-                <!-- Robot Card 1 -->
-                <div class="robot-card">
-                    <img src="images/sample/spot.jpg" alt="Boston Dynamics Spot" class="robot-image">
-                    <div class="robot-content">
-                        <a href="robot-detail.html?slug=spot"><h3 class="robot-title">Spot</h3></a>
-                        <p class="robot-desc">An agile mobile robot that navigates terrain with unprecedented mobility, allowing you to automate routine inspection tasks and data capture safely.</p>
-                        <div class="robot-meta">
-                            <span>Boston Dynamics</span>
-                            <span>Industrial</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Robot Card 2 -->
-                <div class="robot-card">
-                    <img src="images/sample/atlas.jpg" alt="Boston Dynamics Atlas" class="robot-image">
-                    <div class="robot-content">
-                        <a href="robot-detail.html?slug=atlas"><h3 class="robot-title">Atlas</h3></a>
-                        <p class="robot-desc">Atlas is the most dynamic humanoid robot, designed to navigate rough terrain and perform complex physical tasks like running, jumping, and backflips.</p>
-                        <div class="robot-meta">
-                            <span>Boston Dynamics</span>
-                            <span>Humanoid</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Robot Card 3 -->
-                <div class="robot-card">
-                    <img src="images/sample/anymal.jpg" alt="ANYbotics ANYmal" class="robot-image">
-                    <div class="robot-content">
-                        <a href="robot-detail.html?slug=anymal"><h3 class="robot-title">ANYmal</h3></a>
-                        <p class="robot-desc">ANYmal is a four-legged robot designed for autonomous inspection tasks in challenging environments like industrial facilities.</p>
-                        <div class="robot-meta">
-                            <span>ANYbotics</span>
-                            <span>Quadruped</span>
-                        </div>
-                    </div>
+            <div class="robot-grid" id="featured-robots">
+                <!-- Featured robots will be loaded dynamically -->
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
                 </div>
             </div>
             
@@ -314,38 +247,10 @@
         <div class="container">
             <h2 class="section-title">Latest Robotics News</h2>
             
-            <div class="news-container">
-                <!-- News Card 1 -->
-                <div class="news-card">
-                    <img src="images/news/news1.jpg" alt="Soft Robotics Breakthrough" class="news-image">
-                    <div class="news-content">
-                        <div class="news-date">April 25, 2025</div>
-                        <h3 class="news-title">New Breakthrough in Soft Robotics Enables Enhanced Dexterity</h3>
-                        <p class="news-excerpt">Researchers have developed a new material that allows soft robots to manipulate objects with unprecedented precision.</p>
-                        <a href="news-detail.html?id=1" class="btn btn-outline">Read More</a>
-                    </div>
-                </div>
-                
-                <!-- News Card 2 -->
-                <div class="news-card">
-                    <img src="images/news/news2.jpg" alt="Healthcare Robotics" class="news-image">
-                    <div class="news-content">
-                        <div class="news-date">April 22, 2025</div>
-                        <h3 class="news-title">Robotics Adoption in Healthcare Reaches New Heights</h3>
-                        <p class="news-excerpt">Hospitals worldwide are increasing their use of robotic systems for surgery and patient care.</p>
-                        <a href="news-detail.html?id=2" class="btn btn-outline">Read More</a>
-                    </div>
-                </div>
-                
-                <!-- News Card 3 -->
-                <div class="news-card">
-                    <img src="images/news/news3.jpg" alt="AI Robotics" class="news-image">
-                    <div class="news-content">
-                        <div class="news-date">April 18, 2025</div>
-                        <h3 class="news-title">AI Advancements Enable Robots to Learn from Natural Language</h3>
-                        <p class="news-excerpt">New machine learning techniques allow robots to understand and respond to complex verbal instructions.</p>
-                        <a href="news-detail.html?id=3" class="btn btn-outline">Read More</a>
-                    </div>
+            <div class="news-container" id="latest-news">
+                <!-- News cards will be loaded dynamically -->
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
                 </div>
             </div>
         </div>
@@ -366,9 +271,9 @@
                     <h3>About</h3>
                     <ul class="footer-links">
                         <li><a href="about.html">Our Mission</a></li>
-                        <li><a href="team.html">The Team</a></li>
-                        <li><a href="partners.html">Partners</a></li>
-                        <li><a href="careers.html">Careers</a></li>
+                        <li><a href="about.html#team">The Team</a></li>
+                        <li><a href="about.html#partners">Partners</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
                     </ul>
                 </div>
                 
@@ -376,19 +281,19 @@
                     <h3>Resources</h3>
                     <ul class="footer-links">
                         <li><a href="encyclopedia.html">Robot Database</a></li>
-                        <li><a href="research.html">Research Papers</a></li>
-                        <li><a href="events.html">Robotics Events</a></li>
-                        <li><a href="education.html">Education</a></li>
+                        <li><a href="news.html">Robotics News</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
                     <h3>Categories</h3>
                     <ul class="footer-links">
-                        <li><a href="categories.html?cat=industrial">Industrial Robotics</a></li>
-                        <li><a href="categories.html?cat=service">Service Robots</a></li>
-                        <li><a href="categories.html?cat=humanoid">Humanoids</a></li>
-                        <li><a href="categories.html?cat=drone">Drones & UAVs</a></li>
+                        <li><a href="encyclopedia.html?category=Industrial">Industrial Robotics</a></li>
+                        <li><a href="encyclopedia.html?category=Humanoid">Humanoids</a></li>
+                        <li><a href="encyclopedia.html?category=Autonomous">Autonomous Systems</a></li>
+                        <li><a href="encyclopedia.html">All Categories</a></li>
                     </ul>
                 </div>
                 
@@ -396,9 +301,9 @@
                     <h3>Connect</h3>
                     <ul class="footer-links">
                         <li><a href="contact.html">Contact Us</a></li>
-                        <li><a href="newsletter.html">Newsletter</a></li>
-                        <li><a href="https://twitter.com/tgenrobotics">Twitter</a></li>
-                        <li><a href="https://linkedin.com/company/tgenrobotics">LinkedIn</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
                     </ul>
                 </div>
             </div>
@@ -410,19 +315,130 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/data.js"></script>
     <script src="js/main.js"></script>
     <script>
-        // Simple animation for the AI assistant button
-        document.getElementById('ai-button').addEventListener('click', function() {
-            alert('AI Assistant feature coming soon! This will provide interactive help and information about robots.');
-        });
-        
-        // Search functionality placeholder
-        document.querySelector('.search').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                window.location.href = 'encyclopedia.html?search=' + encodeURIComponent(this.value);
-            }
-        });
+        // Homepage specific JavaScript
+
+        // Function to initialize the homepage
+        function initHomepage() {
+            loadFeaturedRobots();
+            loadLatestNews();
+            setupHeroSearch();
+        }
+
+        // Load featured robots
+        function loadFeaturedRobots() {
+            const featuredRobotsContainer = document.getElementById('featured-robots');
+            
+            // Clear loading spinner
+            featuredRobotsContainer.innerHTML = '';
+            
+            // Get top 3 robots by views
+            const topRobots = window.robotsData.robots
+                .sort((a, b) => (b.stats?.views || 0) - (a.stats?.views || 0))
+                .slice(0, 3);
+            
+            // Add robot cards to the grid
+            topRobots.forEach(robot => {
+                const robotCard = createRobotCard(robot);
+                featuredRobotsContainer.appendChild(robotCard);
+            });
+        }
+
+        // Create a robot card element
+        function createRobotCard(robot) {
+            const card = document.createElement('div');
+            card.className = 'robot-card';
+            card.dataset.slug = robot.slug;
+            
+            // Use a placeholder image if no featured image is available
+            const imageUrl = robot.media.featuredImage?.url || 'images/robot-placeholder.jpg';
+            
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="${robot.media.featuredImage?.alt || robot.name}" class="robot-image">
+                <div class="robot-content">
+                    <h3 class="robot-title">${robot.name}</h3>
+                    <p class="robot-desc">${robot.summary}</p>
+                    <div class="robot-meta">
+                        <span>${robot.manufacturer.name}</span>
+                        <span>${robot.categories[0]}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Add click event to navigate to robot detail page
+            card.addEventListener('click', () => {
+                window.location.href = `robot-detail.html?slug=${robot.slug}`;
+            });
+            
+            return card;
+        }
+
+        // Load latest news
+        function loadLatestNews() {
+            const latestNewsContainer = document.getElementById('latest-news');
+            
+            // Clear loading spinner
+            latestNewsContainer.innerHTML = '';
+            
+            // Get 3 latest news
+            const latestNews = window.robotsData.news
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 3);
+            
+            // Add news cards to the container
+            latestNews.forEach(article => {
+                const newsCard = document.createElement('div');
+                newsCard.className = 'news-card';
+                
+                // Format date
+                const date = new Date(article.date);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                newsCard.innerHTML = `
+                    <img src="${article.image}" alt="${article.title}" class="news-image">
+                    <div class="news-content">
+                        <div class="news-date">${formattedDate}</div>
+                        <h3 class="news-title">${article.title}</h3>
+                        <p class="news-excerpt">${article.summary}</p>
+                        <a href="news-detail.html?id=${article.id}" class="btn btn-outline">Read More</a>
+                    </div>
+                `;
+                
+                latestNewsContainer.appendChild(newsCard);
+            });
+        }
+
+        // Setup hero search functionality
+        function setupHeroSearch() {
+            const searchInput = document.getElementById('hero-search');
+            
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query) {
+                        window.location.href = `encyclopedia.html?search=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+
+            // Also handle search icon click
+            const searchIcon = document.querySelector('.search-icon');
+            searchIcon.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = `encyclopedia.html?search=${encodeURIComponent(query)}`;
+                }
+            });
+        }
+
+        // Initialize homepage when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initHomepage);
     </script>
 </body>
 </html>
