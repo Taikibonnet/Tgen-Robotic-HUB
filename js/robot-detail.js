@@ -1,182 +1,18 @@
-// robot-detail.js - Functionality for the Robot Detail page
-
-// Sample data for demonstration
-// In production, this would be fetched from your backend API
-const sampleRobots = [
-    {
-        id: 1,
-        slug: "spot",
-        name: "Spot",
-        manufacturer: {
-            name: "Boston Dynamics",
-            country: "USA",
-            website: "https://www.bostondynamics.com"
-        },
-        yearIntroduced: 2019,
-        categories: ["Industrial", "Quadruped", "Autonomous"],
-        summary: "Spot is an agile mobile robot that navigates terrain with unprecedented mobility, allowing you to automate routine inspection tasks and data capture safely, accurately, and frequently.",
-        description: `<p>Spot is a quadruped robot developed by Boston Dynamics. It is known for its ability to climb stairs, navigate rough terrain, and operate in environments that are challenging for wheeled vehicles. Spot can be operated remotely, or taught routes that it can then navigate autonomously.</p>
-        <p>The robot is designed to go where wheeled robots cannot, while carrying payloads with endurance far beyond aerial drones. With 360° vision and obstacle avoidance, Spot can be driven remotely or taught routes to follow autonomously.</p>
-        <p>Spot's advanced mobility, combined with its ability to carry various sensors and payloads, makes it ideal for industrial inspections, construction progress monitoring, and public safety applications. The robot can be equipped with specialized hardware and software for specific applications through its payload ports.</p>
-        <p>Boston Dynamics released Spot for commercial use in June 2020, making it available for companies and research institutions to purchase for various applications. Since then, Spot has been deployed in numerous industries, from construction sites to nuclear facilities, showcasing its versatility and utility.</p>`,
-        specifications: {
-            physical: {
-                height: { value: 0.84, unit: "m" },
-                width: { value: 0.43, unit: "m" },
-                length: { value: 1.1, unit: "m" },
-                weight: { value: 32.5, unit: "kg" }
-            },
-            performance: {
-                battery: {
-                    runtime: 90,
-                    capacity: 605,
-                    chargingTime: 120
-                },
-                speed: { value: 1.6, unit: "m/s" },
-                payload: { value: 14, unit: "kg" },
-                degreesOfFreedom: 12,
-                maxIncline: 30,
-                operatingTemperature: { min: -20, max: 45, unit: "°C" }
-            },
-            sensors: [
-                { type: "Cameras", description: "5 stereo pairs" },
-                { type: "IMU", description: "Inertial Measurement Unit" },
-                { type: "Position/Force Sensors", description: "In all joints" }
-            ],
-            connectivity: ["WiFi", "Ethernet", "Bluetooth"],
-            ipRating: "IP54"
-        },
-        media: {
-            featuredImage: {
-                url: "images/sample/spot.jpg",
-                alt: "Boston Dynamics Spot"
-            },
-            images: [
-                { url: "images/sample/spot-1.jpg", alt: "Spot in warehouse", caption: "Spot performing inspection in a warehouse" },
-                { url: "images/sample/spot-2.jpg", alt: "Spot climbing stairs", caption: "Spot climbing stairs" },
-                { url: "images/sample/spot-3.jpg", alt: "Spot with camera attachment", caption: "Spot equipped with additional cameras" },
-                { url: "images/sample/spot-4.jpg", alt: "Spot on construction site", caption: "Spot on a construction site" },
-                { url: "images/sample/spot-5.jpg", alt: "Spot opening door", caption: "Spot demonstrating door opening capability" },
-                { url: "images/sample/spot-6.jpg", alt: "Spot with manipulator arm", caption: "Spot with manipulator arm attachment" }
-            ],
-            videos: [
-                { 
-                    url: "videos/spot-demo.mp4", 
-                    title: "Spot Robot Demo", 
-                    description: "See Spot in action in various environments",
-                    thumbnail: "images/sample/spot-video.jpg"
-                }
-            ]
-        },
-        applications: [
-            {
-                title: "Industrial Inspection",
-                description: "Automate routine inspections in industrial facilities. Spot can navigate complex environments and capture consistent data for preventative maintenance.",
-                image: "images/sample/spot-app-inspection.jpg"
-            },
-            {
-                title: "Construction Monitoring",
-                description: "Capture site data consistently and frequently to track progress, improve safety, and document site conditions throughout the project lifecycle.",
-                image: "images/sample/spot-app-construction.jpg"
-            },
-            {
-                title: "Public Safety",
-                description: "Assess hazardous situations, provide situational awareness, and handle dangerous materials in emergency response scenarios.",
-                image: "images/sample/spot-app-safety.jpg"
-            }
-        ],
-        reviews: [
-            {
-                user: {
-                    name: "John Davis",
-                    avatar: "images/avatars/user1.jpg"
-                },
-                rating: 5,
-                date: "2025-03-15T10:30:00Z",
-                content: "We've been using Spot for inspection tasks at our manufacturing facility for six months now, and it has significantly improved our efficiency. The ability to navigate stairs and tight spaces makes it perfect for our needs. Battery life is good enough for a full shift of inspections."
-            },
-            {
-                user: {
-                    name: "Sarah Chen",
-                    avatar: "images/avatars/user2.jpg"
-                },
-                rating: 4,
-                date: "2025-02-28T14:20:00Z",
-                content: "Spot has been a valuable addition to our construction site monitoring. It consistently captures data that helps us track progress and identify issues early. The only downside is the learning curve for programming complex routes, but once set up, it works flawlessly."
-            }
-        ],
-        relatedRobots: [2, 4, 5] // IDs of related robots
-    },
-    {
-        id: 2,
-        slug: "atlas",
-        name: "Atlas",
-        manufacturer: {
-            name: "Boston Dynamics",
-            country: "USA",
-            website: "https://www.bostondynamics.com"
-        },
-        yearIntroduced: 2013,
-        categories: ["Humanoid", "Research"],
-        summary: "Atlas is a research platform designed to push the limits of whole-body mobility and enable a variety of physically demanding tasks.",
-        description: `<p>Atlas is one of the most dynamic humanoid robots ever built. Standing at approximately 1.5 meters tall, Atlas is a research platform designed to push the limits of whole-body mobility.</p>
-        <p>The robot's advanced control system and state-of-the-art hardware give it the power and balance to demonstrate human-level agility. Atlas uses its whole body to perform dynamic behaviors including parkour, backflips, and complex dance routines.</p>
-        <p>With an advanced control system and compact, high-performance hardware, Atlas has one of the world's most compact mobile hydraulic systems. Stereo vision, range sensing, and other sensors give Atlas the ability to manipulate objects in its environment and navigate rough terrain.</p>`,
-        media: {
-            featuredImage: {
-                url: "images/sample/atlas.jpg",
-                alt: "Boston Dynamics Atlas"
-            }
-        }
-    },
-    {
-        id: 4,
-        slug: "anymal",
-        name: "ANYmal",
-        manufacturer: {
-            name: "ANYbotics",
-            country: "Switzerland",
-            website: "https://www.anybotics.com"
-        },
-        yearIntroduced: 2016,
-        categories: ["Industrial", "Quadruped", "Autonomous"],
-        summary: "An autonomous four-legged robot designed for industrial inspection tasks in challenging environments.",
-        description: `<p>ANYmal is a four-legged robot designed specifically for autonomous operation in challenging environments. It can navigate stairs, climb over obstacles, and move in complex environments that would defeat traditional wheeled robots.</p>
-        <p>The robot is equipped with a variety of sensors including cameras, LIDAR, and other measurement devices, making it ideal for inspection tasks in industrial facilities, power plants, and other complex environments.</p>`,
-        media: {
-            featuredImage: {
-                url: "images/sample/anymal.jpg",
-                alt: "ANYbotics ANYmal"
-            }
-        }
-    },
-    {
-        id: 5,
-        slug: "vision-60",
-        name: "Vision 60",
-        manufacturer: {
-            name: "Ghost Robotics",
-            country: "USA",
-            website: "https://www.ghostrobotics.io"
-        },
-        yearIntroduced: 2018,
-        categories: ["Quadruped", "Military", "Autonomous"],
-        summary: "A rugged, mid-sized quadrupedal unmanned ground vehicle (Q-UGV) for all-terrain operation.",
-        description: `<p>The Vision 60 is a rugged, adaptable quadrupedal robot platform designed for military, homeland, and enterprise applications. It's engineered to navigate challenging terrain and operate in extreme environments where traditional unmanned vehicles cannot access.</p>
-        <p>With its advanced sensors and payload capabilities, the Vision 60 can perform a wide range of mission tasks including patrol, reconnaissance, mapping, and communications relay.</p>`,
-        media: {
-            featuredImage: {
-                url: "images/sample/vision60.jpg",
-                alt: "Ghost Robotics Vision 60"
-            }
-        }
-    }
-];
+// robot-detail-enhanced.js - Updated script that integrates with DataManager
 
 // DOM Elements
 const tabs = document.querySelectorAll('.tab');
 const tabContents = document.querySelectorAll('.tab-content');
 const favoriteIcon = document.getElementById('favorite-icon');
+const robotName = document.getElementById('robot-name');
+const robotManufacturer = document.getElementById('robot-manufacturer');
+const robotSummary = document.getElementById('robot-summary');
+const robotMainImage = document.getElementById('robot-main-image');
+const robotCategories = document.getElementById('robot-categories');
+const overviewText = document.getElementById('overview-text');
+const videoThumbnail = document.getElementById('video-thumbnail');
+const videoPlayButton = document.getElementById('play-button');
+const videoSection = document.querySelector('.video-container');
 const reviewForm = document.getElementById('review-form');
 const ratingStars = document.querySelectorAll('.rating-selector .star');
 const lightbox = document.getElementById('lightbox');
@@ -193,6 +29,20 @@ let galleryImages = [];
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if DataManager is available
+    if (typeof DataManager === 'undefined') {
+        document.querySelector('.robot-content').innerHTML = `
+            <div class="container">
+                <div class="message message-error">
+                    <h2>Error</h2>
+                    <p>Data management system not available. Please make sure data-manager.js is loaded before robot-detail.js.</p>
+                    <a href="index.html" class="btn btn-primary" style="margin-top: 20px;">Return to Homepage</a>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
     // Get the robot slug from URL
     const params = getUrlParams();
     const slug = params.slug;
@@ -211,9 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Load robot data by slug
 function loadRobotData(slug) {
-    // In a real implementation, this would make an API call
-    // For demonstration, we'll use the sample data
-    currentRobot = sampleRobots.find(robot => robot.slug === slug);
+    // Get robot data from DataManager
+    currentRobot = DataManager.getRobotBySlug(slug);
     
     if (!currentRobot) {
         // Robot not found, show error and link to return to encyclopedia
@@ -229,6 +78,15 @@ function loadRobotData(slug) {
         return;
     }
     
+    // Increment view count
+    if (!currentRobot.stats) {
+        currentRobot.stats = { views: 0, favorites: 0 };
+    }
+    currentRobot.stats.views = (currentRobot.stats.views || 0) + 1;
+    
+    // Update the robot
+    DataManager.updateRobot(currentRobot.id, { stats: currentRobot.stats });
+    
     // Populate the page with robot data
     populateRobotData();
     
@@ -239,45 +97,68 @@ function loadRobotData(slug) {
 // Populate the page with robot data
 function populateRobotData() {
     // Hero section
-    document.getElementById('robot-name').textContent = currentRobot.name;
-    document.getElementById('robot-manufacturer').textContent = currentRobot.manufacturer.name;
-    document.getElementById('robot-summary').textContent = currentRobot.summary;
+    robotName.textContent = currentRobot.name;
+    robotManufacturer.textContent = currentRobot.manufacturer.name;
+    robotSummary.textContent = currentRobot.summary;
     
     // Featured image
     if (currentRobot.media && currentRobot.media.featuredImage) {
-        document.getElementById('robot-main-image').src = currentRobot.media.featuredImage.url;
-        document.getElementById('robot-main-image').alt = currentRobot.media.featuredImage.alt || currentRobot.name;
+        if (currentRobot.media.featuredImage.mediaId) {
+            // Get image from DataManager
+            const media = DataManager.getMediaById(currentRobot.media.featuredImage.mediaId);
+            if (media) {
+                robotMainImage.src = media.data;
+                robotMainImage.alt = currentRobot.media.featuredImage.alt || currentRobot.name;
+            } else {
+                robotMainImage.src = 'images/robot-placeholder.jpg';
+                robotMainImage.alt = currentRobot.name;
+            }
+        } else if (currentRobot.media.featuredImage.url) {
+            robotMainImage.src = currentRobot.media.featuredImage.url;
+            robotMainImage.alt = currentRobot.media.featuredImage.alt || currentRobot.name;
+        }
+    } else {
+        robotMainImage.src = 'images/robot-placeholder.jpg';
+        robotMainImage.alt = currentRobot.name;
     }
     
     // Categories
-    const categoriesContainer = document.getElementById('robot-categories');
-    categoriesContainer.innerHTML = '';
+    robotCategories.innerHTML = '';
     
     if (currentRobot.categories && currentRobot.categories.length > 0) {
         currentRobot.categories.forEach(category => {
             const categoryElement = document.createElement('span');
             categoryElement.className = 'robot-category';
             categoryElement.textContent = category;
-            categoriesContainer.appendChild(categoryElement);
+            robotCategories.appendChild(categoryElement);
         });
     }
     
     // Overview tab
     if (currentRobot.description) {
-        document.getElementById('overview-text').innerHTML = currentRobot.description;
+        overviewText.innerHTML = currentRobot.description;
     } else {
-        document.getElementById('overview-text').innerHTML = `<p>No detailed description available for ${currentRobot.name}.</p>`;
+        overviewText.innerHTML = `<p>No detailed description available for ${currentRobot.name}.</p>`;
     }
     
-    // Video thumbnail
+    // Show/hide video section
     if (currentRobot.media && currentRobot.media.videos && currentRobot.media.videos.length > 0) {
+        videoSection.style.display = 'block';
+        
         const video = currentRobot.media.videos[0];
-        document.getElementById('video-thumbnail').src = video.thumbnail;
-        document.getElementById('video-thumbnail').alt = video.title;
+        
+        // Check if we have a stored video or just a URL
+        if (video.mediaId) {
+            // We could display a video player here if supported, but for now just show placeholder
+            videoThumbnail.src = video.thumbnail || 'images/video-placeholder.jpg';
+            videoThumbnail.alt = video.title || currentRobot.name;
+        } else if (video.url) {
+            videoThumbnail.src = video.thumbnail || 'images/video-placeholder.jpg';
+            videoThumbnail.alt = video.title || currentRobot.name;
+        }
         
         // Show video button in hero section
         document.getElementById('video-demo-btn').style.display = 'inline-block';
-        document.getElementById('video-demo-btn').href = '#overview';
         document.getElementById('video-demo-btn').addEventListener('click', function(e) {
             e.preventDefault();
             
@@ -288,11 +169,17 @@ function populateRobotData() {
             document.querySelector('[data-tab="overview"]').classList.add('active');
             document.getElementById('overview').classList.add('active');
             
-            // Simulate video playback
-            alert('Video playback functionality would be implemented here');
+            // Add smooth scroll to video section
+            videoSection.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Add click handler to play button
+        videoPlayButton.addEventListener('click', function() {
+            // In a real implementation, this would open a video player
+            alert('Video playback would be implemented here with a proper media player');
         });
     } else {
-        // Hide video button if no videos
+        videoSection.style.display = 'none';
         document.getElementById('video-demo-btn').style.display = 'none';
     }
     
@@ -440,36 +327,74 @@ function populateGallery() {
     
     // Add featured image
     if (currentRobot.media && currentRobot.media.featuredImage) {
-        galleryImages.push({
-            url: currentRobot.media.featuredImage.url,
-            alt: currentRobot.media.featuredImage.alt || currentRobot.name,
-            caption: currentRobot.media.featuredImage.caption || `${currentRobot.name} featured image`
-        });
+        let imageUrl;
+        const altText = currentRobot.media.featuredImage.alt || currentRobot.name;
+        
+        if (currentRobot.media.featuredImage.mediaId) {
+            const media = DataManager.getMediaById(currentRobot.media.featuredImage.mediaId);
+            if (media) {
+                imageUrl = media.data;
+            }
+        } else if (currentRobot.media.featuredImage.url) {
+            imageUrl = currentRobot.media.featuredImage.url;
+        }
+        
+        if (imageUrl) {
+            galleryImages.push({
+                url: imageUrl,
+                alt: altText,
+                caption: currentRobot.media.featuredImage.caption || `${currentRobot.name} featured image`
+            });
+        }
     }
     
     // Add additional images
     if (currentRobot.media && currentRobot.media.images && currentRobot.media.images.length > 0) {
         currentRobot.media.images.forEach(image => {
-            galleryImages.push({
-                url: image.url,
-                alt: image.alt || currentRobot.name,
-                caption: image.caption || ''
-            });
+            let imageUrl;
+            const altText = image.alt || currentRobot.name;
+            
+            if (image.mediaId) {
+                const media = DataManager.getMediaById(image.mediaId);
+                if (media) {
+                    imageUrl = media.data;
+                }
+            } else if (image.url) {
+                imageUrl = image.url;
+            }
+            
+            if (imageUrl) {
+                galleryImages.push({
+                    url: imageUrl,
+                    alt: altText,
+                    caption: image.caption || ''
+                });
+            }
         });
     }
     
     // Add video thumbnails
     if (currentRobot.media && currentRobot.media.videos && currentRobot.media.videos.length > 0) {
         currentRobot.media.videos.forEach(video => {
-            if (video.thumbnail) {
-                galleryImages.push({
-                    url: video.thumbnail,
-                    alt: video.title || currentRobot.name,
-                    caption: video.title || '',
-                    isVideo: true,
-                    videoUrl: video.url
-                });
+            let thumbnailUrl = 'images/video-placeholder.jpg';
+            
+            if (video.thumbnailMediaId) {
+                const media = DataManager.getMediaById(video.thumbnailMediaId);
+                if (media) {
+                    thumbnailUrl = media.data;
+                }
+            } else if (video.thumbnail) {
+                thumbnailUrl = video.thumbnail;
             }
+            
+            galleryImages.push({
+                url: thumbnailUrl,
+                alt: video.title || currentRobot.name,
+                caption: video.title || '',
+                isVideo: true,
+                videoUrl: video.url,
+                videoMediaId: video.mediaId
+            });
         });
     }
     
@@ -517,7 +442,7 @@ function populateGallery() {
             // Add click event for video
             galleryItem.addEventListener('click', function() {
                 // In a real implementation, this would open a video player
-                alert('Video playback functionality would be implemented here');
+                alert('Video playback would be implemented here with a proper media player');
             });
         } else {
             galleryItem.innerHTML = `<img src="${image.url}" alt="${image.alt}">`;
@@ -535,6 +460,13 @@ function populateGallery() {
 // Populate applications tab
 function populateApplications() {
     const applicationsContainer = document.getElementById('application-cards');
+    
+    // Clear container
+    if (!applicationsContainer) {
+        console.error('Applications container not found');
+        return;
+    }
+    
     applicationsContainer.innerHTML = '';
     
     if (!currentRobot.applications || currentRobot.applications.length === 0) {
@@ -550,8 +482,20 @@ function populateApplications() {
         const appCard = document.createElement('div');
         appCard.className = 'application-card';
         
+        // Get image URL
+        let imageUrl = 'images/application-placeholder.jpg';
+        
+        if (app.imageMediaId) {
+            const media = DataManager.getMediaById(app.imageMediaId);
+            if (media) {
+                imageUrl = media.data;
+            }
+        } else if (app.image) {
+            imageUrl = app.image;
+        }
+        
         appCard.innerHTML = `
-            <img src="${app.image || 'images/application-placeholder.jpg'}" alt="${app.title}" class="application-image">
+            <img src="${imageUrl}" alt="${app.title}" class="application-image">
             <div class="application-content">
                 <h3 class="application-title">${app.title}</h3>
                 <p class="application-desc">${app.description}</p>
@@ -566,6 +510,13 @@ function populateApplications() {
 // Populate reviews tab
 function populateReviews() {
     const reviewsContainer = document.getElementById('reviews-container');
+    
+    // Clear container
+    if (!reviewsContainer) {
+        console.error('Reviews container not found');
+        return;
+    }
+    
     reviewsContainer.innerHTML = '';
     
     if (!currentRobot.reviews || currentRobot.reviews.length === 0) {
@@ -588,10 +539,16 @@ function populateReviews() {
         // Create star rating
         const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
         
+        // Get avatar
+        let avatarUrl = 'images/default-avatar.jpg';
+        if (review.user.avatar) {
+            avatarUrl = review.user.avatar;
+        }
+        
         reviewElement.innerHTML = `
             <div class="review-header">
                 <div class="review-author">
-                    <img src="${review.user.avatar || 'images/default-avatar.jpg'}" alt="${review.user.name}" class="review-avatar">
+                    <img src="${avatarUrl}" alt="${review.user.name}" class="review-avatar">
                     <div>
                         <div class="review-name">${review.user.name}</div>
                         <div class="review-date">${formattedDate}</div>
@@ -611,21 +568,34 @@ function populateReviews() {
 // Populate related robots
 function populateRelatedRobots() {
     const relatedContainer = document.getElementById('related-robots');
-    relatedContainer.innerHTML = '';
     
-    if (!currentRobot.relatedRobots || currentRobot.relatedRobots.length === 0) {
-        relatedContainer.innerHTML = `
-            <div class="message" style="grid-column: 1 / -1;">
-                <p>No related robots available for ${currentRobot.name}.</p>
-            </div>
-        `;
+    // Clear container
+    if (!relatedContainer) {
+        console.error('Related robots container not found');
         return;
     }
     
-    // Get related robots data
-    const relatedRobots = currentRobot.relatedRobots
-        .map(id => sampleRobots.find(robot => robot.id === id))
-        .filter(robot => robot !== undefined);
+    relatedContainer.innerHTML = '';
+    
+    // Get all robots except the current one
+    let allRobots = DataManager.getAllRobots().filter(robot => robot.id !== currentRobot.id);
+    
+    // Filter by matching categories if possible
+    if (currentRobot.categories && currentRobot.categories.length > 0) {
+        const categoryMatches = allRobots.filter(robot => 
+            robot.categories && 
+            robot.categories.some(category => currentRobot.categories.includes(category))
+        );
+        
+        // Use category matches if we have enough, otherwise use all robots
+        if (categoryMatches.length >= 3) {
+            allRobots = categoryMatches;
+        }
+    }
+    
+    // Get up to 3 random robots
+    const shuffled = allRobots.sort(() => 0.5 - Math.random());
+    const relatedRobots = shuffled.slice(0, 3);
     
     if (relatedRobots.length === 0) {
         relatedContainer.innerHTML = `
@@ -640,8 +610,22 @@ function populateRelatedRobots() {
         const relatedCard = document.createElement('div');
         relatedCard.className = 'related-card';
         
+        // Get image URL
+        let imageUrl = 'images/robot-placeholder.jpg';
+        
+        if (robot.media && robot.media.featuredImage) {
+            if (robot.media.featuredImage.mediaId) {
+                const media = DataManager.getMediaById(robot.media.featuredImage.mediaId);
+                if (media) {
+                    imageUrl = media.data;
+                }
+            } else if (robot.media.featuredImage.url) {
+                imageUrl = robot.media.featuredImage.url;
+            }
+        }
+        
         relatedCard.innerHTML = `
-            <img src="${robot.media?.featuredImage?.url || 'images/robot-placeholder.jpg'}" alt="${robot.name}" class="related-image">
+            <img src="${imageUrl}" alt="${robot.name}" class="related-image">
             <div class="related-content">
                 <h3 class="related-title">${robot.name}</h3>
                 <div class="related-manufacturer">${robot.manufacturer.name}</div>
@@ -676,70 +660,94 @@ function setupEventListeners() {
     });
     
     // Favorite button
-    favoriteIcon.addEventListener('click', toggleFavorite);
+    if (favoriteIcon) {
+        favoriteIcon.addEventListener('click', toggleFavorite);
+    }
     
     // Review form submission
-    reviewForm.addEventListener('submit', submitReview);
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', submitReview);
+    }
     
     // Rating stars selection
-    ratingStars.forEach(star => {
-        star.addEventListener('click', () => {
-            const rating = parseInt(star.dataset.rating);
-            setRating(rating);
+    if (ratingStars) {
+        ratingStars.forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = parseInt(star.dataset.rating);
+                setRating(rating);
+            });
         });
-    });
+    }
     
     // Lightbox controls
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
-    lightboxNext.addEventListener('click', () => navigateLightbox(1));
-    
-    // Close lightbox on outside click
-    lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) {
-            closeLightbox();
-        }
-    });
-    
-    // Keyboard navigation for lightbox
-    document.addEventListener('keydown', (e) => {
-        if (!lightbox.classList.contains('active')) return;
+    if (lightbox) {
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
+        lightboxNext.addEventListener('click', () => navigateLightbox(1));
         
-        switch (e.key) {
-            case 'Escape':
+        // Close lightbox on outside click
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
                 closeLightbox();
-                break;
-            case 'ArrowLeft':
-                navigateLightbox(-1);
-                break;
-            case 'ArrowRight':
-                navigateLightbox(1);
-                break;
-        }
-    });
+            }
+        });
+        
+        // Keyboard navigation for lightbox
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            
+            switch (e.key) {
+                case 'Escape':
+                    closeLightbox();
+                    break;
+                case 'ArrowLeft':
+                    navigateLightbox(-1);
+                    break;
+                case 'ArrowRight':
+                    navigateLightbox(1);
+                    break;
+            }
+        });
+    }
     
     // Share button
-    document.querySelector('.share-icon').addEventListener('click', shareRobot);
+    const shareIcon = document.querySelector('.share-icon');
+    if (shareIcon) {
+        shareIcon.addEventListener('click', shareRobot);
+    }
 }
 
 // Toggle favorite status
 function toggleFavorite() {
-    // In a real implementation, this would interact with an API
-    // For demonstration, we'll just toggle the icon
+    if (!currentRobot) return;
+    
+    // In a real implementation with user accounts, this would interact with a backend API
+    // For demonstration, we'll just toggle the icon and update the local robot data
+    
+    // Initialize stats if not exists
+    if (!currentRobot.stats) {
+        currentRobot.stats = { views: 0, favorites: 0 };
+    }
+    
     const isFavorited = favoriteIcon.classList.contains('fas');
     
     if (isFavorited) {
         favoriteIcon.classList.remove('fas');
         favoriteIcon.classList.add('far');
-        showMessage(`${currentRobot.name} removed from favorites`, 'info');
+        currentRobot.stats.favorites = Math.max(0, (currentRobot.stats.favorites || 0) - 1);
+        showMessage(`Removed ${currentRobot.name} from favorites`, 'info');
     } else {
         favoriteIcon.classList.remove('far');
         favoriteIcon.classList.add('fas');
-        showMessage(`${currentRobot.name} added to favorites`, 'success');
+        currentRobot.stats.favorites = (currentRobot.stats.favorites || 0) + 1;
+        showMessage(`Added ${currentRobot.name} to favorites`, 'success');
     }
+    
+    // Update the robot data
+    DataManager.updateRobot(currentRobot.id, { stats: currentRobot.stats });
 }
 
-// Check if robot is in favorites (mock implementation)
+// Check if robot is in favorites (mock implementation for now)
 function checkFavoriteStatus() {
     // In a real implementation, this would check against user's favorites
     // For demonstration, we'll just use a random boolean
@@ -772,6 +780,8 @@ function setRating(rating) {
 function submitReview(e) {
     e.preventDefault();
     
+    if (!currentRobot) return;
+    
     const content = document.getElementById('review-content').value;
     
     if (currentRating === 0) {
@@ -783,9 +793,6 @@ function submitReview(e) {
         showMessage('Please enter your review before submitting', 'error');
         return;
     }
-    
-    // In a real implementation, this would send data to the API
-    // For demonstration, we'll just show a success message and add to local review list
     
     // Create new review object
     const newReview = {
@@ -804,6 +811,9 @@ function submitReview(e) {
     }
     
     currentRobot.reviews.unshift(newReview);
+    
+    // Update the robot in DataManager
+    DataManager.updateRobot(currentRobot.id, { reviews: currentRobot.reviews });
     
     // Refresh reviews display
     populateReviews();
@@ -890,9 +900,30 @@ function shareRobot() {
     
     const url = window.location.href;
     
+    // Check if Web Share API is supported
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            url: url
+        })
+        .then(() => {
+            console.log('Successfully shared');
+        })
+        .catch(error => {
+            console.error('Error sharing:', error);
+            copyToClipboard(url);
+        });
+    } else {
+        // Fallback to clipboard copy
+        copyToClipboard(url);
+    }
+}
+
+// Copy text to clipboard
+function copyToClipboard(text) {
     // Create a temporary input element
     const input = document.createElement('input');
-    input.value = url;
+    input.value = text;
     document.body.appendChild(input);
     
     // Select and copy the URL
@@ -904,4 +935,77 @@ function shareRobot() {
     
     // Show success message
     showMessage('Link copied to clipboard', 'success');
+}
+
+// Show a temporary message
+function showMessage(message, type = 'info', duration = 3000) {
+    // Create message element
+    const messageElement = document.createElement('div');
+    messageElement.className = `message message-${type} fade-in`;
+    messageElement.textContent = message;
+    
+    // Style the element
+    messageElement.style.position = 'fixed';
+    messageElement.style.top = '20px';
+    messageElement.style.right = '20px';
+    messageElement.style.padding = '15px 20px';
+    messageElement.style.borderRadius = '5px';
+    messageElement.style.zIndex = '2000';
+    messageElement.style.opacity = '0';
+    messageElement.style.transition = 'opacity 0.3s ease';
+    
+    // Set colors based on type
+    if (type === 'success') {
+        messageElement.style.backgroundColor = 'rgba(32, 227, 178, 0.95)';
+        messageElement.style.color = '#fff';
+    } else if (type === 'error') {
+        messageElement.style.backgroundColor = 'rgba(255, 107, 107, 0.95)';
+        messageElement.style.color = '#fff';
+    } else {
+        messageElement.style.backgroundColor = 'rgba(52, 152, 219, 0.95)';
+        messageElement.style.color = '#fff';
+    }
+    
+    // Add to body
+    document.body.appendChild(messageElement);
+    
+    // Fade in
+    setTimeout(() => {
+        messageElement.style.opacity = '1';
+    }, 10);
+    
+    // Remove after duration
+    setTimeout(() => {
+        messageElement.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(messageElement);
+        }, 300);
+    }, duration);
+}
+
+// Get URL parameters
+function getUrlParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    const pairs = queryString.split('&');
+    
+    for (const pair of pairs) {
+        const [key, value] = pair.split('=');
+        if (key) {
+            params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        }
+    }
+    
+    return params;
+}
+
+// Truncate text to a specific length
+function truncateText(text, length = 100) {
+    if (!text) return '';
+    
+    if (text.length <= length) {
+        return text;
+    }
+    
+    return text.substring(0, length) + '...';
 }
