@@ -15,7 +15,12 @@ const DataManager = {
     init() {
         // Initialize robots if not exists
         if (!localStorage.getItem(this.STORAGE_KEYS.ROBOTS)) {
-            localStorage.setItem(this.STORAGE_KEYS.ROBOTS, JSON.stringify(sampleRobots));
+            // Check if there's a global variable with sample data
+            if (typeof window.robotsData !== 'undefined' && window.robotsData.robots) {
+                localStorage.setItem(this.STORAGE_KEYS.ROBOTS, JSON.stringify(window.robotsData.robots));
+            } else {
+                localStorage.setItem(this.STORAGE_KEYS.ROBOTS, JSON.stringify(sampleRobots));
+            }
         }
 
         // Initialize media storage if not exists
@@ -111,6 +116,7 @@ const DataManager = {
         robots[index] = {
             ...robots[index],
             ...robotData,
+            id: robots[index].id, // Ensure ID doesn't change
             updatedAt: new Date().toISOString()
         };
         
@@ -159,6 +165,12 @@ const DataManager = {
         return media[mediaId] || null;
     },
 
+    // Get all media files
+    getAllMedia() {
+        const media = JSON.parse(localStorage.getItem(this.STORAGE_KEYS.MEDIA) || '{}');
+        return Object.values(media);
+    },
+
     // Delete media by ID
     deleteMedia(mediaId) {
         const media = JSON.parse(localStorage.getItem(this.STORAGE_KEYS.MEDIA) || '{}');
@@ -185,11 +197,194 @@ const DataManager = {
             .replace(/-+$/, '');           // Trim - from end of text
     },
 
+    // Filter robots by category
+    filterRobotsByCategory(category) {
+        if (!category) return this.getAllRobots();
+        return this.getAllRobots().filter(robot => 
+            robot.categories && robot.categories.includes(category)
+        );
+    },
+
+    // Filter robots by manufacturer
+    filterRobotsByManufacturer(manufacturer) {
+        if (!manufacturer) return this.getAllRobots();
+        return this.getAllRobots().filter(robot => 
+            robot.manufacturer && robot.manufacturer.name === manufacturer
+        );
+    },
+
+    // Search robots
+    searchRobots(query) {
+        if (!query) return this.getAllRobots();
+        
+        const lowerQuery = query.toLowerCase();
+        return this.getAllRobots().filter(robot => {
+            const robotText = `
+                ${robot.name || ''}
+                ${robot.manufacturer?.name || ''}
+                ${robot.summary || ''}
+                ${robot.description || ''}
+                ${robot.categories ? robot.categories.join(' ') : ''}
+            `.toLowerCase();
+            
+            return robotText.includes(lowerQuery);
+        });
+    },
+
+    // Get all unique categories
+    getAllCategories() {
+        const categories = new Set();
+        this.getAllRobots().forEach(robot => {
+            if (robot.categories) {
+                robot.categories.forEach(category => categories.add(category));
+            }
+        });
+        return Array.from(categories).sort();
+    },
+
+    // Get all unique manufacturers
+    getAllManufacturers() {
+        const manufacturers = new Set();
+        this.getAllRobots().forEach(robot => {
+            if (robot.manufacturer && robot.manufacturer.name) {
+                manufacturers.add(robot.manufacturer.name);
+            }
+        });
+        return Array.from(manufacturers).sort();
+    },
+
+    // Get related robots
+    getRelatedRobots(robotId, limit = 3) {
+        const robot = this.getRobotById(robotId);
+        if (!robot || !robot.categories || robot.categories.length === 0) {
+            return [];
+        }
+
+        // Get robots with similar categories
+        const related = this.getAllRobots()
+            .filter(r => r.id !== robotId && r.categories)
+            .map(r => {
+                // Count matching categories
+                const matchingCategories = r.categories.filter(cat => 
+                    robot.categories.includes(cat)
+                ).length;
+                
+                return {
+                    ...r,
+                    matchScore: matchingCategories
+                };
+            })
+            .filter(r => r.matchScore > 0)
+            .sort((a, b) => b.matchScore - a.matchScore)
+            .slice(0, limit);
+            
+        return related;
+    },
+
+    // Increment robot view count
+    incrementRobotViews(robotId) {
+        const robot = this.getRobotById(robotId);
+        if (!robot) return false;
+        
+        if (!robot.stats) {
+            robot.stats = { views: 0, favorites: 0 };
+        }
+        
+        robot.stats.views = (robot.stats.views || 0) + 1;
+        this.updateRobot(robotId, robot);
+        
+        return true;
+    },
+
+    // Toggle robot favorite status
+    toggleRobotFavorite(robotId) {
+        const robot = this.getRobotById(robotId);
+        if (!robot) return false;
+        
+        if (!robot.stats) {
+            robot.stats = { views: 0, favorites: 0 };
+        }
+        
+        // Check if user has favorited this robot
+        const user = this.getCurrentUser();
+        let isFavorited = false;
+        
+        if (user) {
+            if (!user.favorites) {
+                user.favorites = [];
+            }
+            
+            const favoriteIndex = user.favorites.indexOf(robotId);
+            
+            if (favoriteIndex === -1) {
+                // Add to favorites
+                user.favorites.push(robotId);
+                robot.stats.favorites = (robot.stats.favorites || 0) + 1;
+                isFavorited = true;
+            } else {
+                // Remove from favorites
+                user.favorites.splice(favoriteIndex, 1);
+                robot.stats.favorites = Math.max((robot.stats.favorites || 0) - 1, 0);
+                isFavorited = false;
+            }
+            
+            this.saveUser(user);
+        } else {
+            // Use localStorage to track anonymous favorites
+            let favorites = JSON.parse(localStorage.getItem('anonymous_favorites') || '[]');
+            const favoriteIndex = favorites.indexOf(robotId);
+            
+            if (favoriteIndex === -1) {
+                // Add to favorites
+                favorites.push(robotId);
+                robot.stats.favorites = (robot.stats.favorites || 0) + 1;
+                isFavorited = true;
+            } else {
+                // Remove from favorites
+                favorites.splice(favoriteIndex, 1);
+                robot.stats.favorites = Math.max((robot.stats.favorites || 0) - 1, 0);
+                isFavorited = false;
+            }
+            
+            localStorage.setItem('anonymous_favorites', JSON.stringify(favorites));
+        }
+        
+        this.updateRobot(robotId, robot);
+        
+        return isFavorited;
+    },
+
+    // Check if robot is favorited
+    isRobotFavorited(robotId) {
+        const user = this.getCurrentUser();
+        
+        if (user && user.favorites) {
+            return user.favorites.includes(robotId);
+        }
+        
+        // Check anonymous favorites
+        const favorites = JSON.parse(localStorage.getItem('anonymous_favorites') || '[]');
+        return favorites.includes(robotId);
+    },
+
+    // Get the current user
+    getCurrentUser() {
+        const userJson = localStorage.getItem(this.STORAGE_KEYS.USER);
+        return userJson ? JSON.parse(userJson) : null;
+    },
+
+    // Save user data
+    saveUser(userData) {
+        localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(userData));
+        return userData;
+    },
+
     // Clear all data (for testing)
     clearAll() {
         localStorage.removeItem(this.STORAGE_KEYS.ROBOTS);
         localStorage.removeItem(this.STORAGE_KEYS.MEDIA);
         localStorage.removeItem(this.STORAGE_KEYS.NEXT_ID);
+        localStorage.removeItem('anonymous_favorites');
         this.init();
     }
 };
