@@ -1,807 +1,9 @@
-.stat-card {
-            background-color: var(--dark-2);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stat-title {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 10px;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--primary);
-        }
-        
-        .stat-change {
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .stat-up {
-            color: #4caf50;
-        }
-        
-        .stat-down {
-            color: #f44336;
-        }
-        
-        .card {
-            background-color: var(--dark-2);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
-        /* Activity List */
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            background-color: var(--dark-3);
-            transition: all 0.3s ease;
-        }
-        
-        .activity-item:hover {
-            transform: translateX(5px);
-            background-color: rgba(32, 227, 178, 0.05);
-        }
-        
-        .activity-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-right: 15px;
-        }
-        
-        .activity-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .activity-content {
-            flex: 1;
-        }
-        
-        .activity-title {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-        
-        .activity-desc {
-            font-size: 0.8rem;
-            color: var(--gray);
-        }
-        
-        .activity-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .activity-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--light);
-            transition: all 0.3s ease;
-        }
-        
-        .activity-btn:hover {
-            background-color: var(--primary);
-            color: var(--dark);
-        }
-        
-        /* Data Table */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .data-table th, .data-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .data-table th {
-            color: var(--gray);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        
-        .data-table tbody tr {
-            transition: all 0.3s ease;
-        }
-        
-        .data-table tbody tr:hover {
-            background-color: rgba(32, 227, 178, 0.05);
-        }
-        
-        .table-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .action-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--light);
-        }
-        
-        .action-btn:hover {
-            background-color: var(--primary);
-            color: var(--dark);
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        .empty-state p {
-            margin-bottom: 20px;
-            color: var(--gray);
-        }
-        
-        .empty-table-message {
-            text-align: center;
-            padding: 30px;
-            color: var(--gray);
-        }
-        
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-container {
-            background-color: var(--dark-2);
-            border-radius: 10px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.active .modal-container {
-            transform: translateY(0);
-        }
-        
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
-        .modal-close {
-            background: transparent;
-            border: none;
-            color: var(--gray);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-close:hover {
-            color: var(--primary);
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        
-        /* Info Box */
-        .info-box {
-            background-color: rgba(52, 152, 219, 0.1);
-            border-left: 3px solid #3498db;
-            padding: 15px;
-            border-radius: 3px;
-            margin-bottom: 20px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: 70px;
-            }
-            
-            .sidebar-menu-text, .sidebar-header {
-                display: none;
-            }
-            
-            .sidebar-menu a {
-                justify-content: center;
-                padding: 15px;
-            }
-            
-            .sidebar-menu-icon {
-                margin-right: 0;
-                font-size: 1.5rem;
-            }
-            
-            .main-content {
-                margin-left: 70px;
-                max-width: calc(100% - 70px);
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .top-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <img src="images/logo-small.png" alt="Tgen Robotics Hub" class="sidebar-logo">
-        </div>
-        
-        <ul class="sidebar-menu">
-            <li>
-                <a href="#dashboard" data-section="dashboard">
-                    <i class="fas fa-tachometer-alt sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="#robots" data-section="robots">
-                    <i class="fas fa-robot sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Robots</span>
-                </a>
-            </li>
-            <li>
-                <a href="#news" data-section="news">
-                    <i class="fas fa-newspaper sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">News</span>
-                </a>
-            </li>
-            <li>
-                <a href="#categories" data-section="categories">
-                    <i class="fas fa-tags sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Categories</span>
-                </a>
-            </li>
-            <li>
-                <a href="#users" data-section="users">
-                    <i class="fas fa-users sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Users</span>
-                </a>
-            </li>
-            <li>
-                <a href="#media" data-section="media">
-                    <i class="fas fa-images sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Media</span>
-                </a>
-            </li>
-            <li>
-                <a href="#settings" data-section="settings">
-                    <i class="fas fa-cog sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Settings</span>
-                </a>
-            </li>
-        </ul>
-        
-        <div class="sidebar-footer">
-            <span>Tgen Robotics Hub v1.0</span>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-bar">
-            <h1 class="page-title">Dashboard</h1>
-            
-            <div class="user-info">
-                <div>
-                    <div class="user-name">Admin User</div>
-                    <div class="user-role">Administrator</div>
-                </div>
-                <img src="images/admin-avatar.jpg" alt="Admin Avatar" class="user-avatar">
-            </div>
-        </div>
-
-        <!-- Dashboard Content -->
-        <div id="dashboard-content">
-            <div class="stats-grid">
-                <!-- Stats will be loaded dynamically -->
-                <div class="stat-card skeleton-loading"></div>
-                <div class="stat-card skeleton-loading"></div>
-                <div class="stat-card skeleton-loading"></div>
-                <div class="stat-card skeleton-loading"></div>
-                <div class="stat-card skeleton-loading"></div>
-                <div class="stat-card skeleton-loading"></div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Recent Activity</h2>
-                    <a href="#" class="btn btn-outline btn-sm">View All</a>
-                </div>
-                <div id="recent-activity">
-                    <!-- Recent activity will be loaded dynamically -->
-                    <div class="activity-item skeleton-loading"></div>
-                    <div class="activity-item skeleton-loading"></div>
-                    <div class="activity-item skeleton-loading"></div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Quick Links</h2>
-                </div>
-                <div class="quick-links">
-                    <a href="#robots" data-section="robots" class="quick-link-btn">
-                        <i class="fas fa-robot"></i>
-                        <span>Manage Robots</span>
-                    </a>
-                    <a href="#categories" data-section="categories" class="quick-link-btn">
-                        <i class="fas fa-tags"></i>
-                        <span>Manage Categories</span>
-                    </a>
-                    <a href="#media" data-section="media" class="quick-link-btn">
-                        <i class="fas fa-images"></i>
-                        <span>Media Library</span>
-                    </a>
-                    <a href="#settings" data-section="settings" class="quick-link-btn">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Robots Content -->
-        <div id="robots-content" style="display: none;">
-            <!-- Robot management will be loaded from robot-management-enhanced.js -->
-            <div class="robot-actions">
-                <button class="btn btn-primary" id="add-robot-btn">Add New Robot</button>
-            </div>
-
-            <table class="robot-table">
-                <thead>
-                    <tr>
-                        <th style="width: 70px;">Image</th>
-                        <th>Name</th>
-                        <th>Manufacturer</th>
-                        <th>Categories</th>
-                        <th>Status</th>
-                        <th>Date Added</th>
-                        <th style="width: 100px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="robot-table-body">
-                    <!-- Table rows will be populated dynamically -->
-                </tbody>
-            </table>
-
-            <div class="pagination" id="pagination">
-                <!-- Pagination controls will be added here -->
-            </div>
-        </div>
-        
-        <!-- News Content -->
-        <div id="news-content" style="display: none;">
-            <!-- News management will be loaded dynamically -->
-        </div>
-        
-        <!-- Categories Content -->
-        <div id="categories-content" style="display: none;">
-            <!-- Categories management will be loaded dynamically -->
-        </div>
-        
-        <!-- Users Content -->
-        <div id="users-content" style="display: none;">
-            <!-- Users management will be loaded dynamically -->
-        </div>
-        
-        <!-- Media Content -->
-        <div id="media-content" style="display: none;">
-            <!-- Media library will be loaded dynamically -->
-        </div>
-        
-        <!-- Settings Content -->
-        <div id="settings-content" style="display: none;">
-            <!-- Settings will be loaded dynamically -->
-        </div>
-    </div>
-
-    <!-- Robot Form Modal -->
-    <div class="modal-overlay" id="robot-modal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modal-title">Add New Robot</h2>
-                <button class="modal-close" id="modal-close">&times;</button>
-            </div>
-            
-            <div class="modal-tabs">
-                <div class="modal-tab active" data-tab="basic">Basic Info</div>
-                <div class="modal-tab" data-tab="specs">Specifications</div>
-                <div class="modal-tab" data-tab="media">Media</div>
-                <div class="modal-tab" data-tab="applications">Applications</div>
-                <div class="modal-tab" data-tab="meta">SEO/Meta</div>
-            </div>
-            
-            <form id="robot-form">
-                <div class="modal-body">
-                    <!-- Basic Info Tab -->
-                    <div class="tab-content active" id="tab-basic">
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="robot-name">Robot Name *</label>
-                                    <input type="text" class="form-control" id="robot-name" required>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="robot-slug">Slug</label>
-                                    <input type="text" class="form-control" id="robot-slug" placeholder="Auto-generated if left empty">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="manufacturer-name">Manufacturer Name *</label>
-                                    <input type="text" class="form-control" id="manufacturer-name" required>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="manufacturer-country">Country of Origin</label>
-                                    <input type="text" class="form-control" id="manufacturer-country">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="manufacturer-website">Manufacturer Website</label>
-                            <input type="url" class="form-control" id="manufacturer-website" placeholder="https://example.com">
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="year-introduced">Year Introduced</label>
-                                    <input type="number" class="form-control" id="year-introduced" min="1950" max="2025">
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Status</label>
-                                    <select class="form-control" id="robot-status">
-                                        <option value="draft">Draft</option>
-                                        <option value="published">Published</option>
-                                        <option value="archived">Archived</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Categories</label>
-                            <input type="text" class="form-control" id="category-input" placeholder="Type and press Enter to add categories">
-                            <div class="tag-input-container">
-                                <div class="tag-list" id="category-tags">
-                                    <!-- Category tags will be added here -->
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="robot-summary">Summary *</label>
-                            <textarea class="form-control" id="robot-summary" placeholder="Brief description for cards and previews" required></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="robot-description">Full Description</label>
-                            <textarea class="form-control" id="robot-description" placeholder="Detailed description with markdown support" style="min-height: 200px;"></textarea>
-                        </div>
-                    </div>
-                    
-                    <!-- Specifications Tab -->
-                    <div class="tab-content" id="tab-specs">
-                        <h3>Physical Specifications</h3>
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="spec-height">Height</label>
-                                    <div style="display: flex; gap: 10px;">
-                                        <input type="number" class="form-control" id="spec-height" step="0.01">
-                                        <select class="form-control" id="spec-height-unit" style="width: 80px;">
-                                            <option value="m">m</option>
-                                            <option value="cm">cm</option>
-                                            <option value="in">in</option>
-                                            <option value="ft">ft</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="spec-width">Width</label>
-                                    <div style="display: flex; gap: 10px;">
-                                        <input type="number" class="form-control" id="spec-width" step="0.01">
-                                        <select class="form-control" id="spec-width-unit" style="width: 80px;">
-                                            <option value="m">m</option>
-                                            <option value="cm">cm</option>
-                                            <option value="in">in</option>
-                                            <option value="ft">ft</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="spec-length">Length</label>
-                                    <div style="display: flex; gap: 10px;">
-                                        <input type="number" class="form-control" id="spec-length" step="0.01">
-                                        <select class="form-control" id="spec-length-unit" style="width: 80px;">
-                                            <option value="m">m</option>
-                                            <option value="cm">cm</option>
-                                            <option value="in">in</option>
-                                            <option value="ft">ft</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="spec-weight">Weight</label>
-                                    <div style="display: flex; gap: 10px;">
-                                        <input type="number" class="form-control" id="spec-weight" step="0.01">
-                                        <select class="form-control" id="spec-weight-unit" style="width: 80px;">
-                                            <option value="kg">kg</option>
-                                            <option value="g">g</option>
-                                            <option value="lb">lb</option>
-                                            <option value="oz">oz</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <h3 style="margin-top: 20px;">Performance</h3>
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="spec-battery-runtime">Battery Runtime (minutes)</label>
-                                    <input type="number" class="form-control" id="spec-battery-runtime">
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="spec-speed">Maximum Speed</label>
-                                    <div style="display: flex; gap: 10px;">
-                                        <input type="number" class="form-control" id="spec-speed" step="0.01">
-                                        <select class="form-control" id="spec-speed-unit" style="width: 80px;">
-                                            <option value="m/s">m/s</option>
-                                            <option value="km/h">km/h</option>
-                                            <option value="mph">mph</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="spec-dof">Degrees of Freedom</label>
-                                    <input type="number" class="form-control" id="spec-dof">
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label" for="spec-ip-rating">IP Rating</label>
-                                    <input type="text" class="form-control" id="spec-ip-rating" placeholder="e.g., IP54">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <h3 style="margin-top: 20px;">Sensors and Connectivity</h3>
-                        <div class="form-group">
-                            <label class="form-label">Sensors</label>
-                            <input type="text" class="form-control" id="sensor-input" placeholder="Type and press Enter to add sensors">
-                            <div class="tag-input-container">
-                                <div class="tag-list" id="sensor-tags">
-                                    <!-- Sensor tags will be added here -->
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Connectivity</label>
-                            <input type="text" class="form-control" id="connectivity-input" placeholder="Type and press Enter to add connectivity options">
-                            <div class="tag-input-container">
-                                <div class="tag-list" id="connectivity-tags">
-                                    <!-- Connectivity tags will be added here -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Media Tab -->
-                    <div class="tab-content" id="tab-media">
-                        <div class="form-group">
-                            <label class="form-label">Featured Image</label>
-                            <div class="media-upload" id="featured-image-upload">
-                                <div class="media-upload-icon">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                </div>
-                                <p>Click to upload or drag and drop</p>
-                                <p class="small">JPG, PNG or GIF (Max. 5MB)</p>
-                            </div>
-                            <div class="media-preview" id="featured-image-preview"></div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Additional Images</label>
-                            <div class="media-upload" id="additional-images-upload">
-                                <div class="media-upload-icon">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                </div>
-                                <p>Click to upload or drag and drop</p>
-                                <p class="small">JPG, PNG or GIF (Max. 5MB each)</p>
-                            </div>
-                            <div class="media-preview" id="additional-images-preview"></div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Videos</label>
-                            <div class="media-upload" id="videos-upload">
-                                <div class="media-upload-icon">
-                                    <i class="fas fa-film"></i>
-                                </div>
-                                <p>Click to upload or drag and drop</p>
-                                <p class="small">MP4, WebM (Max. 50MB each)</p>
-                            </div>
-                            <div class="media-preview" id="videos-preview"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Applications Tab -->
-                    <div class="tab-content" id="tab-applications">
-                        <div id="applications-container">
-                            <div class="application-item" data-index="0">
-                                <h3>Application 1</h3>
-                                <div class="form-group">
-                                    <label class="form-label">Title</label>
-                                    <input type="text" class="form-control application-title" placeholder="e.g., Industrial Inspection">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Description</label>
-                                    <textarea class="form-control application-description" placeholder="Describe how this robot is used for this application"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Image</label>
-                                    <div class="media-upload application-image-upload">
-                                        <div class="media-upload-icon">
-                                            <i class="fas fa-cloud-upload-alt"></i>
-                                        </div>
-                                        <p>Click to upload</p>
-                                    </div>
-                                    <div class="media-preview application-image-preview"></div>
-                                </div>
-                                <button type="button" class="btn btn-danger remove-application" style="margin-top: 10px;">Remove Application</button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="add-application-btn" style="margin-top: 20px;">Add Another Application</button>
-                    </div>
-                    
-                    <!-- SEO/Meta Tab -->
-                    <div class="tab-content" id="tab-meta">
-                        <div class="form-group">
-                            <label class="form-label" for="meta-title">Meta Title</label>
-                            <input type="text" class="form-control" id="meta-title" placeholder="Leave blank to use robot name">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="meta-description">Meta Description</label>
-                            <textarea class="form-control" id="meta-description" placeholder="Brief description for search engines (max 160 characters)" maxlength="160"></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Keywords</label>
-                            <input type="text" class="form-control" id="keywords-input" placeholder="Type and press Enter to add keywords">
-                            <div class<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Tgen Robotics Hub</title>
-    <link rel="stylesheet" href="styles/admin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
             --primary: #20e3b2;
@@ -857,16 +59,6 @@
             opacity: 0.9;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-        }
-        
-        .btn-outline:hover {
-            background: rgba(32, 227, 178, 0.1);
         }
         
         .btn-danger {
@@ -1009,3 +201,630 @@
             color: var(--gray);
             margin-bottom: 10px;
         }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stat-up {
+            color: #4caf50;
+        }
+        
+        .stat-down {
+            color: #f44336;
+        }
+        
+        .card {
+            background-color: var(--dark-2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        /* Robot Management */
+        .robot-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .robot-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .robot-table th, .robot-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .robot-table th {
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .robot-table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .robot-table tbody tr:hover {
+            background-color: rgba(32, 227, 178, 0.05);
+        }
+        
+        .robot-thumbnail {
+            width: 60px;
+            height: 40px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+        
+        .robot-actions-cell {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-icon {
+            background-color: rgba(32, 227, 178, 0.1);
+            color: var(--primary);
+        }
+        
+        .delete-icon {
+            background-color: rgba(255, 107, 107, 0.1);
+            color: var(--accent);
+        }
+        
+        .action-icon:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Content Editor */
+        .editor-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        
+        .editor-form {
+            background-color: var(--dark-3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .media-preview {
+            background-color: var(--dark-3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .preview-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .uploaded-media {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .media-item {
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 100px;
+        }
+        
+        .media-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .media-actions {
+            margin-top: 20px;
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .btn-ghost:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .editor-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar-menu-text, .sidebar-header {
+                display: none;
+            }
+            
+            .sidebar-menu a {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .sidebar-menu-icon {
+                margin-right: 0;
+                font-size: 1.5rem;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                max-width: calc(100% - 70px);
+            }
+            
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://placehold.co/200x60/1a1a1a/20e3b2?text=Tgen" alt="Tgen Robotics Hub Logo" class="sidebar-logo">
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="active">
+                    <span class="sidebar-menu-icon">📊</span>
+                    <span class="sidebar-menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">🤖</span>
+                    <span class="sidebar-menu-text">Robots</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">📰</span>
+                    <span class="sidebar-menu-text">News</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">🗂️</span>
+                    <span class="sidebar-menu-text">Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">👥</span>
+                    <span class="sidebar-menu-text">Users</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">💬</span>
+                    <span class="sidebar-menu-text">Comments</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">🖼️</span>
+                    <span class="sidebar-menu-text">Media</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">⚙️</span>
+                    <span class="sidebar-menu-text">Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="index.html">
+                    <span class="sidebar-menu-icon">🌐</span>
+                    <span class="sidebar-menu-text">View Site</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            &copy; 2025 Tgen Robotics Hub
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title">Admin Dashboard</h1>
+            
+            <div class="user-info">
+                <div>
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <img src="https://placehold.co/40x40/1a1a1a/20e3b2?text=A" alt="Admin User" class="user-avatar">
+            </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Total Robots</div>
+                <div class="stat-value">157</div>
+                <div class="stat-change stat-up">
+                    <span>+12</span>
+                    <span>from last month</span>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">Total Users</div>
+                <div class="stat-value">2,543</div>
+                <div class="stat-change stat-up">
+                    <span>+256</span>
+                    <span>from last month</span>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">Page Views</div>
+                <div class="stat-value">45.8k</div>
+                <div class="stat-change stat-up">
+                    <span>+8.3%</span>
+                    <span>from last month</span>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">AI Assistant Usage</div>
+                <div class="stat-value">15.2k</div>
+                <div class="stat-change stat-up">
+                    <span>+12.7%</span>
+                    <span>from last month</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Robot Management -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Robot Management</h2>
+                <button class="btn btn-primary">+ Add New Robot</button>
+            </div>
+            
+            <div class="robot-actions">
+                <input type="text" class="form-control" placeholder="Search robots..." style="max-width: 300px;">
+                <select class="form-control" style="max-width: 200px;">
+                    <option>All Categories</option>
+                    <option>Industrial</option>
+                    <option>Humanoid</option>
+                    <option>Service</option>
+                    <option>Medical</option>
+                    <option>Educational</option>
+                </select>
+                <button class="btn btn-primary" style="white-space: nowrap;">Apply Filters</button>
+            </div>
+            
+            <table class="robot-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Manufacturer</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Views</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=Spot" alt="Spot" class="robot-thumbnail"></td>
+                        <td>Spot</td>
+                        <td>Boston Dynamics</td>
+                        <td>Industrial, Quadruped</td>
+                        <td>Published</td>
+                        <td>5,432</td>
+                        <td class="robot-actions-cell">
+                            <div class="action-icon edit-icon">✏️</div>
+                            <div class="action-icon delete-icon">🗑️</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=ASIMO" alt="ASIMO" class="robot-thumbnail"></td>
+                        <td>ASIMO</td>
+                        <td>Honda</td>
+                        <td>Humanoid</td>
+                        <td>Published</td>
+                        <td>4,218</td>
+                        <td class="robot-actions-cell">
+                            <div class="action-icon edit-icon">✏️</div>
+                            <div class="action-icon delete-icon">🗑️</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=Waymo" alt="Waymo" class="robot-thumbnail"></td>
+                        <td>Self-Driving Car</td>
+                        <td>Waymo</td>
+                        <td>Autonomous Vehicle</td>
+                        <td>Published</td>
+                        <td>3,156</td>
+                        <td class="robot-actions-cell">
+                            <div class="action-icon edit-icon">✏️</div>
+                            <div class="action-icon delete-icon">🗑️</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=Atlas" alt="Atlas" class="robot-thumbnail"></td>
+                        <td>Atlas</td>
+                        <td>Boston Dynamics</td>
+                        <td>Humanoid</td>
+                        <td>Published</td>
+                        <td>4,987</td>
+                        <td class="robot-actions-cell">
+                            <div class="action-icon edit-icon">✏️</div>
+                            <div class="action-icon delete-icon">🗑️</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=DaVinci" alt="Da Vinci" class="robot-thumbnail"></td>
+                        <td>Da Vinci</td>
+                        <td>Intuitive Surgical</td>
+                        <td>Medical</td>
+                        <td>Draft</td>
+                        <td>0</td>
+                        <td class="robot-actions-cell">
+                            <div class="action-icon edit-icon">✏️</div>
+                            <div class="action-icon delete-icon">🗑️</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn btn-primary" style="padding: 8px 15px;">1</button>
+                    <button class="btn" style="padding: 8px 15px; background: rgba(255, 255, 255, 0.1);">2</button>
+                    <button class="btn" style="padding: 8px 15px; background: rgba(255, 255, 255, 0.1);">3</button>
+                    <button class="btn" style="padding: 8px 15px; background: rgba(255, 255, 255, 0.1);">...</button>
+                    <button class="btn" style="padding: 8px 15px; background: rgba(255, 255, 255, 0.1);">16</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Editor -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Robot Editor</h2>
+                <button class="btn btn-primary">Save Changes</button>
+            </div>
+            
+            <div class="editor-container">
+                <div class="editor-form">
+                    <div class="form-group">
+                        <label class="form-label">Robot Name</label>
+                        <input type="text" class="form-control" value="Spot">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Manufacturer</label>
+                        <input type="text" class="form-control" value="Boston Dynamics">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Categories</label>
+                        <input type="text" class="form-control" value="Industrial, Quadruped, Autonomous">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Summary</label>
+                        <textarea class="form-control">Spot is an agile mobile robot that navigates terrain with unprecedented mobility, allowing you to automate routine inspection tasks and data capture safely, accurately, and frequently.</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Detailed Description</label>
+                        <textarea class="form-control">Spot is a quadruped robot developed by Boston Dynamics. It is known for its ability to climb stairs, navigate rough terrain, and operate in environments that are challenging for wheeled vehicles. Spot can be operated remotely, or taught routes that it can then navigate autonomously.
+
+The robot is designed to go where wheeled robots cannot, while carrying payloads with endurance far beyond aerial drones. With 360° vision and obstacle avoidance, Spot can be driven remotely or taught routes to follow autonomously.</textarea>
+                    </div>
+                    
+                    <div class="editor-actions">
+                        <button class="btn" style="background: rgba(255, 255, 255, 0.1);">Save Draft</button>
+                        <button class="btn btn-primary">Publish</button>
+                    </div>
+                </div>
+                
+                <div class="media-preview">
+                    <h3 class="preview-title">Media</h3>
+                    
+                    <div class="uploaded-media">
+                        <div class="media-item">
+                            <img src="https://placehold.co/100x100/1a1a1a/20e3b2?text=1" alt="Media 1">
+                            <div class="media-remove">×</div>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://placehold.co/100x100/1a1a1a/20e3b2?text=2" alt="Media 2">
+                            <div class="media-remove">×</div>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://placehold.co/100x100/1a1a1a/20e3b2?text=3" alt="Media 3">
+                            <div class="media-remove">×</div>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://placehold.co/100x100/1a1a1a/20e3b2?text=4" alt="Media 4">
+                            <div class="media-remove">×</div>
+                        </div>
+                    </div>
+                    
+                    <div class="media-actions">
+                        <button class="btn btn-ghost">
+                            <span>+</span>
+                            <span>Upload More Images</span>
+                        </button>
+                    </div>
+                    
+                    <h3 class="preview-title" style="margin-top: 30px;">Specifications</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Physical Dimensions</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <input type="text" class="form-control" placeholder="Height" value="0.84 m">
+                            <input type="text" class="form-control" placeholder="Width" value="0.43 m">
+                            <input type="text" class="form-control" placeholder="Length" value="1.1 m">
+                            <input type="text" class="form-control" placeholder="Weight" value="32.5 kg">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Performance</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <input type="text" class="form-control" placeholder="Battery Life" value="90 minutes">
+                            <input type="text" class="form-control" placeholder="Max Speed" value="1.6 m/s">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple interaction for demo purposes
+        document.querySelectorAll('.edit-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                alert('Edit functionality will be implemented in the full version');
+            });
+        });
+        
+        document.querySelectorAll('.delete-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                confirm('Are you sure you want to delete this robot? This action cannot be undone.');
+            });
+        });
+        
+        document.querySelectorAll('.media-remove').forEach(icon => {
+            icon.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
