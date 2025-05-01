@@ -237,21 +237,22 @@ function applyFilters() {
         });
     }
     
-    // Sort by popularity (views)
+    // Sort by name
     results.sort((a, b) => {
-        const aViews = a.stats?.views || 0;
-        const bViews = b.stats?.views || 0;
-        return bViews - aViews;
+        if (a.name && b.name) {
+            return a.name.localeCompare(b.name);
+        }
+        return 0;
     });
     
-    // Update filtered robots
     filteredRobots = results;
     
-    // Update pagination
-    updatePagination();
+    // Reset to first page when filters change
+    currentPage = 1;
     
-    // Display the robots
+    // Display robots and update pagination
     displayRobots();
+    updatePagination();
 }
 
 // Display robots based on current page and filters
@@ -290,31 +291,28 @@ function createRobotCard(robot) {
     card.dataset.slug = robot.slug;
     card.dataset.id = robot.id;
     
-    // Determine the image URL
+    // Get image URL - check for media ID first (for uploaded images)
     let imageUrl = 'images/robot-placeholder.jpg';
     
     if (robot.media && robot.media.featuredImage) {
         if (robot.media.featuredImage.mediaId) {
-            // Get image from media storage
             const media = DataManager.getMediaById(robot.media.featuredImage.mediaId);
             if (media) {
                 imageUrl = media.data;
             }
         } else if (robot.media.featuredImage.url) {
-            // Use URL directly
             imageUrl = robot.media.featuredImage.url;
         }
     }
     
-    // Create card HTML
     card.innerHTML = `
         <img src="${imageUrl}" alt="${robot.name}" class="robot-image">
         <div class="robot-content">
             <h3 class="robot-title">${robot.name}</h3>
             <p class="robot-desc">${truncateText(robot.summary || '', 120)}</p>
             <div class="robot-meta">
-                <span>${robot.manufacturer?.name || 'Unknown Manufacturer'}</span>
-                <span>${robot.categories?.[0] || 'Uncategorized'}</span>
+                <span>${robot.manufacturer ? robot.manufacturer.name : ''}</span>
+                <span>${robot.categories && robot.categories.length > 0 ? robot.categories[0] : ''}</span>
             </div>
         </div>
     `;
@@ -341,15 +339,19 @@ function updatePagination() {
     pagination.style.display = totalPages <= 1 ? 'none' : 'flex';
 }
 
-// Helper function to truncate text
-function truncateText(text, maxLength) {
+// Truncate text to a specific length
+function truncateText(text, length = 100) {
     if (!text) return '';
     
-    if (text.length <= maxLength) {
+    if (text.length <= length) {
         return text;
     }
     
-    return text.substr(0, maxLength).trim() + '...';
+    // Find the last space before the cutoff
+    const lastSpace = text.substring(0, length).lastIndexOf(' ');
+    const cutoff = lastSpace > 0 ? lastSpace : length;
+    
+    return text.substring(0, cutoff) + '...';
 }
 
 // Debounce function to limit how often a function can run
