@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Editor - Tgen Robotics Hub</title>
+    <style>
+        :root {
+            --primary: #20e3b2;
+            --secondary: #0cebeb;
+            --accent: #ff6b6b;
+            --dark: #121212;
+            --dark-2: #1a1a1a;
+            --dark-3: #222222;
+            --light: #f8f9fa;
+            --gray: #adb5bd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #ff6b6b, #ff8080);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark-2);
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-logo {
+            height: 40px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(32, 227, 178, 0.1);
+            color: var(--primary);
+        }
+        
+        .sidebar-menu-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .sidebar-menu-text {
+            font-size: 0.95rem;
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 30px;
+            max-width: calc(100% - 250px);
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        /* Content Editor Styles */
+        .editor-container {
+            background-color: var(--dark-2);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .editor-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .editor-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .editor-tabs {
+            display: flex;
+            overflow-x: auto;
+            background-color: var(--dark-3);
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .editor-tabs::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+        
+        .editor-tab {
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            color: var(--light);
+            opacity: 0.7;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .editor-tab.active {
+            opacity: 1;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .editor-content {
+            padding: 20px;
+        }
+        
+        .editor-tab-content {
+            display: none;
+        }
+        
+        .editor-tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .rich-editor {
+            min-height: 300px;
+        }
+        
+        .input-group {
+            display: flex;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .input-group .form-control {
+            border-radius: 5px 0 0 5px;
+            border-right: none;
+        }
+        
+        .input-group select.form-control {
+            width: auto;
+            border-radius: 0 5px 5px 0;
+            border-left: none;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .form-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Tags Input */
+        .tags-input-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 5px;
+        }
+        
+        .tag {
+            background: rgba(32, 227, 178, 0.2);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .tag-remove {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+        
+        .tag-remove:hover {
+            background: rgba(255, 107, 107, 0.3);
+        }
+        
+        .tags-input {
+            background: none;
+            border: none;
+            outline: none;
+            padding: 8px;
+            color: var(--light);
+            width: 100%;
+        }
+        
+        /* Specs Section */
+        .specs-section {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .specs-section-title {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+        }
+        
+        /* Media Upload */
+        .media-upload-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .media-preview {
+            width: 200px;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .media-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-upload-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .media-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 120px;
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gallery-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .gallery-remove:hover {
+            background: rgba(255, 107, 107, 0.9);
+        }
+        
+        /* Applications */
+        .application-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .application-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-icon:hover {
+            background-color: rgba(255, 107, 107, 0.3);
+            color: var(--accent);
+        }
+        
+        .application-image-preview {
+            width: 200px;
+            height: 120px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar-menu-text, .sidebar-header {
+                display: none;
+            }
+            
+            .sidebar-menu a {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .sidebar-menu-icon {
+                margin-right: 0;
+                font-size: 1.5rem;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                max-width: calc(100% - 70px);
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .media-upload-container {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .editor-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .editor-tab {
+                flex: 1;
+                text-align: center;
+                min-width: 100px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .media-gallery {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .editor-actions {
+                flex-direction: column;
+            }
+            
+            .editor-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://placehold.co/200x60/1a1a1a/20e3b2?text=Tgen" alt="Tgen Robotics Hub Logo" class="sidebar-logo">
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="admin-dashboard.html">
+                    <span class="sidebar-menu-icon">📊</span>
+                    <span class="sidebar-menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin-robot-management.html">
+                    <span class="sidebar-menu-icon">🤖</span>
+                    <span class="sidebar-menu-text">Robots</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="active">
+                    <span class="sidebar-menu-icon">📝</span>
+                    <span class="sidebar-menu-text">Content Editor</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">📰</span>
+                    <span class="sidebar-menu-text">News</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">🗂️</span>
+                    <span class="sidebar-menu-text">Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">👥</span>
+                    <span class="sidebar-menu-text">Users</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">💬</span>
+                    <span class="sidebar-menu-text">Comments</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">🖼️</span>
+                    <span class="sidebar-menu-text">Media</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="sidebar-menu-icon">⚙️</span>
+                    <span class="sidebar-menu-text">Settings</span>
+                </a>
+            </li>
+                <div class="sidebar-divider"></div>
+                <div class="sidebar-section-title">Public Site</div>
+
+            <li>
+                <a href="index.html">
+                    <i class="fas fa-home sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="encyclopedia.html">
+                    <i class="fas fa-book sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Encyclopedia</span>
+                </a>
+            </li>
+            <li>
+                <a href="index.html">
+                    <span class="sidebar-menu-icon">🌐</span>
+                    <span class="sidebar-menu-text">View Site</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            &copy; 2025 Tgen Robotics Hub
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title">Content Editor</h1>
+            
+            <div class="user-info">
+                <div>
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <img src="https://placehold.co/40x40/1a1a1a/20e3b2?text=A" alt="Admin User" class="user-avatar">
+            </div>
+        </div>
+        
+        <!-- Robot Editor Container -->
+        <div class="robot-editor-container">
+            <!-- The editor content will be loaded dynamically through JavaScript -->
+            <div class="loading-indicator">
+                <p>Loading editor...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/data-manager.js"></script>
+    <script src="js/admin-content-editor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize the editor
+            new AdminContentEditor();
+        });
+    </script>
+</body>
+</html>
