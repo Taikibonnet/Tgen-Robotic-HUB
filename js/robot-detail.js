@@ -1,18 +1,15 @@
-// robot-detail-enhanced.js - Updated script that integrates with DataManager
+// robot-detail.js - Functionality for the Robot Detail page
+
+// Current robot data
+let currentRobot = null;
+let currentRating = 0;
+let currentGalleryIndex = 0;
+let galleryImages = [];
 
 // DOM Elements
 const tabs = document.querySelectorAll('.tab');
 const tabContents = document.querySelectorAll('.tab-content');
 const favoriteIcon = document.getElementById('favorite-icon');
-const robotName = document.getElementById('robot-name');
-const robotManufacturer = document.getElementById('robot-manufacturer');
-const robotSummary = document.getElementById('robot-summary');
-const robotMainImage = document.getElementById('robot-main-image');
-const robotCategories = document.getElementById('robot-categories');
-const overviewText = document.getElementById('overview-text');
-const videoThumbnail = document.getElementById('video-thumbnail');
-const videoPlayButton = document.getElementById('play-button');
-const videoSection = document.querySelector('.video-container');
 const reviewForm = document.getElementById('review-form');
 const ratingStars = document.querySelectorAll('.rating-selector .star');
 const lightbox = document.getElementById('lightbox');
@@ -21,28 +18,8 @@ const lightboxClose = document.getElementById('lightbox-close');
 const lightboxPrev = document.getElementById('lightbox-prev');
 const lightboxNext = document.getElementById('lightbox-next');
 
-// Current robot data
-let currentRobot = null;
-let currentRating = 0;
-let currentGalleryIndex = 0;
-let galleryImages = [];
-
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if DataManager is available
-    if (typeof DataManager === 'undefined') {
-        document.querySelector('.robot-content').innerHTML = `
-            <div class="container">
-                <div class="message message-error">
-                    <h2>Error</h2>
-                    <p>Data management system not available. Please make sure data-manager.js is loaded before robot-detail.js.</p>
-                    <a href="index.html" class="btn btn-primary" style="margin-top: 20px;">Return to Homepage</a>
-                </div>
-            </div>
-        `;
-        return;
-    }
-    
     // Get the robot slug from URL
     const params = getUrlParams();
     const slug = params.slug;
@@ -59,9 +36,22 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
+// Parse URL parameters
+function getUrlParams() {
+    const params = {};
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    
+    for (const [key, value] of urlParams.entries()) {
+        params[key] = value;
+    }
+    
+    return params;
+}
+
 // Load robot data by slug
 function loadRobotData(slug) {
-    // Get robot data from DataManager
+    // Get the robot data from DataManager
     currentRobot = DataManager.getRobotBySlug(slug);
     
     if (!currentRobot) {
@@ -79,87 +69,91 @@ function loadRobotData(slug) {
     }
     
     // Increment view count
-    if (!currentRobot.stats) {
-        currentRobot.stats = { views: 0, favorites: 0 };
-    }
-    currentRobot.stats.views = (currentRobot.stats.views || 0) + 1;
-    
-    // Update the robot
-    DataManager.updateRobot(currentRobot.id, { stats: currentRobot.stats });
+    DataManager.incrementRobotViews(currentRobot.id);
     
     // Populate the page with robot data
     populateRobotData();
     
     // Update document title
-    document.title = `${currentRobot.name} - ${currentRobot.manufacturer.name} | Tgen Robotics Hub`;
+    document.title = currentRobot.metaData?.title || 
+        `${currentRobot.name} - ${currentRobot.manufacturer.name} | Tgen Robotics Hub`;
 }
 
 // Populate the page with robot data
 function populateRobotData() {
     // Hero section
-    robotName.textContent = currentRobot.name;
-    robotManufacturer.textContent = currentRobot.manufacturer.name;
-    robotSummary.textContent = currentRobot.summary;
+    document.getElementById('robot-name').textContent = currentRobot.name;
+    document.getElementById('robot-manufacturer').textContent = currentRobot.manufacturer.name;
+    document.getElementById('robot-summary').textContent = currentRobot.summary;
     
     // Featured image
+    const featuredImageContainer = document.getElementById('robot-main-image');
     if (currentRobot.media && currentRobot.media.featuredImage) {
+        // Check if it's a media ID (for uploaded images) or a direct URL
         if (currentRobot.media.featuredImage.mediaId) {
-            // Get image from DataManager
             const media = DataManager.getMediaById(currentRobot.media.featuredImage.mediaId);
             if (media) {
-                robotMainImage.src = media.data;
-                robotMainImage.alt = currentRobot.media.featuredImage.alt || currentRobot.name;
+                featuredImageContainer.src = media.data;
             } else {
-                robotMainImage.src = 'images/robot-placeholder.jpg';
-                robotMainImage.alt = currentRobot.name;
+                featuredImageContainer.src = 'images/robot-placeholder.jpg';
             }
         } else if (currentRobot.media.featuredImage.url) {
-            robotMainImage.src = currentRobot.media.featuredImage.url;
-            robotMainImage.alt = currentRobot.media.featuredImage.alt || currentRobot.name;
+            featuredImageContainer.src = currentRobot.media.featuredImage.url;
+        } else {
+            featuredImageContainer.src = 'images/robot-placeholder.jpg';
         }
+        
+        featuredImageContainer.alt = currentRobot.media.featuredImage.alt || currentRobot.name;
     } else {
-        robotMainImage.src = 'images/robot-placeholder.jpg';
-        robotMainImage.alt = currentRobot.name;
+        featuredImageContainer.src = 'images/robot-placeholder.jpg';
+        featuredImageContainer.alt = currentRobot.name;
     }
     
     // Categories
-    robotCategories.innerHTML = '';
+    const categoriesContainer = document.getElementById('robot-categories');
+    categoriesContainer.innerHTML = '';
     
     if (currentRobot.categories && currentRobot.categories.length > 0) {
         currentRobot.categories.forEach(category => {
             const categoryElement = document.createElement('span');
             categoryElement.className = 'robot-category';
             categoryElement.textContent = category;
-            robotCategories.appendChild(categoryElement);
+            categoriesContainer.appendChild(categoryElement);
         });
     }
     
     // Overview tab
     if (currentRobot.description) {
-        overviewText.innerHTML = currentRobot.description;
+        document.getElementById('overview-text').innerHTML = currentRobot.description;
     } else {
-        overviewText.innerHTML = `<p>No detailed description available for ${currentRobot.name}.</p>`;
+        document.getElementById('overview-text').innerHTML = `<p>No detailed description available for ${currentRobot.name}.</p>`;
     }
     
-    // Show/hide video section
+    // Video thumbnail
+    const videoThumbnail = document.getElementById('video-thumbnail');
+    const videoDemoBtn = document.getElementById('video-demo-btn');
+    
     if (currentRobot.media && currentRobot.media.videos && currentRobot.media.videos.length > 0) {
-        videoSection.style.display = 'block';
-        
         const video = currentRobot.media.videos[0];
         
-        // Check if we have a stored video or just a URL
-        if (video.mediaId) {
-            // We could display a video player here if supported, but for now just show placeholder
+        // Check if it's a media ID or direct URL for thumbnail
+        if (video.thumbnailMediaId) {
+            const media = DataManager.getMediaById(video.thumbnailMediaId);
+            if (media) {
+                videoThumbnail.src = media.data;
+            } else {
+                videoThumbnail.src = video.thumbnail || 'images/video-placeholder.jpg';
+            }
+        } else {
             videoThumbnail.src = video.thumbnail || 'images/video-placeholder.jpg';
-            videoThumbnail.alt = video.title || currentRobot.name;
-        } else if (video.url) {
-            videoThumbnail.src = video.thumbnail || 'images/video-placeholder.jpg';
-            videoThumbnail.alt = video.title || currentRobot.name;
         }
         
+        videoThumbnail.alt = video.title || `${currentRobot.name} Video`;
+        
         // Show video button in hero section
-        document.getElementById('video-demo-btn').style.display = 'inline-block';
-        document.getElementById('video-demo-btn').addEventListener('click', function(e) {
+        videoDemoBtn.style.display = 'inline-block';
+        videoDemoBtn.href = '#overview';
+        videoDemoBtn.addEventListener('click', function(e) {
             e.preventDefault();
             
             // Switch to overview tab
@@ -169,18 +163,12 @@ function populateRobotData() {
             document.querySelector('[data-tab="overview"]').classList.add('active');
             document.getElementById('overview').classList.add('active');
             
-            // Add smooth scroll to video section
-            videoSection.scrollIntoView({ behavior: 'smooth' });
-        });
-        
-        // Add click handler to play button
-        videoPlayButton.addEventListener('click', function() {
-            // In a real implementation, this would open a video player
-            alert('Video playback would be implemented here with a proper media player');
+            // Play video
+            playVideo(video);
         });
     } else {
-        videoSection.style.display = 'none';
-        document.getElementById('video-demo-btn').style.display = 'none';
+        // Hide video button if no videos
+        videoDemoBtn.style.display = 'none';
     }
     
     // Specifications tab
@@ -199,7 +187,91 @@ function populateRobotData() {
     populateRelatedRobots();
     
     // Check if robot is in favorites
-    checkFavoriteStatus();
+    updateFavoriteStatus();
+}
+
+// Play a video (modal or embedded player)
+function playVideo(video) {
+    // Check if video is a media ID or direct URL
+    let videoUrl;
+    
+    if (video.mediaId) {
+        const media = DataManager.getMediaById(video.mediaId);
+        if (media) {
+            videoUrl = media.data;
+        }
+    } else if (video.url) {
+        videoUrl = video.url;
+    }
+    
+    if (!videoUrl) {
+        alert('Video not available');
+        return;
+    }
+    
+    // Create a modal for the video
+    const videoModal = document.createElement('div');
+    videoModal.className = 'video-modal-overlay';
+    videoModal.style.position = 'fixed';
+    videoModal.style.top = '0';
+    videoModal.style.left = '0';
+    videoModal.style.width = '100%';
+    videoModal.style.height = '100%';
+    videoModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    videoModal.style.display = 'flex';
+    videoModal.style.alignItems = 'center';
+    videoModal.style.justifyContent = 'center';
+    videoModal.style.zIndex = '2000';
+    
+    // For YouTube or Vimeo URLs, use iframe
+    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') || videoUrl.includes('vimeo.com')) {
+        let embedUrl;
+        
+        if (videoUrl.includes('youtube.com')) {
+            const videoId = new URLSearchParams(new URL(videoUrl).search).get('v');
+            embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (videoUrl.includes('youtu.be')) {
+            const videoId = videoUrl.split('/').pop();
+            embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (videoUrl.includes('vimeo.com')) {
+            const videoId = videoUrl.split('/').pop();
+            embedUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+        }
+        
+        videoModal.innerHTML = `
+            <div class="video-container" style="width: 80%; max-width: 800px; position: relative;">
+                <div class="video-close" style="position: absolute; top: -40px; right: 0; color: white; font-size: 30px; cursor: pointer;">&times;</div>
+                <iframe src="${embedUrl}" frameborder="0" allowfullscreen style="width: 100%; height: 450px;"></iframe>
+            </div>
+        `;
+    } else {
+        // For direct video files, use video element
+        videoModal.innerHTML = `
+            <div class="video-container" style="width: 80%; max-width: 800px; position: relative;">
+                <div class="video-close" style="position: absolute; top: -40px; right: 0; color: white; font-size: 30px; cursor: pointer;">&times;</div>
+                <video controls autoplay style="width: 100%; max-height: 80vh;">
+                    <source src="${videoUrl}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        `;
+    }
+    
+    // Add to body
+    document.body.appendChild(videoModal);
+    
+    // Close button functionality
+    const closeBtn = videoModal.querySelector('.video-close');
+    closeBtn.addEventListener('click', () => {
+        document.body.removeChild(videoModal);
+    });
+    
+    // Close on outside click
+    videoModal.addEventListener('click', (e) => {
+        if (e.target === videoModal) {
+            document.body.removeChild(videoModal);
+        }
+    });
 }
 
 // Populate specifications tab
@@ -328,8 +400,8 @@ function populateGallery() {
     // Add featured image
     if (currentRobot.media && currentRobot.media.featuredImage) {
         let imageUrl;
-        const altText = currentRobot.media.featuredImage.alt || currentRobot.name;
         
+        // Check if it's a media ID (for uploaded images) or a direct URL
         if (currentRobot.media.featuredImage.mediaId) {
             const media = DataManager.getMediaById(currentRobot.media.featuredImage.mediaId);
             if (media) {
@@ -342,7 +414,7 @@ function populateGallery() {
         if (imageUrl) {
             galleryImages.push({
                 url: imageUrl,
-                alt: altText,
+                alt: currentRobot.media.featuredImage.alt || currentRobot.name,
                 caption: currentRobot.media.featuredImage.caption || `${currentRobot.name} featured image`
             });
         }
@@ -352,8 +424,8 @@ function populateGallery() {
     if (currentRobot.media && currentRobot.media.images && currentRobot.media.images.length > 0) {
         currentRobot.media.images.forEach(image => {
             let imageUrl;
-            const altText = image.alt || currentRobot.name;
             
+            // Check if it's a media ID or direct URL
             if (image.mediaId) {
                 const media = DataManager.getMediaById(image.mediaId);
                 if (media) {
@@ -366,7 +438,7 @@ function populateGallery() {
             if (imageUrl) {
                 galleryImages.push({
                     url: imageUrl,
-                    alt: altText,
+                    alt: image.alt || currentRobot.name,
                     caption: image.caption || ''
                 });
             }
@@ -376,8 +448,9 @@ function populateGallery() {
     // Add video thumbnails
     if (currentRobot.media && currentRobot.media.videos && currentRobot.media.videos.length > 0) {
         currentRobot.media.videos.forEach(video => {
-            let thumbnailUrl = 'images/video-placeholder.jpg';
+            let thumbnailUrl;
             
+            // Check if it's a media ID or direct URL for thumbnail
             if (video.thumbnailMediaId) {
                 const media = DataManager.getMediaById(video.thumbnailMediaId);
                 if (media) {
@@ -385,16 +458,19 @@ function populateGallery() {
                 }
             } else if (video.thumbnail) {
                 thumbnailUrl = video.thumbnail;
+            } else {
+                thumbnailUrl = 'images/video-placeholder.jpg';
             }
             
-            galleryImages.push({
-                url: thumbnailUrl,
-                alt: video.title || currentRobot.name,
-                caption: video.title || '',
-                isVideo: true,
-                videoUrl: video.url,
-                videoMediaId: video.mediaId
-            });
+            if (thumbnailUrl) {
+                galleryImages.push({
+                    url: thumbnailUrl,
+                    alt: video.title || currentRobot.name,
+                    caption: video.title || '',
+                    isVideo: true,
+                    video: video
+                });
+            }
         });
     }
     
@@ -441,8 +517,9 @@ function populateGallery() {
             
             // Add click event for video
             galleryItem.addEventListener('click', function() {
-                // In a real implementation, this would open a video player
-                alert('Video playback would be implemented here with a proper media player');
+                if (image.video) {
+                    playVideo(image.video);
+                }
             });
         } else {
             galleryItem.innerHTML = `<img src="${image.url}" alt="${image.alt}">`;
@@ -460,13 +537,6 @@ function populateGallery() {
 // Populate applications tab
 function populateApplications() {
     const applicationsContainer = document.getElementById('application-cards');
-    
-    // Clear container
-    if (!applicationsContainer) {
-        console.error('Applications container not found');
-        return;
-    }
-    
     applicationsContainer.innerHTML = '';
     
     if (!currentRobot.applications || currentRobot.applications.length === 0) {
@@ -510,13 +580,6 @@ function populateApplications() {
 // Populate reviews tab
 function populateReviews() {
     const reviewsContainer = document.getElementById('reviews-container');
-    
-    // Clear container
-    if (!reviewsContainer) {
-        console.error('Reviews container not found');
-        return;
-    }
-    
     reviewsContainer.innerHTML = '';
     
     if (!currentRobot.reviews || currentRobot.reviews.length === 0) {
@@ -525,77 +588,46 @@ function populateReviews() {
                 <p>No reviews yet for ${currentRobot.name}. Be the first to leave a review!</p>
             </div>
         `;
-        return;
-    }
-    
-    currentRobot.reviews.forEach(review => {
-        const reviewElement = document.createElement('div');
-        reviewElement.className = 'review';
-        
-        // Format date
-        const date = new Date(review.date);
-        const formattedDate = date.toLocaleDateString();
-        
-        // Create star rating
-        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-        
-        // Get avatar
-        let avatarUrl = 'images/default-avatar.jpg';
-        if (review.user.avatar) {
-            avatarUrl = review.user.avatar;
-        }
-        
-        reviewElement.innerHTML = `
-            <div class="review-header">
-                <div class="review-author">
-                    <img src="${avatarUrl}" alt="${review.user.name}" class="review-avatar">
-                    <div>
-                        <div class="review-name">${review.user.name}</div>
-                        <div class="review-date">${formattedDate}</div>
+    } else {
+        currentRobot.reviews.forEach(review => {
+            const reviewElement = document.createElement('div');
+            reviewElement.className = 'review';
+            
+            // Format date
+            const date = new Date(review.date);
+            const formattedDate = date.toLocaleDateString();
+            
+            // Create star rating
+            const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+            
+            reviewElement.innerHTML = `
+                <div class="review-header">
+                    <div class="review-author">
+                        <img src="${review.user.avatar || 'images/default-avatar.jpg'}" alt="${review.user.name}" class="review-avatar">
+                        <div>
+                            <div class="review-name">${review.user.name}</div>
+                            <div class="review-date">${formattedDate}</div>
+                        </div>
                     </div>
+                    <div class="review-rating">${stars}</div>
                 </div>
-                <div class="review-rating">${stars}</div>
-            </div>
-            <div class="review-content">
-                <p>${review.content}</p>
-            </div>
-        `;
-        
-        reviewsContainer.appendChild(reviewElement);
-    });
+                <div class="review-content">
+                    <p>${review.content}</p>
+                </div>
+            `;
+            
+            reviewsContainer.appendChild(reviewElement);
+        });
+    }
 }
 
 // Populate related robots
 function populateRelatedRobots() {
     const relatedContainer = document.getElementById('related-robots');
-    
-    // Clear container
-    if (!relatedContainer) {
-        console.error('Related robots container not found');
-        return;
-    }
-    
     relatedContainer.innerHTML = '';
     
-    // Get all robots except the current one
-    let allRobots = DataManager.getAllRobots().filter(robot => robot.id !== currentRobot.id);
-    
-    // Filter by matching categories if possible
-    if (currentRobot.categories && currentRobot.categories.length > 0) {
-        const categoryMatches = allRobots.filter(robot => 
-            robot.categories && 
-            robot.categories.some(category => currentRobot.categories.includes(category))
-        );
-        
-        // Use category matches if we have enough, otherwise use all robots
-        if (categoryMatches.length >= 3) {
-            allRobots = categoryMatches;
-        }
-    }
-    
-    // Get up to 3 random robots
-    const shuffled = allRobots.sort(() => 0.5 - Math.random());
-    const relatedRobots = shuffled.slice(0, 3);
+    // Get related robots
+    const relatedRobots = DataManager.getRelatedRobots(currentRobot.id, 3);
     
     if (relatedRobots.length === 0) {
         relatedContainer.innerHTML = `
@@ -670,50 +702,66 @@ function setupEventListeners() {
     }
     
     // Rating stars selection
-    if (ratingStars) {
-        ratingStars.forEach(star => {
-            star.addEventListener('click', () => {
-                const rating = parseInt(star.dataset.rating);
-                setRating(rating);
-            });
+    ratingStars.forEach(star => {
+        star.addEventListener('click', () => {
+            const rating = parseInt(star.dataset.rating);
+            setRating(rating);
         });
-    }
+    });
     
     // Lightbox controls
-    if (lightbox) {
+    if (lightboxClose) {
         lightboxClose.addEventListener('click', closeLightbox);
+    }
+    
+    if (lightboxPrev) {
         lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
+    }
+    
+    if (lightboxNext) {
         lightboxNext.addEventListener('click', () => navigateLightbox(1));
-        
-        // Close lightbox on outside click
+    }
+    
+    // Close lightbox on outside click
+    if (lightbox) {
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) {
                 closeLightbox();
             }
         });
-        
-        // Keyboard navigation for lightbox
-        document.addEventListener('keydown', (e) => {
-            if (!lightbox.classList.contains('active')) return;
-            
-            switch (e.key) {
-                case 'Escape':
-                    closeLightbox();
-                    break;
-                case 'ArrowLeft':
-                    navigateLightbox(-1);
-                    break;
-                case 'ArrowRight':
-                    navigateLightbox(1);
-                    break;
-            }
-        });
     }
     
+    // Keyboard navigation for lightbox
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox || !lightbox.classList.contains('active')) return;
+        
+        switch (e.key) {
+            case 'Escape':
+                closeLightbox();
+                break;
+            case 'ArrowLeft':
+                navigateLightbox(-1);
+                break;
+            case 'ArrowRight':
+                navigateLightbox(1);
+                break;
+        }
+    });
+    
     // Share button
-    const shareIcon = document.querySelector('.share-icon');
-    if (shareIcon) {
-        shareIcon.addEventListener('click', shareRobot);
+    const shareButton = document.querySelector('.share-icon');
+    if (shareButton) {
+        shareButton.addEventListener('click', shareRobot);
+    }
+    
+    // Edit button (for admin users)
+    const editButton = document.getElementById('edit-robot-btn');
+    if (editButton) {
+        editButton.addEventListener('click', () => {
+            if (currentRobot) {
+                window.location.href = `admin-robot-management.html?edit=${currentRobot.id}`;
+            }
+        });
     }
 }
 
@@ -721,37 +769,26 @@ function setupEventListeners() {
 function toggleFavorite() {
     if (!currentRobot) return;
     
-    // In a real implementation with user accounts, this would interact with a backend API
-    // For demonstration, we'll just toggle the icon and update the local robot data
+    // Toggle favorite status in DataManager
+    const isFavorited = DataManager.toggleRobotFavorite(currentRobot.id);
     
-    // Initialize stats if not exists
-    if (!currentRobot.stats) {
-        currentRobot.stats = { views: 0, favorites: 0 };
-    }
+    // Update UI
+    updateFavoriteStatus();
     
-    const isFavorited = favoriteIcon.classList.contains('fas');
-    
-    if (isFavorited) {
-        favoriteIcon.classList.remove('fas');
-        favoriteIcon.classList.add('far');
-        currentRobot.stats.favorites = Math.max(0, (currentRobot.stats.favorites || 0) - 1);
-        showMessage(`Removed ${currentRobot.name} from favorites`, 'info');
-    } else {
-        favoriteIcon.classList.remove('far');
-        favoriteIcon.classList.add('fas');
-        currentRobot.stats.favorites = (currentRobot.stats.favorites || 0) + 1;
-        showMessage(`Added ${currentRobot.name} to favorites`, 'success');
-    }
-    
-    // Update the robot data
-    DataManager.updateRobot(currentRobot.id, { stats: currentRobot.stats });
+    // Show message
+    showMessage(
+        isFavorited 
+            ? `${currentRobot.name} added to favorites` 
+            : `${currentRobot.name} removed from favorites`,
+        isFavorited ? 'success' : 'info'
+    );
 }
 
-// Check if robot is in favorites (mock implementation for now)
-function checkFavoriteStatus() {
-    // In a real implementation, this would check against user's favorites
-    // For demonstration, we'll just use a random boolean
-    const isFavorited = false; // Math.random() > 0.5;
+// Update favorite button based on current status
+function updateFavoriteStatus() {
+    if (!currentRobot || !favoriteIcon) return;
+    
+    const isFavorited = DataManager.isRobotFavorited(currentRobot.id);
     
     if (isFavorited) {
         favoriteIcon.classList.remove('far');
@@ -813,7 +850,7 @@ function submitReview(e) {
     currentRobot.reviews.unshift(newReview);
     
     // Update the robot in DataManager
-    DataManager.updateRobot(currentRobot.id, { reviews: currentRobot.reviews });
+    DataManager.updateRobot(currentRobot.id, currentRobot);
     
     // Refresh reviews display
     populateReviews();
@@ -828,7 +865,7 @@ function submitReview(e) {
 
 // Open lightbox
 function openLightbox(index) {
-    if (!galleryImages || galleryImages.length === 0) return;
+    if (!galleryImages || galleryImages.length === 0 || !lightbox) return;
     
     // Skip video items
     while (index < galleryImages.length && galleryImages[index].isVideo) {
@@ -849,163 +886,201 @@ function openLightbox(index) {
 
 // Close lightbox
 function closeLightbox() {
+    if (!lightbox) return;
+    
     lightbox.classList.remove('active');
     
     // Restore body scrolling
     document.body.style.overflow = '';
 }
 
-// Navigate through lightbox images
-function navigateLightbox(direction) {
-    let newIndex = currentGalleryIndex + direction;
+// Update lightbox image
+function updateLightboxImage() {
+    if (!lightbox || !lightboxImage || galleryImages.length === 0) return;
     
-    // Handle wrapping
-    if (newIndex < 0) {
-        newIndex = galleryImages.length - 1;
-    } else if (newIndex >= galleryImages.length) {
-        newIndex = 0;
+    const currentImage = galleryImages[currentGalleryIndex];
+    
+    lightboxImage.src = currentImage.url;
+    lightboxImage.alt = currentImage.alt;
+    
+    // Update caption if available
+    const captionElement = lightbox.querySelector('.lightbox-caption');
+    if (captionElement) {
+        captionElement.textContent = currentImage.caption || '';
     }
     
+    // Update navigation buttons visibility
+    updateLightboxNavigation();
+}
+
+// Update lightbox navigation buttons visibility
+function updateLightboxNavigation() {
+    if (!lightboxPrev || !lightboxNext) return;
+    
+    // Check for previous valid image (non-video)
+    let prevIndex = currentGalleryIndex - 1;
+    while (prevIndex >= 0 && galleryImages[prevIndex].isVideo) {
+        prevIndex--;
+    }
+    
+    // Check for next valid image (non-video)
+    let nextIndex = currentGalleryIndex + 1;
+    while (nextIndex < galleryImages.length && galleryImages[nextIndex].isVideo) {
+        nextIndex++;
+    }
+    
+    // Show/hide prev button
+    lightboxPrev.style.visibility = prevIndex >= 0 ? 'visible' : 'hidden';
+    
+    // Show/hide next button
+    lightboxNext.style.visibility = nextIndex < galleryImages.length ? 'visible' : 'hidden';
+}
+
+// Navigate to previous/next image in lightbox
+function navigateLightbox(direction) {
+    if (!lightbox || galleryImages.length === 0) return;
+    
+    let newIndex = currentGalleryIndex + direction;
+    
     // Skip video items
-    while (newIndex < galleryImages.length && galleryImages[newIndex].isVideo) {
+    while (newIndex >= 0 && newIndex < galleryImages.length && galleryImages[newIndex].isVideo) {
         newIndex += direction;
-        
-        // Handle wrapping again
-        if (newIndex < 0) {
-            newIndex = galleryImages.length - 1;
-        } else if (newIndex >= galleryImages.length) {
-            newIndex = 0;
-        }
+    }
+    
+    // Check if new index is valid
+    if (newIndex < 0 || newIndex >= galleryImages.length) {
+        return;
     }
     
     currentGalleryIndex = newIndex;
     updateLightboxImage();
 }
 
-// Update lightbox image
-function updateLightboxImage() {
-    const image = galleryImages[currentGalleryIndex];
-    
-    lightboxImage.src = image.url;
-    lightboxImage.alt = image.alt;
-    
-    // Update caption if present
-    // In a real implementation, you would add a caption element to the lightbox
-}
-
 // Share robot
 function shareRobot() {
-    // In a real implementation, this would open a share dialog
-    // For demonstration, we'll just copy the URL to clipboard
+    if (!currentRobot) return;
     
-    const url = window.location.href;
-    
-    // Check if Web Share API is supported
+    // Check if Web Share API is available
     if (navigator.share) {
         navigator.share({
-            title: document.title,
-            url: url
+            title: `${currentRobot.name} - Tgen Robotics Hub`,
+            text: currentRobot.summary,
+            url: window.location.href
         })
         .then(() => {
-            console.log('Successfully shared');
+            console.log('Shared successfully');
         })
         .catch(error => {
             console.error('Error sharing:', error);
-            copyToClipboard(url);
+            copyToClipboard();
         });
     } else {
-        // Fallback to clipboard copy
-        copyToClipboard(url);
+        // Fallback to copy to clipboard
+        copyToClipboard();
     }
 }
 
-// Copy text to clipboard
-function copyToClipboard(text) {
-    // Create a temporary input element
-    const input = document.createElement('input');
-    input.value = text;
-    document.body.appendChild(input);
+// Copy URL to clipboard
+function copyToClipboard() {
+    const textArea = document.createElement('textarea');
+    textArea.value = window.location.href;
+    textArea.style.position = 'fixed';  // Avoid scrolling to bottom
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
     
-    // Select and copy the URL
-    input.select();
-    document.execCommand('copy');
+    try {
+        const successful = document.execCommand('copy');
+        showMessage(
+            successful ? 'Link copied to clipboard' : 'Failed to copy link',
+            successful ? 'success' : 'error'
+        );
+    } catch (err) {
+        showMessage('Failed to copy link', 'error');
+    }
     
-    // Remove the temporary input
-    document.body.removeChild(input);
-    
-    // Show success message
-    showMessage('Link copied to clipboard', 'success');
+    document.body.removeChild(textArea);
 }
 
-// Show a temporary message
+// Show message popup
 function showMessage(message, type = 'info', duration = 3000) {
+    // Check if message container exists, create if not
+    let messageContainer = document.getElementById('message-container');
+    
+    if (!messageContainer) {
+        messageContainer = document.createElement('div');
+        messageContainer.id = 'message-container';
+        messageContainer.style.position = 'fixed';
+        messageContainer.style.bottom = '20px';
+        messageContainer.style.right = '20px';
+        messageContainer.style.zIndex = '1000';
+        document.body.appendChild(messageContainer);
+    }
+    
     // Create message element
     const messageElement = document.createElement('div');
-    messageElement.className = `message message-${type} fade-in`;
+    messageElement.className = `message message-${type}`;
     messageElement.textContent = message;
     
-    // Style the element
-    messageElement.style.position = 'fixed';
-    messageElement.style.top = '20px';
-    messageElement.style.right = '20px';
-    messageElement.style.padding = '15px 20px';
-    messageElement.style.borderRadius = '5px';
-    messageElement.style.zIndex = '2000';
-    messageElement.style.opacity = '0';
-    messageElement.style.transition = 'opacity 0.3s ease';
+    // Add styles
+    messageElement.style.padding = '10px 15px';
+    messageElement.style.marginTop = '10px';
+    messageElement.style.borderRadius = '4px';
+    messageElement.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
+    messageElement.style.animation = 'fadeIn 0.3s ease-out';
     
     // Set colors based on type
-    if (type === 'success') {
-        messageElement.style.backgroundColor = 'rgba(32, 227, 178, 0.95)';
-        messageElement.style.color = '#fff';
-    } else if (type === 'error') {
-        messageElement.style.backgroundColor = 'rgba(255, 107, 107, 0.95)';
-        messageElement.style.color = '#fff';
-    } else {
-        messageElement.style.backgroundColor = 'rgba(52, 152, 219, 0.95)';
-        messageElement.style.color = '#fff';
+    switch (type) {
+        case 'success':
+            messageElement.style.backgroundColor = '#4CAF50';
+            messageElement.style.color = 'white';
+            break;
+        case 'error':
+            messageElement.style.backgroundColor = '#F44336';
+            messageElement.style.color = 'white';
+            break;
+        case 'info':
+        default:
+            messageElement.style.backgroundColor = '#2196F3';
+            messageElement.style.color = 'white';
+            break;
     }
     
-    // Add to body
-    document.body.appendChild(messageElement);
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+    `;
+    document.head.appendChild(style);
     
-    // Fade in
-    setTimeout(() => {
-        messageElement.style.opacity = '1';
-    }, 10);
+    // Add to container
+    messageContainer.appendChild(messageElement);
     
     // Remove after duration
     setTimeout(() => {
-        messageElement.style.opacity = '0';
+        messageElement.style.animation = 'fadeOut 0.3s ease-out';
         setTimeout(() => {
-            document.body.removeChild(messageElement);
+            if (messageContainer.contains(messageElement)) {
+                messageContainer.removeChild(messageElement);
+            }
         }, 300);
     }, duration);
 }
 
-// Get URL parameters
-function getUrlParams() {
-    const params = {};
-    const queryString = window.location.search.substring(1);
-    const pairs = queryString.split('&');
-    
-    for (const pair of pairs) {
-        const [key, value] = pair.split('=');
-        if (key) {
-            params[decodeURIComponent(key)] = decodeURIComponent(value || '');
-        }
-    }
-    
-    return params;
-}
-
 // Truncate text to a specific length
-function truncateText(text, length = 100) {
+function truncateText(text, maxLength) {
     if (!text) return '';
     
-    if (text.length <= length) {
+    if (text.length <= maxLength) {
         return text;
     }
     
-    return text.substring(0, length) + '...';
+    return text.substring(0, maxLength) + '...';
 }
