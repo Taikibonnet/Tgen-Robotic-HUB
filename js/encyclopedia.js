@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Apply any active filters
     applyFilters();
+
+     // Sync with admin data
+    syncWithAdminData();
     
     // Display robots
     displayRobots();
@@ -363,4 +366,17 @@ function debounce(func, delay) {
             func.apply(this, args);
         }, delay);
     };
+}
+// Check for admin-added robots that should appear in the encyclopedia
+function syncWithAdminData() {
+    // Get all robots from DataManager
+    const allRobots = DataManager.getAllRobots();
+    
+    // Filter only published robots
+    const publishedRobots = allRobots.filter(robot => robot.status === 'published');
+    
+    // Update filteredRobots based on any active filters
+    applyFilters();
+    
+    console.log(`Encyclopedia synced with admin data. ${publishedRobots.length} published robots available.`);
 }
