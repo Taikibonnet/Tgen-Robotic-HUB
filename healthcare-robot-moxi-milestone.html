@@ -1,0 +1,64 @@
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="news.html">Robotics News</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html?category=Industrial">Industrial Robotics</a></li>
+                        <li><a href="encyclopedia.html?category=Humanoid">Humanoids</a></li>
+                        <li><a href="encyclopedia.html?category=Autonomous">Autonomous Systems</a></li>
+                        <li><a href="encyclopedia.html">All Categories</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script>
+        // Enable mobile navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const navLinks = document.querySelector('.nav-links');
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                navLinks.classList.toggle('mobile-active');
+                authButtons.classList.toggle('mobile-active');
+            });
+            
+            // Share functionality
+            const shareButtons = document.querySelectorAll('.share-button');
+            
+            shareButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // In a real application, you would implement actual sharing
+                    alert('Sharing functionality would be implemented here.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
