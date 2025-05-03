@@ -4,40 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Tgen Robotics Hub</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        :root {
-            --primary: #20e3b2;
-            --secondary: #0cebeb;
-            --dark: #121212;
-            --light: #f8f9fa;
-            --accent: #ff6b6b;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #121212;
-            color: var(--light);
-            line-height: 1.6;
+        /* Hero Section */
+        .hero {
+            height: 40vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding-top: 130px; /* Increased padding to prevent overlap with header */
             background: radial-gradient(circle at center, #1a1a1a 0%, #121212 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('images/background-pattern.png') center/cover no-repeat;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .login-section {
+            padding: 60px 0;
+            position: relative;
         }
         
         .login-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            background: rgba(30, 30, 30, 0.8);
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: rgba(30, 30, 30, 0.8);
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border: 1px solid rgba(32, 227, 178, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(32, 227, 178, 0.05), transparent);
+            z-index: -1;
         }
         
         .login-header {
@@ -45,13 +88,23 @@
             margin-bottom: 30px;
         }
         
-        .login-header h1 {
+        .login-header h2 {
             font-size: 2rem;
+            color: var(--primary);
             margin-bottom: 10px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .login-header h2::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
             background: linear-gradient(90deg, var(--secondary), var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
         
         .login-header p {
@@ -60,29 +113,31 @@
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .form-label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
+            color: var(--primary);
         }
         
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
             border-radius: 5px;
+            border: 1px solid rgba(32, 227, 178, 0.3);
+            background-color: rgba(0, 0, 0, 0.2);
             color: var(--light);
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
         
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
+            box-shadow: 0 0 10px rgba(32, 227, 178, 0.3);
         }
         
         .forgot-password {
@@ -94,126 +149,276 @@
             color: var(--primary);
             text-decoration: none;
             font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
         }
         
         .btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 5px;
-            font-weight: 500;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: none;
             font-size: 1rem;
+            text-align: center;
         }
         
         .btn-primary {
             background: linear-gradient(90deg, var(--secondary), var(--primary));
             color: var(--dark);
+            border: none;
+            display: block;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
         }
         
         .btn-primary:hover {
             opacity: 0.9;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
+            box-shadow: 0 8px 20px rgba(32, 227, 178, 0.4);
         }
         
         .register-link {
             text-align: center;
             margin-top: 20px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
         
         .register-link a {
             color: var(--primary);
             text-decoration: none;
+            font-weight: 500;
         }
         
-        .back-home {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .register-link a:hover {
+            text-decoration: underline;
         }
         
         .error-message {
             background-color: rgba(255, 107, 107, 0.2);
             color: var(--accent);
-            padding: 10px;
+            padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
             display: none;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 0 20px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-home">
-        ← Back to Home
-    </a>
-    
-    <div class="login-container">
-        <div class="login-header">
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
+            </a>
+            <nav class="nav-links">
+                <a href="encyclopedia.html">Encyclopedia</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <button class="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline active">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
             <h1>Welcome Back</h1>
-            <p>Sign in to access your Tgen Robotics Hub account</p>
+            <p>Sign in to access your Tgen Robotics Hub account and explore the world of robotics</p>
         </div>
-        
-        <div id="error-message" class="error-message">
-            Invalid email or password. Please try again.
+    </section>
+    
+    <!-- Login Section -->
+    <section class="login-section">
+        <div class="container">
+            <div class="login-container">
+                <div class="login-header">
+                    <h2>Sign In</h2>
+                    <p>Enter your credentials to access your account</p>
+                </div>
+                
+                <div id="error-message" class="error-message">
+                    Invalid email or password. Please try again.
+                </div>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="forgot-password">
+                        <a href="#">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </form>
+                
+                <div class="register-link">
+                    Don't have an account? <a href="signup.html">Sign Up</a>
+                </div>
+            </div>
         </div>
-        
-        <form id="login-form">
-            <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
-            </div>
-            
-            <div class="forgot-password">
-                <a href="#">Forgot password?</a>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Sign In</button>
-        </form>
-        
-        <div class="register-link">
-            Don't have an account? <a href="register.html">Register</a>
+    </section>
+    
+    <!-- AI Assistant Button -->
+    <div class="ai-assistant">
+        <div class="ai-button" id="ai-button">
+            <div class="ai-icon">🤖</div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html#mission">Our Mission</a></li>
+                        <li><a href="about.html#vision">Our Vision</a></li>
+                        <li><a href="about.html#why">Why We Exist</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
     
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
     <script>
-        const loginForm = document.getElementById('login-form');
-        const errorMessage = document.getElementById('error-message');
-        
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const navLinks = document.querySelector('.nav-links');
+            const authButtons = document.querySelector('.auth-buttons');
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            mobileMenuButton.addEventListener('click', function() {
+                navLinks.classList.toggle('mobile-active');
+                authButtons.classList.toggle('mobile-active');
+            });
             
-            // For demonstration purposes - hardcoded credentials
-            // In a real application, this would be validated on the server
-            if (email === 'tgen.robotics@gmail.com' && password === 'Admin123!') {
-                // Store login state in localStorage
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', 'admin');
-                localStorage.setItem('userEmail', email);
+            // Login form handling
+            const loginForm = document.getElementById('login-form');
+            const errorMessage = document.getElementById('error-message');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                // Redirect to admin dashboard
-                window.location.href = 'admin-dashboard.html';
-            } else {
-                // Show error message
-                errorMessage.style.display = 'block';
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
                 
-                // Clear password field
-                document.getElementById('password').value = '';
+                // Admin credentials
+                if (email === 'tgen.robotics@gmail.com' && password === 'Admin123!') {
+                    // Store login state in localStorage
+                    const userData = {
+                        isLoggedIn: true,
+                        email: email,
+                        firstName: 'Admin',
+                        lastName: 'User',
+                        role: 'admin'
+                    };
+                    
+                    localStorage.setItem('tgenUser', JSON.stringify(userData));
+                    
+                    // Redirect to admin dashboard
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    // Check for regular user login (would connect to backend in a real app)
+                    // For demo, allow any well-formed email and password with 8+ chars
+                    if (isValidEmail(email) && password.length >= 8) {
+                        // Create a demo user
+                        const userData = {
+                            isLoggedIn: true,
+                            email: email,
+                            firstName: 'Guest',
+                            lastName: 'User',
+                            role: 'user'
+                        };
+                        
+                        localStorage.setItem('tgenUser', JSON.stringify(userData));
+                        
+                        // Redirect to homepage
+                        window.location.href = 'index.html';
+                    } else {
+                        // Show error message
+                        errorMessage.style.display = 'block';
+                        
+                        // Clear password field
+                        document.getElementById('password').value = '';
+                    }
+                }
+            });
+            
+            // Email validation helper
+            function isValidEmail(email) {
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return regex.test(email);
+            }
+            
+            // Check if user is already logged in
+            const currentUser = window.tgenApp.getCurrentUser();
+            if (currentUser) {
+                // Redirect to home page
+                window.location.href = 'index.html';
             }
         });
     </script>
