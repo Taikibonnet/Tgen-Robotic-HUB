@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Tgen Robotics Hub</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
             --primary: #20e3b2;
@@ -128,6 +130,21 @@
             font-size: 0.95rem;
         }
         
+        .sidebar-divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 15px 20px;
+        }
+        
+        .sidebar-section-title {
+            padding: 0 20px;
+            margin: 15px 0 10px;
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
         .sidebar-footer {
             position: absolute;
             bottom: 0;
@@ -244,46 +261,40 @@
             font-weight: 600;
         }
         
-        /* Robot Management */
-        .robot-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .robot-table {
+        /* Table Styles */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
         }
         
-        .robot-table th, .robot-table td {
+        .data-table th, .data-table td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .robot-table th {
+        .data-table th {
             color: var(--gray);
             font-weight: 500;
             font-size: 0.9rem;
         }
         
-        .robot-table tbody tr {
+        .data-table tbody tr {
             transition: all 0.3s ease;
         }
         
-        .robot-table tbody tr:hover {
+        .data-table tbody tr:hover {
             background-color: rgba(32, 227, 178, 0.05);
         }
         
-        .robot-thumbnail {
+        .thumbnail {
             width: 60px;
             height: 40px;
             border-radius: 5px;
             object-fit: cover;
         }
         
-        .robot-actions-cell {
+        .actions-cell {
             display: flex;
             gap: 10px;
         }
@@ -304,6 +315,11 @@
             color: var(--primary);
         }
         
+        .view-icon {
+            background-color: rgba(73, 139, 255, 0.1);
+            color: #498bff;
+        }
+        
         .delete-icon {
             background-color: rgba(255, 107, 107, 0.1);
             color: var(--accent);
@@ -313,133 +329,63 @@
             transform: translateY(-2px);
         }
         
-        /* Content Editor */
-        .editor-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-        }
-        
-        .editor-form {
-            background-color: var(--dark-3);
-            border-radius: 10px;
-            padding: 20px;
-        }
-        
-        .form-group {
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
+        /* News Specific Styles */
+        .news-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-align: center;
         }
         
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .status-published {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4caf50;
+        }
+        
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 15px;
             border-radius: 5px;
-            color: var(--light);
+            cursor: pointer;
             transition: all 0.3s ease;
         }
         
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
+        .page-btn.active {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
         }
         
-        textarea.form-control {
-            min-height: 150px;
-            resize: vertical;
+        .page-btn:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
         }
         
-        .media-preview {
-            background-color: var(--dark-3);
-            border-radius: 10px;
-            padding: 20px;
-        }
-        
-        .preview-title {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .uploaded-media {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .media-item {
-            position: relative;
-            border-radius: 5px;
-            overflow: hidden;
-            height: 100px;
-        }
-        
-        .media-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .media-remove {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        
-        .media-actions {
-            margin-top: 20px;
-        }
-        
-        .btn-ghost {
-            background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.3);
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-        }
-        
-        .btn-ghost:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        
-        .editor-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        /* Responsive */
+        /* Responsive Styles */
         @media (max-width: 992px) {
             .sidebar {
                 width: 70px;
             }
             
-            .sidebar-menu-text, .sidebar-header {
+            .sidebar-menu-text, .sidebar-header, .sidebar-section-title {
                 display: none;
             }
             
@@ -457,15 +403,16 @@
                 margin-left: 70px;
                 max-width: calc(100% - 70px);
             }
-            
-            .editor-container {
-                grid-template-columns: 1fr;
-            }
         }
         
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
+            }
+            
+            .data-table {
+                display: block;
+                overflow-x: auto;
             }
         }
         
@@ -479,6 +426,12 @@
                 align-items: flex-start;
                 gap: 15px;
             }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -486,61 +439,58 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="https://placehold.co/200x60/1a1a1a/20e3b2?text=Tgen" alt="Tgen Robotics Hub Logo" class="sidebar-logo">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="sidebar-logo">
+            </a>
         </div>
         
         <ul class="sidebar-menu">
             <li>
-                <a href="#" class="active">
-                    <span class="sidebar-menu-icon">📊</span>
+                <a href="admin-dashboard.html" class="active">
+                    <i class="fas fa-tachometer-alt sidebar-menu-icon"></i>
                     <span class="sidebar-menu-text">Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <span class="sidebar-menu-icon">🤖</span>
+                <a href="admin-robot-management.html">
+                    <i class="fas fa-robot sidebar-menu-icon"></i>
                     <span class="sidebar-menu-text">Robots</span>
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <span class="sidebar-menu-icon">📰</span>
+                <a href="admin-news.html">
+                    <i class="fas fa-newspaper sidebar-menu-icon"></i>
                     <span class="sidebar-menu-text">News</span>
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <span class="sidebar-menu-icon">🗂️</span>
-                    <span class="sidebar-menu-text">Categories</span>
+                <a href="admin-image-upload.html">
+                    <i class="fas fa-images sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Media</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin-content-editor.html">
+                    <i class="fas fa-edit sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Editor</span>
                 </a>
             </li>
             <li>
                 <a href="#">
-                    <span class="sidebar-menu-icon">👥</span>
+                    <i class="fas fa-users sidebar-menu-icon"></i>
                     <span class="sidebar-menu-text">Users</span>
                 </a>
             </li>
             <li>
                 <a href="#">
-                    <span class="sidebar-menu-icon">💬</span>
-                    <span class="sidebar-menu-text">Comments</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <span class="sidebar-menu-icon">🖼️</span>
-                    <span class="sidebar-menu-text">Media</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <span class="sidebar-menu-icon">⚙️</span>
+                    <i class="fas fa-cog sidebar-menu-icon"></i>
                     <span class="sidebar-menu-text">Settings</span>
                 </a>
             </li>
-                <div class="sidebar-divider"></div>
-                <div class="sidebar-section-title">Public Site</div>
-
+            
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-title">Public Site</div>
+            
             <li>
                 <a href="index.html">
                     <i class="fas fa-home sidebar-menu-icon"></i>
@@ -554,9 +504,9 @@
                 </a>
             </li>
             <li>
-                <a href="index.html">
-                    <span class="sidebar-menu-icon">🌐</span>
-                    <span class="sidebar-menu-text">View Site</span>
+                <a href="news.html">
+                    <i class="fas fa-newspaper sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">News</span>
                 </a>
             </li>
         </ul>
@@ -576,7 +526,7 @@
                     <div class="user-name">Admin User</div>
                     <div class="user-role">Administrator</div>
                 </div>
-                <img src="https://placehold.co/40x40/1a1a1a/20e3b2?text=A" alt="Admin User" class="user-avatar">
+                <img src="images/avatar-placeholder.jpg" alt="Admin User" class="user-avatar">
             </div>
         </div>
         
@@ -592,10 +542,10 @@
             </div>
             
             <div class="stat-card">
-                <div class="stat-title">Total Users</div>
-                <div class="stat-value">2,543</div>
+                <div class="stat-title">News Articles</div>
+                <div class="stat-value">28</div>
                 <div class="stat-change stat-up">
-                    <span>+256</span>
+                    <span>+5</span>
                     <span>from last month</span>
                 </div>
             </div>
@@ -619,231 +569,218 @@
             </div>
         </div>
         
-        <!-- Robot Management -->
+        <!-- Recent News Section -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Robot Management</h2>
-                <button class="btn btn-primary">+ Add New Robot</button>
+                <h2 class="card-title">Recent News Articles</h2>
+                <a href="news-editor.html" class="btn btn-primary">+ Add New Article</a>
             </div>
             
-            <div class="robot-actions">
-                <input type="text" class="form-control" placeholder="Search robots..." style="max-width: 300px;">
+            <div class="filter-controls">
+                <input type="text" class="form-control" placeholder="Search articles..." style="max-width: 300px;">
                 <select class="form-control" style="max-width: 200px;">
                     <option>All Categories</option>
-                    <option>Industrial</option>
+                    <option>Industry</option>
+                    <option>Healthcare</option>
+                    <option>Innovation</option>
+                    <option>Research</option>
+                    <option>AI</option>
                     <option>Humanoid</option>
-                    <option>Service</option>
-                    <option>Medical</option>
-                    <option>Educational</option>
                 </select>
                 <button class="btn btn-primary" style="white-space: nowrap;">Apply Filters</button>
             </div>
             
-            <table class="robot-table">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Image</th>
-                        <th>Name</th>
-                        <th>Manufacturer</th>
+                        <th>Title</th>
                         <th>Category</th>
+                        <th>Date</th>
                         <th>Status</th>
                         <th>Views</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="news-table-body">
                     <tr>
-                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=Spot" alt="Spot" class="robot-thumbnail"></td>
-                        <td>Spot</td>
-                        <td>Boston Dynamics</td>
-                        <td>Industrial, Quadruped</td>
-                        <td>Published</td>
-                        <td>5,432</td>
-                        <td class="robot-actions-cell">
-                            <div class="action-icon edit-icon">✏️</div>
-                            <div class="action-icon delete-icon">🗑️</div>
+                        <td><img src="images/news/industrial-robots.jpg" alt="Industrial Robots" class="thumbnail"></td>
+                        <td>Global Market Value of Industrial Robots Reaches All-Time High</td>
+                        <td>Industry</td>
+                        <td>Apr 22, 2025</td>
+                        <td><span class="news-status status-published">Published</span></td>
+                        <td>1,253</td>
+                        <td class="actions-cell">
+                            <a href="news-editor.html?id=1" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="industrial-robots-market-growth.html" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="1"><i class="fas fa-trash-alt"></i></a>
                         </td>
                     </tr>
                     <tr>
-                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=ASIMO" alt="ASIMO" class="robot-thumbnail"></td>
-                        <td>ASIMO</td>
-                        <td>Honda</td>
-                        <td>Humanoid</td>
-                        <td>Published</td>
-                        <td>4,218</td>
-                        <td class="robot-actions-cell">
-                            <a href="#" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="robot-detail.html?slug=spot" class="action-icon view-icon" title="View in Encyclopedia"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete"><i class="fas fa-trash-alt"></i></a>
-                        </td>
-                    <tr>
-                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=Waymo" alt="Waymo" class="robot-thumbnail"></td>
-                        <td>Self-Driving Car</td>
-                        <td>Waymo</td>
-                        <td>Autonomous Vehicle</td>
-                        <td>Published</td>
-                        <td>3,156</td>
-                        <td class="robot-actions-cell">
-                            <a href="#" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="robot-detail.html?slug=spot" class="action-icon view-icon" title="View in Encyclopedia"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                        <td><img src="images/news/healthcare-moxi.jpg" alt="Healthcare Robot" class="thumbnail"></td>
+                        <td>Healthcare Robot 'Moxi' Saves Clinical Staff Over 1.5 Billion Steps</td>
+                        <td>Healthcare</td>
+                        <td>Apr 18, 2025</td>
+                        <td><span class="news-status status-published">Published</span></td>
+                        <td>987</td>
+                        <td class="actions-cell">
+                            <a href="news-editor.html?id=2" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="healthcare-robot-moxi-milestone.html" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="2"><i class="fas fa-trash-alt"></i></a>
                         </td>
                     </tr>
                     <tr>
-                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=Atlas" alt="Atlas" class="robot-thumbnail"></td>
-                        <td>Atlas</td>
-                        <td>Boston Dynamics</td>
-                        <td>Humanoid</td>
-                        <td>Published</td>
-                        <td>4,987</td>
-                        <td class="robot-actions-cell">
-                            <a href="#" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="robot-detail.html?slug=spot" class="action-icon view-icon" title="View in Encyclopedia"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                        <td><img src="images/news/3d-printer.jpg" alt="3D Printer Robot" class="thumbnail"></td>
+                        <td>RIC Technology Unveils Advanced Construction Robotic 3D Printer</td>
+                        <td>Innovation</td>
+                        <td>Apr 15, 2025</td>
+                        <td><span class="news-status status-published">Published</span></td>
+                        <td>763</td>
+                        <td class="actions-cell">
+                            <a href="news-editor.html?id=3" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="news-detail.html?id=1" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="3"><i class="fas fa-trash-alt"></i></a>
                         </td>
                     </tr>
                     <tr>
-                        <td><img src="https://placehold.co/60x40/1a1a1a/20e3b2?text=DaVinci" alt="Da Vinci" class="robot-thumbnail"></td>
-                        <td>Da Vinci</td>
-                        <td>Intuitive Surgical</td>
-                        <td>Medical</td>
-                        <td>Draft</td>
+                        <td><img src="images/news/mit-research.jpg" alt="MIT Research" class="thumbnail"></td>
+                        <td>MIT's "Xstrings" Method Enables Automated Assembly of Cable-Driven Robots</td>
+                        <td>Research</td>
+                        <td>Apr 12, 2025</td>
+                        <td><span class="news-status status-published">Published</span></td>
+                        <td>589</td>
+                        <td class="actions-cell">
+                            <a href="news-editor.html?id=4" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="news-detail.html?id=2" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="4"><i class="fas fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/news/robot-video-learning.jpg" alt="AI Learning" class="thumbnail"></td>
+                        <td>Robot See, Robot Do: New AI System Learns After Watching How-to Videos</td>
+                        <td>AI</td>
+                        <td>Apr 8, 2025</td>
+                        <td><span class="news-status status-draft">Draft</span></td>
                         <td>0</td>
-                        <td class="robot-actions-cell">
-                            <a href="#" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="robot-detail.html?slug=spot" class="action-icon view-icon" title="View in Encyclopedia"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                        <td class="actions-cell">
+                            <a href="news-editor.html?id=5" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="#" class="action-icon view-icon" title="Preview"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="5"><i class="fas fa-trash-alt"></i></a>
                         </td>
                     </tr>
                 </tbody>
             </table>
             
-            <div style="display: flex; justify-content: center; margin-top: 20px;">
-                <div style="display: flex; gap: 5px;">
-                    <button class="btn btn-primary" style="padding: 8px 15px;">1</button>
-                    <button class="btn" style="padding: 8px 15px; background: rgba(255, 255, 255, 0.1);">2</button>
-                    <button class="btn" style="padding: 8px 15px; background: rgba(255, 255, 255, 0.1);">3</button>
-                    <button class="btn" style="padding: 8px 15px; background: rgba(255, 255, 255, 0.1);">...</button>
-                    <button class="btn" style="padding: 8px 15px; background: rgba(255, 255, 255, 0.1);">16</button>
-                </div>
+            <div class="pagination">
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">...</button>
+                <button class="page-btn">6</button>
             </div>
         </div>
         
-        <!-- Content Editor -->
+        <!-- Quick Actions -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Robot Editor</h2>
-                <button class="btn btn-primary">Save Changes</button>
+                <h2 class="card-title">Quick Actions</h2>
             </div>
             
-            <div class="editor-container">
-                <div class="editor-form">
-                    <div class="form-group">
-                        <label class="form-label">Robot Name</label>
-                        <input type="text" class="form-control" value="Spot">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Manufacturer</label>
-                        <input type="text" class="form-control" value="Boston Dynamics">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Categories</label>
-                        <input type="text" class="form-control" value="Industrial, Quadruped, Autonomous">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Summary</label>
-                        <textarea class="form-control">Spot is an agile mobile robot that navigates terrain with unprecedented mobility, allowing you to automate routine inspection tasks and data capture safely, accurately, and frequently.</textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Detailed Description</label>
-                        <textarea class="form-control">Spot is a quadruped robot developed by Boston Dynamics. It is known for its ability to climb stairs, navigate rough terrain, and operate in environments that are challenging for wheeled vehicles. Spot can be operated remotely, or taught routes that it can then navigate autonomously.
-
-The robot is designed to go where wheeled robots cannot, while carrying payloads with endurance far beyond aerial drones. With 360° vision and obstacle avoidance, Spot can be driven remotely or taught routes to follow autonomously.</textarea>
-                    </div>
-                    
-                    <div class="editor-actions">
-                        <button class="btn" style="background: rgba(255, 255, 255, 0.1);">Save Draft</button>
-                        <button class="btn btn-primary">Publish</button>
-                    </div>
-                </div>
-                
-                <div class="media-preview">
-                    <h3 class="preview-title">Media</h3>
-                    
-                    <div class="uploaded-media">
-                        <div class="media-item">
-                            <img src="https://placehold.co/100x100/1a1a1a/20e3b2?text=1" alt="Media 1">
-                            <div class="media-remove">×</div>
-                        </div>
-                        <div class="media-item">
-                            <img src="https://placehold.co/100x100/1a1a1a/20e3b2?text=2" alt="Media 2">
-                            <div class="media-remove">×</div>
-                        </div>
-                        <div class="media-item">
-                            <img src="https://placehold.co/100x100/1a1a1a/20e3b2?text=3" alt="Media 3">
-                            <div class="media-remove">×</div>
-                        </div>
-                        <div class="media-item">
-                            <img src="https://placehold.co/100x100/1a1a1a/20e3b2?text=4" alt="Media 4">
-                            <div class="media-remove">×</div>
-                        </div>
-                    </div>
-                    
-                    <div class="media-actions">
-                        <button class="btn btn-ghost">
-                            <span>+</span>
-                            <span>Upload More Images</span>
-                        </button>
-                    </div>
-                    
-                    <h3 class="preview-title" style="margin-top: 30px;">Specifications</h3>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Physical Dimensions</label>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <input type="text" class="form-control" placeholder="Height" value="0.84 m">
-                            <input type="text" class="form-control" placeholder="Width" value="0.43 m">
-                            <input type="text" class="form-control" placeholder="Length" value="1.1 m">
-                            <input type="text" class="form-control" placeholder="Weight" value="32.5 kg">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Performance</label>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <input type="text" class="form-control" placeholder="Battery Life" value="90 minutes">
-                            <input type="text" class="form-control" placeholder="Max Speed" value="1.6 m/s">
-                        </div>
-                    </div>
-                </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <a href="news-editor.html" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-plus-circle" style="margin-right: 10px;"></i> Add News Article
+                </a>
+                <a href="admin-image-upload.html" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-cloud-upload-alt" style="margin-right: 10px;"></i> Upload Images
+                </a>
+                <a href="admin-robot-management.html" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-robot" style="margin-right: 10px;"></i> Manage Robots
+                </a>
+                <a href="admin-content-editor.html" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-edit" style="margin-right: 10px;"></i> Content Editor
+                </a>
             </div>
         </div>
     </main>
 
+    <!-- Scripts -->
     <script>
-        // Simple interaction for demo purposes
-        document.querySelectorAll('.edit-icon').forEach(icon => {
-            icon.addEventListener('click', function() {
-                alert('Edit functionality will be implemented in the full version');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load news articles from localStorage if available
+            loadNewsArticles();
+            
+            // Delete article functionality
+            document.querySelectorAll('.delete-icon').forEach(icon => {
+                icon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const articleId = this.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+                        deleteArticle(articleId);
+                    }
+                });
+            });
+            
+            // Pagination functionality
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // In a real application, this would load the corresponding page
+                    // For this demo, we'll just simulate it
+                    console.log('Changed to page:', this.textContent);
+                });
             });
         });
         
-        document.querySelectorAll('.delete-icon').forEach(icon => {
-            icon.addEventListener('click', function() {
-                confirm('Are you sure you want to delete this robot? This action cannot be undone.');
-            });
-        });
+        function loadNewsArticles() {
+            // In a real application, this would load from a database
+            // For this demo, we'll check localStorage for any stored articles
+            const storedArticles = localStorage.getItem('news_articles');
+            
+            if (storedArticles) {
+                const articles = JSON.parse(storedArticles);
+                updateArticleTable(articles);
+            }
+        }
         
-        document.querySelectorAll('.media-remove').forEach(icon => {
-            icon.addEventListener('click', function() {
-                this.parentElement.style.display = 'none';
-            });
-        });
+        function updateArticleTable(articles) {
+            // Only update if we have articles and they differ from what's already shown
+            if (!articles || articles.length === 0) return;
+            
+            // Get the first 5 articles
+            const recentArticles = articles.slice(0, 5);
+            
+            // Get the table body
+            const tableBody = document.getElementById('news-table-body');
+            if (!tableBody) return;
+            
+            // Clear existing rows (except the demo ones for now)
+            // In a real app, you'd clear them all
+            // tableBody.innerHTML = '';
+            
+            // For now, we'll just log the new articles
+            console.log('New articles available:', recentArticles);
+        }
+        
+        function deleteArticle(articleId) {
+            // In a real application, this would delete from a database
+            // For this demo, we'll remove from localStorage if it exists
+            const storedArticles = localStorage.getItem('news_articles');
+            
+            if (storedArticles) {
+                let articles = JSON.parse(storedArticles);
+                articles = articles.filter(article => article.id !== articleId);
+                localStorage.setItem('news_articles', JSON.stringify(articles));
+                
+                // Refresh the table
+                updateArticleTable(articles);
+                
+                // For the demo, just show an alert
+                alert('Article deleted successfully');
+            }
+        }
     </script>
-    <script src="js/admin-encyclopedia-connector.js"></script>
 </body>
 </html>
