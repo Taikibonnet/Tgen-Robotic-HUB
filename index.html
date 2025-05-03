@@ -104,6 +104,72 @@
             cursor: pointer;
         }
         
+        /* User Dropdown Menu */
+        .user-dropdown {
+            position: relative;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--light);
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .user-info:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-info i {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background-color: rgba(30, 30, 30, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            width: 180px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .dropdown-menu.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-menu a:hover {
+            background-color: rgba(32, 227, 178, 0.1);
+            color: var(--primary);
+        }
+        
+        .dropdown-menu a i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+        
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 3rem;
@@ -243,6 +309,7 @@
         function initHomepage() {
             loadFeaturedRobots();
             setupHeroSearch();
+            checkUserStatus();
         }
 
         // Load featured robots
@@ -312,6 +379,59 @@
                 if (query) {
                     window.location.href = `encyclopedia.html?search=${encodeURIComponent(query)}`;
                 }
+            });
+        }
+        
+        // Check user login status and update UI
+        function checkUserStatus() {
+            const user = window.tgenApp.getCurrentUser();
+            if (user) {
+                updateAuthUI(user);
+            }
+        }
+        
+        // Update authentication UI based on user state
+        function updateAuthUI(user) {
+            const authButtonsContainer = document.querySelector('.auth-buttons');
+            
+            // Replace login/signup buttons with user dropdown
+            authButtonsContainer.innerHTML = `
+                <div class="user-dropdown">
+                    <div class="user-info">
+                        <span>${user.firstName}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+                        ${user.role === 'admin' ? '<a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>' : ''}
+                        <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners for dropdown and logout
+            const userInfo = document.querySelector('.user-info');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            // Toggle dropdown on click
+            userInfo.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('active');
+                userInfo.querySelector('i').style.transform = dropdownMenu.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+            });
+            
+            // Hide dropdown when clicking elsewhere
+            document.addEventListener('click', function() {
+                dropdownMenu.classList.remove('active');
+                userInfo.querySelector('i').style.transform = 'rotate(0)';
+            });
+            
+            // Logout handler
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.tgenApp.logout();
+                window.location.reload();
             });
         }
 
