@@ -244,6 +244,11 @@
             color: var(--primary);
         }
         
+        .view-icon {
+            background-color: rgba(73, 139, 255, 0.1);
+            color: #498bff;
+        }
+        
         .delete-icon {
             background-color: rgba(255, 107, 107, 0.1);
             color: var(--accent);
@@ -305,7 +310,7 @@
         /* Dialog/Modal */
         .modal-overlay {
             position: fixed;
-            top: a;
+            top: 0;
             left: 0;
             width: 100%;
             height: 100%;
@@ -507,33 +512,6 @@
             font-size: 0.8rem;
         }
         
-        /* Tag Input */
-        .tag-input-container {
-            margin-top: 10px;
-        }
-        
-        .tag-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        
-        .tag {
-            background-color: rgba(32, 227, 178, 0.2);
-            color: var(--primary);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .tag-remove {
-            cursor: pointer;
-        }
-        
         /* Responsive */
         @media (max-width: 992px) {
             .sidebar {
@@ -587,33 +565,31 @@
                 </a>
             </li>
             <li>
-                <a href="admin-news.html">
-                    <i class="fas fa-newspaper sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">News</span>
-                </a>
-            </li>
-            <li>
-                <a href="admin-categories.html">
-                    <i class="fas fa-tags sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Categories</span>
-                </a>
-            </li>
-            <li>
-                <a href="admin-users.html">
+                <a href="#">
                     <i class="fas fa-users sidebar-menu-icon"></i>
                     <span class="sidebar-menu-text">Users</span>
                 </a>
             </li>
             <li>
-                <a href="admin-media.html">
-                    <i class="fas fa-images sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Media</span>
+                <a href="#">
+                    <i class="fas fa-cog sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Settings</span>
+                </a>
+            </li>
+            
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-title">Public Site</div>
+            
+            <li>
+                <a href="index.html">
+                    <i class="fas fa-home sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Home</span>
                 </a>
             </li>
             <li>
-                <a href="admin-settings.html">
-                    <i class="fas fa-cog sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Settings</span>
+                <a href="encyclopedia.html">
+                    <i class="fas fa-book sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Encyclopedia</span>
                 </a>
             </li>
         </ul>
@@ -648,14 +624,48 @@
                     <th style="width: 70px;">Image</th>
                     <th>Name</th>
                     <th>Manufacturer</th>
-                    <th>Categories</th>
                     <th>Status</th>
                     <th>Date Added</th>
                     <th style="width: 100px;">Actions</th>
                 </tr>
             </thead>
             <tbody id="robot-table-body">
-                <!-- Table rows will be populated dynamically -->
+                <tr>
+                    <td><img src="images/robots/spot.jpg" alt="Spot" class="robot-thumbnail"></td>
+                    <td>Spot</td>
+                    <td>Boston Dynamics</td>
+                    <td><span class="status-badge status-published">Published</span></td>
+                    <td>2025-04-15</td>
+                    <td class="robot-actions-cell">
+                        <a href="#" class="action-icon edit-icon" data-id="1"><i class="fas fa-edit"></i></a>
+                        <a href="robot-detail.html?id=1" class="action-icon view-icon"><i class="fas fa-eye"></i></a>
+                        <a href="#" class="action-icon delete-icon" data-id="1"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="images/robots/atlas.jpg" alt="Atlas" class="robot-thumbnail"></td>
+                    <td>Atlas</td>
+                    <td>Boston Dynamics</td>
+                    <td><span class="status-badge status-published">Published</span></td>
+                    <td>2025-04-10</td>
+                    <td class="robot-actions-cell">
+                        <a href="#" class="action-icon edit-icon" data-id="2"><i class="fas fa-edit"></i></a>
+                        <a href="robot-detail.html?id=2" class="action-icon view-icon"><i class="fas fa-eye"></i></a>
+                        <a href="#" class="action-icon delete-icon" data-id="2"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="images/robots/anymal.jpg" alt="ANYmal" class="robot-thumbnail"></td>
+                    <td>ANYmal</td>
+                    <td>ANYbotics</td>
+                    <td><span class="status-badge status-published">Published</span></td>
+                    <td>2025-04-08</td>
+                    <td class="robot-actions-cell">
+                        <a href="#" class="action-icon edit-icon" data-id="3"><i class="fas fa-edit"></i></a>
+                        <a href="robot-detail.html?id=3" class="action-icon view-icon"><i class="fas fa-eye"></i></a>
+                        <a href="#" class="action-icon delete-icon" data-id="3"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
             </tbody>
         </table>
 
@@ -677,8 +687,6 @@
                     <div class="modal-tab active" data-tab="basic">Basic Info</div>
                     <div class="modal-tab" data-tab="specs">Specifications</div>
                     <div class="modal-tab" data-tab="media">Media</div>
-                    <div class="modal-tab" data-tab="applications">Applications</div>
-                    <div class="modal-tab" data-tab="meta">SEO/Meta</div>
                 </div>
                 
                 <form id="robot-form">
@@ -740,16 +748,6 @@
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Categories</label>
-                                <input type="text" class="form-control" id="category-input" placeholder="Type and press Enter to add categories">
-                                <div class="tag-input-container">
-                                    <div class="tag-list" id="category-tags">
-                                        <!-- Category tags will be added here -->
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
                                 <label class="form-label" for="robot-summary">Summary *</label>
                                 <textarea class="form-control" id="robot-summary" placeholder="Brief description for cards and previews" required></textarea>
                             </div>
@@ -770,37 +768,6 @@
                                         <div style="display: flex; gap: 10px;">
                                             <input type="number" class="form-control" id="spec-height" step="0.01">
                                             <select class="form-control" id="spec-height-unit" style="width: 80px;">
-                                                <option value="m">m</option>
-                                                <option value="cm">cm</option>
-                                                <option value="in">in</option>
-                                                <option value="ft">ft</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label class="form-label" for="spec-width">Width</label>
-                                        <div style="display: flex; gap: 10px;">
-                                            <input type="number" class="form-control" id="spec-width" step="0.01">
-                                            <select class="form-control" id="spec-width-unit" style="width: 80px;">
-                                                <option value="m">m</option>
-                                                <option value="cm">cm</option>
-                                                <option value="in">in</option>
-                                                <option value="ft">ft</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-row">
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label class="form-label" for="spec-length">Length</label>
-                                        <div style="display: flex; gap: 10px;">
-                                            <input type="number" class="form-control" id="spec-length" step="0.01">
-                                            <select class="form-control" id="spec-length-unit" style="width: 80px;">
                                                 <option value="m">m</option>
                                                 <option value="cm">cm</option>
                                                 <option value="in">in</option>
@@ -847,42 +814,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="form-row">
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label class="form-label" for="spec-dof">Degrees of Freedom</label>
-                                        <input type="number" class="form-control" id="spec-dof">
-                                    </div>
-                                </div>
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label class="form-label" for="spec-ip-rating">IP Rating</label>
-                                        <input type="text" class="form-control" id="spec-ip-rating" placeholder="e.g., IP54">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <h3 style="margin-top: 20px;">Sensors and Connectivity</h3>
-                            <div class="form-group">
-                                <label class="form-label">Sensors</label>
-                                <input type="text" class="form-control" id="sensor-input" placeholder="Type and press Enter to add sensors">
-                                <div class="tag-input-container">
-                                    <div class="tag-list" id="sensor-tags">
-                                        <!-- Sensor tags will be added here -->
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Connectivity</label>
-                                <input type="text" class="form-control" id="connectivity-input" placeholder="Type and press Enter to add connectivity options">
-                                <div class="tag-input-container">
-                                    <div class="tag-list" id="connectivity-tags">
-                                        <!-- Connectivity tags will be added here -->
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         
                         <!-- Media Tab -->
@@ -912,73 +843,17 @@
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Videos</label>
-                                <div class="media-upload" id="videos-upload">
-                                    <div class="media-upload-icon">
-                                        <i class="fas fa-film"></i>
-                                    </div>
-                                    <p>Click to upload or drag and drop</p>
-                                    <p class="small">MP4, WebM (Max. 50MB each)</p>
-                                </div>
-                                <div class="media-preview" id="videos-preview"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Applications Tab -->
-                        <div class="tab-content" id="tab-applications">
-                            <div id="applications-container">
-                                <div class="application-item" data-index="0">
-                                    <h3>Application 1</h3>
-                                    <div class="form-group">
-                                        <label class="form-label">Title</label>
-                                        <input type="text" class="form-control application-title" placeholder="e.g., Industrial Inspection">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Description</label>
-                                        <textarea class="form-control application-description" placeholder="Describe how this robot is used for this application"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Image</label>
-                                        <div class="media-upload application-image-upload">
-                                            <div class="media-upload-icon">
-                                                <i class="fas fa-cloud-upload-alt"></i>
-                                            </div>
-                                            <p>Click to upload</p>
-                                        </div>
-                                        <div class="media-preview application-image-preview"></div>
-                                    </div>
-                                    <button type="button" class="btn btn-danger remove-application" style="margin-top: 10px;">Remove Application</button>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-primary" id="add-application-btn" style="margin-top: 20px;">Add Another Application</button>
-                        </div>
-                        
-                        <!-- SEO/Meta Tab -->
-                        <div class="tab-content" id="tab-meta">
-                            <div class="form-group">
-                                <label class="form-label" for="meta-title">Meta Title</label>
-                                <input type="text" class="form-control" id="meta-title" placeholder="Leave blank to use robot name">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="meta-description">Meta Description</label>
-                                <textarea class="form-control" id="meta-description" placeholder="Brief description for search engines (max 160 characters)" maxlength="160"></textarea>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Keywords</label>
-                                <input type="text" class="form-control" id="keywords-input" placeholder="Type and press Enter to add keywords">
-                                <div class="tag-input-container">
-                                    <div class="tag-list" id="keyword-tags">
-                                        <!-- Keyword tags will be added here -->
-                                    </div>
-                                </div>
+                                <label class="form-label">Video URL</label>
+                                <input type="url" class="form-control" id="video-url" placeholder="e.g., https://www.youtube.com/watch?v=...">
+                                <label class="form-label">Video URL</label>
+                                <input type="url" class="form-control" id="video-url" placeholder="e.g., https://www.youtube.com/watch?v=...">
+                                <p class="small" style="margin-top: 5px; color: var(--gray);">YouTube or Vimeo URLs are supported</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline" id="cancel-btn">Cancel</button>
+                        <button type="button" class="btn" id="cancel-btn" style="background: rgba(255, 255, 255, 0.1);">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Robot</button>
                     </div>
                 </form>
@@ -987,11 +862,115 @@
     </div>
 
     <!-- JavaScript -->
-    <script src="js/admin.js"></script>
-    <script src="js/data-manager.js"></script>
-    <script src="js/file-uploader.js"></script>
-    <script src="js/robot-admin-connector.js"></script>
-    <script src="js/robot-management.js"></script>
-    <script src="js/admin-encyclopedia-connector.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal functionality
+            const modal = document.getElementById('robot-modal');
+            const addRobotBtn = document.getElementById('add-robot-btn');
+            const modalClose = document.getElementById('modal-close');
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            // Tab functionality
+            const tabs = document.querySelectorAll('.modal-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Show modal when "Add New Robot" is clicked
+            addRobotBtn.addEventListener('click', function() {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            });
+            
+            // Hide modal when close button or cancel is clicked
+            modalClose.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            function closeModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = ''; // Allow scrolling again
+            }
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    document.getElementById('tab-' + tabId).classList.add('active');
+                });
+            });
+            
+            // Edit robot functionality
+            const editButtons = document.querySelectorAll('.edit-icon');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const robotId = this.getAttribute('data-id');
+                    
+                    // Set modal title to "Edit Robot"
+                    document.getElementById('modal-title').textContent = 'Edit Robot';
+                    
+                    // TODO: Fetch robot data and populate form
+                    console.log('Editing robot with ID:', robotId);
+                    
+                    // Show modal
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            // Delete robot functionality
+            const deleteButtons = document.querySelectorAll('.delete-icon');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const robotId = this.getAttribute('data-id');
+                    
+                    if (confirm('Are you sure you want to delete this robot? This action cannot be undone.')) {
+                        // TODO: Delete robot logic
+                        console.log('Deleting robot with ID:', robotId);
+                    }
+                });
+            });
+            
+            // Form submission
+            const robotForm = document.getElementById('robot-form');
+            robotForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // TODO: Validate form and save data
+                console.log('Form submitted');
+                
+                // Close modal after submission
+                closeModal();
+            });
+            
+            // Pagination functionality
+            const pageItems = document.querySelectorAll('.page-item');
+            pageItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all page items
+                    pageItems.forEach(p => p.classList.remove('active'));
+                    
+                    // Add active class to clicked page item
+                    this.classList.add('active');
+                    
+                    // TODO: Fetch robots for selected page
+                    console.log('Selected page:', this.textContent);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
