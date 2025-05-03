@@ -261,124 +261,6 @@
             font-weight: 600;
         }
         
-        /* Table Styles */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .data-table th, .data-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .data-table th {
-            color: var(--gray);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        
-        .data-table tbody tr {
-            transition: all 0.3s ease;
-        }
-        
-        .data-table tbody tr:hover {
-            background-color: rgba(32, 227, 178, 0.05);
-        }
-        
-        .thumbnail {
-            width: 60px;
-            height: 40px;
-            border-radius: 5px;
-            object-fit: cover;
-        }
-        
-        .actions-cell {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .action-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .edit-icon {
-            background-color: rgba(32, 227, 178, 0.1);
-            color: var(--primary);
-        }
-        
-        .view-icon {
-            background-color: rgba(73, 139, 255, 0.1);
-            color: #498bff;
-        }
-        
-        .delete-icon {
-            background-color: rgba(255, 107, 107, 0.1);
-            color: var(--accent);
-        }
-        
-        .action-icon:hover {
-            transform: translateY(-2px);
-        }
-        
-        /* Filter Controls */
-        .filter-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        /* News Specific Styles */
-        .news-status {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            text-align: center;
-        }
-        
-        .status-published {
-            background-color: rgba(76, 175, 80, 0.15);
-            color: #4caf50;
-        }
-        
-        .status-draft {
-            background-color: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 20px;
-        }
-        
-        .page-btn {
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .page-btn.active {
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            color: var(--dark);
-        }
-        
-        .page-btn:not(.active) {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
         /* Responsive Styles */
         @media (max-width: 992px) {
             .sidebar {
@@ -458,24 +340,6 @@
                 </a>
             </li>
             <li>
-                <a href="admin-news.html">
-                    <i class="fas fa-newspaper sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">News</span>
-                </a>
-            </li>
-            <li>
-                <a href="admin-image-upload.html">
-                    <i class="fas fa-images sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Media</span>
-                </a>
-            </li>
-            <li>
-                <a href="admin-content-editor.html">
-                    <i class="fas fa-edit sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Editor</span>
-                </a>
-            </li>
-            <li>
                 <a href="#">
                     <i class="fas fa-users sidebar-menu-icon"></i>
                     <span class="sidebar-menu-text">Users</span>
@@ -501,12 +365,6 @@
                 <a href="encyclopedia.html">
                     <i class="fas fa-book sidebar-menu-icon"></i>
                     <span class="sidebar-menu-text">Encyclopedia</span>
-                </a>
-            </li>
-            <li>
-                <a href="news.html">
-                    <i class="fas fa-newspaper sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">News</span>
                 </a>
             </li>
         </ul>
@@ -542,15 +400,6 @@
             </div>
             
             <div class="stat-card">
-                <div class="stat-title">News Articles</div>
-                <div class="stat-value">28</div>
-                <div class="stat-change stat-up">
-                    <span>+5</span>
-                    <span>from last month</span>
-                </div>
-            </div>
-            
-            <div class="stat-card">
                 <div class="stat-title">Page Views</div>
                 <div class="stat-value">45.8k</div>
                 <div class="stat-change stat-up">
@@ -567,116 +416,14 @@
                     <span>from last month</span>
                 </div>
             </div>
-        </div>
-        
-        <!-- Recent News Section -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Recent News Articles</h2>
-                <a href="news-editor.html" class="btn btn-primary">+ Add New Article</a>
-            </div>
             
-            <div class="filter-controls">
-                <input type="text" class="form-control" placeholder="Search articles..." style="max-width: 300px;">
-                <select class="form-control" style="max-width: 200px;">
-                    <option>All Categories</option>
-                    <option>Industry</option>
-                    <option>Healthcare</option>
-                    <option>Innovation</option>
-                    <option>Research</option>
-                    <option>AI</option>
-                    <option>Humanoid</option>
-                </select>
-                <button class="btn btn-primary" style="white-space: nowrap;">Apply Filters</button>
-            </div>
-            
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Views</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="news-table-body">
-                    <tr>
-                        <td><img src="images/news/industrial-robots.jpg" alt="Industrial Robots" class="thumbnail"></td>
-                        <td>Global Market Value of Industrial Robots Reaches All-Time High</td>
-                        <td>Industry</td>
-                        <td>Apr 22, 2025</td>
-                        <td><span class="news-status status-published">Published</span></td>
-                        <td>1,253</td>
-                        <td class="actions-cell">
-                            <a href="news-editor.html?id=1" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="industrial-robots-market-growth.html" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="1"><i class="fas fa-trash-alt"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><img src="images/news/healthcare-moxi.jpg" alt="Healthcare Robot" class="thumbnail"></td>
-                        <td>Healthcare Robot 'Moxi' Saves Clinical Staff Over 1.5 Billion Steps</td>
-                        <td>Healthcare</td>
-                        <td>Apr 18, 2025</td>
-                        <td><span class="news-status status-published">Published</span></td>
-                        <td>987</td>
-                        <td class="actions-cell">
-                            <a href="news-editor.html?id=2" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="healthcare-robot-moxi-milestone.html" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="2"><i class="fas fa-trash-alt"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><img src="images/news/3d-printer.jpg" alt="3D Printer Robot" class="thumbnail"></td>
-                        <td>RIC Technology Unveils Advanced Construction Robotic 3D Printer</td>
-                        <td>Innovation</td>
-                        <td>Apr 15, 2025</td>
-                        <td><span class="news-status status-published">Published</span></td>
-                        <td>763</td>
-                        <td class="actions-cell">
-                            <a href="news-editor.html?id=3" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="news-detail.html?id=1" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="3"><i class="fas fa-trash-alt"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><img src="images/news/mit-research.jpg" alt="MIT Research" class="thumbnail"></td>
-                        <td>MIT's "Xstrings" Method Enables Automated Assembly of Cable-Driven Robots</td>
-                        <td>Research</td>
-                        <td>Apr 12, 2025</td>
-                        <td><span class="news-status status-published">Published</span></td>
-                        <td>589</td>
-                        <td class="actions-cell">
-                            <a href="news-editor.html?id=4" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="news-detail.html?id=2" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="4"><i class="fas fa-trash-alt"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><img src="images/news/robot-video-learning.jpg" alt="AI Learning" class="thumbnail"></td>
-                        <td>Robot See, Robot Do: New AI System Learns After Watching How-to Videos</td>
-                        <td>AI</td>
-                        <td>Apr 8, 2025</td>
-                        <td><span class="news-status status-draft">Draft</span></td>
-                        <td>0</td>
-                        <td class="actions-cell">
-                            <a href="news-editor.html?id=5" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="#" class="action-icon view-icon" title="Preview"><i class="fas fa-eye"></i></a>
-                            <a href="#" class="action-icon delete-icon" title="Delete" data-id="5"><i class="fas fa-trash-alt"></i></a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="pagination">
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">...</button>
-                <button class="page-btn">6</button>
+            <div class="stat-card">
+                <div class="stat-title">Total Users</div>
+                <div class="stat-value">36</div>
+                <div class="stat-change stat-up">
+                    <span>+5</span>
+                    <span>from last month</span>
+                </div>
             </div>
         </div>
         
@@ -687,18 +434,54 @@
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                <a href="news-editor.html" class="btn btn-primary" style="text-align: center;">
-                    <i class="fas fa-plus-circle" style="margin-right: 10px;"></i> Add News Article
-                </a>
-                <a href="admin-image-upload.html" class="btn btn-primary" style="text-align: center;">
-                    <i class="fas fa-cloud-upload-alt" style="margin-right: 10px;"></i> Upload Images
-                </a>
                 <a href="admin-robot-management.html" class="btn btn-primary" style="text-align: center;">
                     <i class="fas fa-robot" style="margin-right: 10px;"></i> Manage Robots
                 </a>
-                <a href="admin-content-editor.html" class="btn btn-primary" style="text-align: center;">
-                    <i class="fas fa-edit" style="margin-right: 10px;"></i> Content Editor
+                <a href="#" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-users" style="margin-right: 10px;"></i> Manage Users
                 </a>
+                <a href="#" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-cog" style="margin-right: 10px;"></i> Settings
+                </a>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Recent Activity</h2>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; align-items: flex-start; gap: 15px;">
+                    <div style="background: rgba(32, 227, 178, 0.1); color: var(--primary); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 5px;">New robot added: Atlas</div>
+                        <div style="font-size: 0.9rem; color: var(--gray);">By Admin User, 2 days ago</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: flex-start; gap: 15px;">
+                    <div style="background: rgba(32, 227, 178, 0.1); color: var(--primary); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 5px;">New user registered: John Doe</div>
+                        <div style="font-size: 0.9rem; color: var(--gray);">3 days ago</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: flex-start; gap: 15px;">
+                    <div style="background: rgba(32, 227, 178, 0.1); color: var(--primary); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 5px;">Robot updated: Spot</div>
+                        <div style="font-size: 0.9rem; color: var(--gray);">By Admin User, 5 days ago</div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -706,81 +489,9 @@
     <!-- Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Load news articles from localStorage if available
-            loadNewsArticles();
-            
-            // Delete article functionality
-            document.querySelectorAll('.delete-icon').forEach(icon => {
-                icon.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const articleId = this.getAttribute('data-id');
-                    if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
-                        deleteArticle(articleId);
-                    }
-                });
-            });
-            
-            // Pagination functionality
-            document.querySelectorAll('.page-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // In a real application, this would load the corresponding page
-                    // For this demo, we'll just simulate it
-                    console.log('Changed to page:', this.textContent);
-                });
-            });
+            // Any JavaScript functionality would go here
+            console.log('Admin Dashboard initialized');
         });
-        
-        function loadNewsArticles() {
-            // In a real application, this would load from a database
-            // For this demo, we'll check localStorage for any stored articles
-            const storedArticles = localStorage.getItem('news_articles');
-            
-            if (storedArticles) {
-                const articles = JSON.parse(storedArticles);
-                updateArticleTable(articles);
-            }
-        }
-        
-        function updateArticleTable(articles) {
-            // Only update if we have articles and they differ from what's already shown
-            if (!articles || articles.length === 0) return;
-            
-            // Get the first 5 articles
-            const recentArticles = articles.slice(0, 5);
-            
-            // Get the table body
-            const tableBody = document.getElementById('news-table-body');
-            if (!tableBody) return;
-            
-            // Clear existing rows (except the demo ones for now)
-            // In a real app, you'd clear them all
-            // tableBody.innerHTML = '';
-            
-            // For now, we'll just log the new articles
-            console.log('New articles available:', recentArticles);
-        }
-        
-        function deleteArticle(articleId) {
-            // In a real application, this would delete from a database
-            // For this demo, we'll remove from localStorage if it exists
-            const storedArticles = localStorage.getItem('news_articles');
-            
-            if (storedArticles) {
-                let articles = JSON.parse(storedArticles);
-                articles = articles.filter(article => article.id !== articleId);
-                localStorage.setItem('news_articles', JSON.stringify(articles));
-                
-                // Refresh the table
-                updateArticleTable(articles);
-                
-                // For the demo, just show an alert
-                alert('Article deleted successfully');
-            }
-        }
     </script>
 </body>
 </html>
