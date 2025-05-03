@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Market Value of Industrial Robots Reaches All-Time High - Tgen Robotics Hub</title>
+    <meta name="description" content="The industrial robotics market has hit a record $16.5 billion according to IFR, with manufacturing and logistics sectors leading adoption worldwide.">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #111111;
+            --card-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #0ce6ca;
+            --accent-hover: #00bfab;
+            --border-color: #333333;
+        }
+        
+        /* Article Specific Styles */
+        .article-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-bottom: 30px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: var(--accent-hover);
+        }
+        
+        .back-icon {
+            margin-right: 8px;
+        }
+        
+        .article-header {
+            margin-bottom: 30px;
+        }
+        
+        .article-category {
+            display: inline-block;
+            background-color: rgba(12, 230, 202, 0.1);
+            color: var(--accent-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .article-title {
+            font-size: 36px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+        
+        .article-content h2 {
+            font-size: 24px;
+            margin: 30px 0 15px;
+            color: var(--accent-color);
+        }
+        
+        .article-content ul, .article-content ol {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+        
+        .article-content li {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .article-quote {
+            padding: 20px;
+            margin: 30px 0;
+            background-color: rgba(12, 230, 202, 0.05);
+            border-left: 4px solid var(--accent-color);
+            font-style: italic;
+            color: var(--text-color);
+        }
+        
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .article-tag {
+            padding: 6px 12px;
+            background-color: var(--card-bg);
+            border-radius: 50px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .article-tag:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+        
+        .share-section {
+            display: flex;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .share-text {
+            margin-right: 15px;
+            font-weight: 500;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .share-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .share-button:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .share-button svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-color);
+        }
+        
+        .share-button:hover svg {
+            fill: var(--bg-color);
+        }
+        
+        .related-articles {
+            margin-top: 60px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: var(--accent-color);
+        }
+        
+        .article-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .article-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            text-decoration: none;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .card-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+        
+        .card-date {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .article-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 700px) {
+            .article-title {
+                font-size: 28px;
+            }
+        }
+        
+        @media (max-width: 500px) {
+            .article-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .article-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .article-date {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
+            </a>
+            <nav class="nav-links">
+                <a href="encyclopedia.html">Encyclopedia</a>
+                <a href="news.html" class="active">News</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <button class="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main>
+        <div class="article-container">
+            <!-- Back Link -->
+            <a href="news.html" class="back-link">
+                <svg class="back-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 8H1M1 8L8 15M1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Back to News
+            </a>
+            
+            <!-- Article Header -->
+            <div class="article-header">
+                <span class="article-category">Industry</span>
+                <h1 class="article-title">Global Market Value of Industrial Robots Reaches All-Time High of $16.5 Billion</h1>
+                <div class="article-meta">
+                    <span class="article-date">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        April 22, 2025
+                    </span>
+                    <span class="article-author">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        By Industry Team
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Article Featured Image -->
+            <img src="images/news/industrial-robots-large.jpg" alt="Industrial robots in manufacturing plant" class="article-image">
+            
+            <!-- Article Content -->
+            <div class="article-content">
+                <p>The Frankfurt-based International Federation of Robotics (IFR) has released its annual World Robotics Report, revealing that the global market value for industrial robots has reached an unprecedented $16.5 billion, marking a 12% increase over the previous year. This milestone reflects the accelerating adoption of automation technologies across diverse industries, with manufacturing and logistics sectors leading implementation worldwide.</p>
+                
+                <p>According to the report, companies are increasingly turning to robotics to achieve greater operational resilience amid ongoing economic uncertainties, labor shortages, and supply chain disruptions. The total number of industrial robots installed globally now exceeds 3.5 million units, with an additional 580,000 units shipped in the past year alone.</p>
+                
+                <div class="article-quote">
+                    "We're witnessing a fundamental shift in how businesses approach automation," says Dr. Susanne Meyer, President of the International Federation of Robotics. "Robotics is no longer viewed solely as a cost-cutting measure but as a strategic necessity for maintaining competitiveness in an increasingly uncertain global environment."
+                </div>
+                
+                <h2>Regional Growth Patterns</h2>
+                
+                <p>Asia continues to dominate the industrial robotics market, accounting for approximately 71% of all new installations. China alone installed nearly 290,000 industrial robots, reinforcing its position as the world's largest robotics market. However, the most significant growth rates were observed in emerging economies in Southeast Asia and Eastern Europe, where installations increased by 28% and 23% respectively.</p>
+                
+                <p>North America showed solid growth with a 10% increase in new installations, primarily driven by reshoring initiatives and investments in manufacturing capacity across automotive, electronics, and pharmaceutical sectors. Meanwhile, Western Europe saw more modest growth at 6%, with notable exceptions in the medical technology and food processing industries where adoption accelerated significantly.</p>
+                
+                <h2>Industry-Specific Trends</h2>
+                
+                <p>The automotive industry remains the largest adopter of industrial robots, accounting for 31% of all installations, followed closely by electronics manufacturing at 29%. However, the fastest growth is occurring in previously underserved industries, including:</p>
+                
+                <ul>
+                    <li><strong>Food and beverage processing</strong> (32% year-over-year growth), where advances in hygiene-certified robots and soft gripping technologies have opened new automation possibilities</li>
+                    <li><strong>Pharmaceuticals and medical device manufacturing</strong> (28% growth), driven by demands for precision, sterility, and traceability</li>
+                    <li><strong>Construction</strong> (24% growth), where robotics are increasingly used for prefabrication and modular building components</li>
+                    <li><strong>Logistics and warehousing</strong> (21% growth), accelerated by e-commerce expansion and labor shortages</li>
+                </ul>
+                
+                <h2>Technological Developments</h2>
+                
+                <p>The report highlights several technological trends that are reshaping the industrial robotics landscape. Collaborative robots (cobots) continue to see strong growth, with installations increasing by 37% year-over-year. These versatile machines now account for approximately 9% of total robot installations, up from just 3% five years ago.</p>
+                
+                <p>Artificial intelligence integration has become increasingly prevalent, with 68% of newly installed robots featuring some form of AI-enhanced capabilities, particularly in vision systems, anomaly detection, and predictive maintenance. Mobile robots are also gaining significant traction, with autonomous mobile robots (AMRs) growing at over 40% annually as factories and warehouses embrace more flexible automation architectures.</p>
+                
+                <h2>Economic Impact and Outlook</h2>
+                
+                <p>The IFR projects continued strong growth for industrial robotics, forecasting a compound annual growth rate of 14% over the next five years. This expansion is expected to create over 2 million new jobs in robot programming, deployment, maintenance, and supervision, even as certain manual tasks become automated.</p>
+                
+                <p>Analysts note that regions with the highest robot density—measured as robots per 10,000 manufacturing workers—consistently show stronger manufacturing output growth and higher wages compared to regions with lower automation rates. South Korea leads globally with 1,003 robots per 10,000 workers, followed by Singapore (670) and Japan (592), with the global average now standing at 141.</p>
+                
+                <p>As industrial robotics technology continues to mature and become more accessible to medium and small enterprises, the IFR anticipates further democratization of automation capabilities that were previously limited to large multinational corporations. This trend is expected to reshape global manufacturing competitiveness and potentially alter regional economic growth patterns over the coming decade.</p>
+            </div>
+            
+            <!-- Tags -->
+            <div class="article-tags">
+                <a href="news.html?tag=Robotics" class="article-tag">#Robotics</a>
+                <a href="news.html?tag=Industry" class="article-tag">#Industry</a>
+                <a href="news.html?tag=Manufacturing" class="article-tag">#Manufacturing</a>
+                <a href="news.html?tag=Automation" class="article-tag">#Automation</a>
+                <a href="news.html?tag=IFR" class="article-tag">#IFR</a>
+            </div>
+            
+            <!-- Share Section -->
+            <div class="share-section">
+                <span class="share-text">Share this article:</span>
+                <div class="share-buttons">
+                    <div class="share-button" data-platform="facebook">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M23.9981 11.9991C23.9981 5.37216 18.626 0 11.9991 0C5.37216 0 0 5.37216 0 11.9991C0 17.9882 4.38789 22.9522 10.1242 23.8524V15.4676H7.07758V11.9991H10.1242V9.35553C10.1242 6.34826 11.9156 4.68714 14.6564 4.68714C15.9692 4.68714 17.3424 4.92149 17.3424 4.92149V7.87439H15.8294C14.3388 7.87439 13.8739 8.79933 13.8739 9.74824V11.9991H17.2018L16.6698 15.4676H13.8739V23.8524C19.6103 22.9522 23.9981 17.9882 23.9981 11.9991Z"/>
+                        </svg>
+                    </div>
+                    <div class="share-button" data-platform="twitter">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.896-.959-2.173-1.559-3.591-1.559-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124C7.691 8.094 4.066 6.13 1.64 3.161c-.427.722-.666 1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.68 1.319-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.17-.067 2.189 1.394 4.768 2.209 7.557 2.209 9.054 0 14-7.503 14-14 0-.21-.005-.42-.015-.63.961-.689 1.8-1.56 2.46-2.548l-.047-.02z"/>
+                        </svg>
+                    </div>
+                    <div class="share-button" data-platform="linkedin">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Related Articles -->
+            <div class="related-articles">
+                <h2 class="section-title">Related Articles</h2>
+                
+                <div class="article-grid">
+                    <a href="healthcare-robot-moxi-milestone.html" class="article-card">
+                        <img src="images/news/healthcare-moxi.jpg" alt="Moxi robot in hospital" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">Healthcare Robot 'Moxi' Saves Clinical Staff Over 1.5 Billion Steps</h3>
+                            <p class="card-date">April 18, 2025</p>
+                        </div>
+                    </a>
+                    
+                    <a href="news-detail.html?id=3" class="article-card">
+                        <img src="images/news/warehouse-robots.jpg" alt="Autonomous mobile robots" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">Startups Accelerate Development of Autonomous Mobile Robots</h3>
+                            <p class="card-date">April 10, 2025</p>
+                        </div>
+                    </a>
+                    
+                    <a href="news-detail.html?id=4" class="article-card">
+                        <img src="images/news/robot-video-learning.jpg" alt="Robot learning from videos" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">Robot See, Robot Do: New AI System Learns After Watching How-to Videos</h3>
+                            <p class="card-date">April 8, 2025</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- AI Assistant Button -->
+    <div class="ai-assistant">
+        <div class="ai-button" id="ai-button">
+            <div class="ai-icon">🤖</div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html#mission">Our Mission</a></li>
+                        <li><a href="about.html#vision">Our Vision</a></li>
+                        <li><a href="about.html#why">Why We Exist</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="news.html">Robotics News</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html?category=Industrial">Industrial Robotics</a></li>
+                        <li><a href="encyclopedia.html?category=Humanoid">Humanoids</a></li>
+                        <li><a href="encyclopedia.html?category=Autonomous">Autonomous Systems</a></li>
+                        <li><a href="encyclopedia.html">All Categories</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script>
+        // Enable mobile navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const navLinks = document.querySelector('.nav-links');
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                navLinks.classList.toggle('mobile-active');
+                authButtons.classList.toggle('mobile-active');
+            });
+            
+            // Share functionality
+            const shareButtons = document.querySelectorAll('.share-button');
+            
+            shareButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const platform = this.getAttribute('data-platform');
+                    const url = encodeURIComponent(window.location.href);
+                    const title = encodeURIComponent(document.title);
+                    
+                    let shareUrl = '';
+                    
+                    switch (platform) {
+                        case 'facebook':
+                            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                            break;
+                        case 'twitter':
+                            shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+                            break;
+                        case 'linkedin':
+                            shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+                            break;
+                        default:
+                            shareUrl = '';
+                    }
+                    
+                    if (shareUrl) {
+                        window.open(shareUrl, '_blank', 'width=600,height=400');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>: 1.2;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .article-date {
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .article-date svg, .article-author svg {
+            margin-right: 6px;
+        }
+        
+        .article-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .article-content {
+            margin-bottom: 40px;
+        }
+        
+        .article-content p {
+            margin-bottom: 20px;
+            font-size: 17px;
+            line-height
