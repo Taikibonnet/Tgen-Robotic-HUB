@@ -13,7 +13,7 @@
             height: 40vh;
             display: flex;
             align-items: center;
-            padding-top: 90px;
+            padding-top: 130px; /* Increased padding to prevent overlap with header */
             background: radial-gradient(circle at center, #1a1a1a 0%, #121212 100%);
             position: relative;
             overflow: hidden;
@@ -571,6 +571,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/data.js"></script>
     <script src="js/main.js"></script>
     <script src="js/custom-select.js"></script>
     <script>
@@ -689,49 +690,34 @@
                 }
                 
                 if (isValid) {
-                    // Here you would typically send the data to a server
-                    // For now, we'll just show an alert and redirect
-                    alert('Account created successfully! Welcome to TGen Robotic HUB!');
+                    // Store user data in localStorage
+                    const names = fullName.value.split(' ');
+                    const firstName = names[0];
+                    const lastName = names.length > 1 ? names.slice(1).join(' ') : '';
                     
-                    // In a real implementation, you would:
-                    // 1. Send data to the server
-                    // 2. Create the user account
-                    // 3. Log the user in
-                    // 4. Redirect to the dashboard or homepage
+                    const userData = {
+                        isLoggedIn: true,
+                        email: email.value,
+                        firstName: firstName,
+                        lastName: lastName,
+                        role: email.value === 'tgen.robotics@gmail.com' ? 'admin' : 'user'
+                    };
                     
-                    // For demo purposes, store the user data in localStorage
-                    // using the auth.js module we created earlier
-                    const interestsSelect = document.getElementById('interests');
-                    const selectedInterests = Array.from(interestsSelect.selectedOptions).map(option => option.value);
+                    localStorage.setItem('tgenUser', JSON.stringify(userData));
                     
-                    try {
-                        // If auth.js is properly loaded and the authService is available
-                        if (typeof authService !== 'undefined') {
-                            // Register and login the user
-                            authService.register(fullName.value, email.value, password.value, selectedInterests);
-                            authService.login(email.value, password.value);
-                            
-                            // Redirect to the homepage or dashboard
-                            window.location.href = 'index.html';
-                        } else {
-                            // Fallback if authService is not available
-                            console.log('Auth service not available, form validated successfully');
-                            window.location.href = 'index.html';
-                        }
-                    } catch (error) {
-                        console.error('Error during registration:', error);
-                        alert('There was an error creating your account: ' + error.message);
-                    }
+                    // Show success message and redirect
+                    window.tgenApp.showMessage('Account created successfully! Welcome to TGen Robotic HUB!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
                 }
             });
             
-            // If auth.js is loaded, initialize it
-            if (typeof authService !== 'undefined') {
-                // Check if user is already logged in
-                if (authService.isLoggedIn()) {
-                    // Redirect to the dashboard or homepage
-                    window.location.href = 'index.html';
-                }
+            // Check if user is already logged in
+            const currentUser = window.tgenApp.getCurrentUser();
+            if (currentUser) {
+                // Redirect to home page
+                window.location.href = 'index.html';
             }
         });
     </script>
