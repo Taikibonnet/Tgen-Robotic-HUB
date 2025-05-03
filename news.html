@@ -1,130 +1,678 @@
-<!-- Featured News Section -->
-<section class="news-section">
-    <div class="container">
-        <h2 class="section-title">Featured Stories</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotics News - Tgen Robotics Hub</title>
+    <meta name="description" content="Stay updated with the latest robotics news, trends, and technological breakthroughs from around the world.">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* News Page Specific Styles */
+        .news-hero {
+            padding: 140px 0 60px;
+            background: linear-gradient(to bottom, var(--dark) 0%, var(--dark-2) 100%);
+            text-align: center;
+            position: relative;
+        }
         
-        <div class="featured-news">
-            <div class="featured-news-card shimmer">
-                <div class="news-content">
-                    <div class="news-date"><i class="far fa-calendar-alt"></i> April 4, 2025</div>
-                    <h3 class="news-title">Powerful Clinical AI Tool Shows Remarkable Diagnostic Accuracy</h3>
-                    <p class="news-excerpt">Biomedical informatics researchers have developed an AI system capable of diagnosing complex medical conditions with accuracy rates exceeding those of experienced clinicians.</p>
-                    <a href="news-detail.html?id=5" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-            
-            <div class="news-card shimmer">
-                <div class="news-image">
-                    <img src="images/news/humanoid-robot.jpg" alt="Humanoid robot">
-                    <div class="news-category">Humanoid</div>
-                </div>
-                <div class="news-content">
-                    <div class="news-date"><i class="far fa-calendar-alt"></i> April 1, 2025</div>
-                    <h3 class="news-title">Next-Generation Humanoid Robots Demonstrate Advanced Dexterity</h3>
-                    <p class="news-excerpt">The latest generation of humanoid robots is showing unprecedented levels of manual dexterity, enabling them to perform complex tasks previously reserved for humans.</p>
-                    <a href="news-detail.html?id=6" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="pagination">
-            <div class="page-item active">1</div>
-            <div class="page-item">2</div>
-            <div class="page-item">3</div>
-            <div class="page-item">4</div>
-            <div class="page-item"><i class="fas fa-ellipsis-h"></i></div>
-            <div class="page-item">10</div>
-        </div>
-    </div>
-</section> class="featured-image">
-                    <img src="images/news/industrial-robots.jpg" alt="Industrial robot market trends">
-                    <div class="featured-category">Industry</div>
-                </div>
-                <div class="featured-content">
-                    <div class="featured-date"><i class="far fa-calendar-alt"></i> April 22, 2025</div>
-                    <h3 class="featured-title">Global Market Value of Industrial Robots Reaches All-Time High of $16.5 Billion</h3>
-                    <p class="featured-excerpt">The Frankfurt-based International Federation of Robotics (IFR) reports unprecedented growth in industrial robotics adoption worldwide, with manufacturing and logistics sectors leading implementation. Companies are increasingly turning to automation to achieve greater operational resilience amid economic uncertainties.</p>
-                    <a href="industrial-robots-market-growth.html" class="read-more">Read Full Story <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-            
-            <div class="featured-news-card shimmer">
-                <div class="featured-image">
-                    <img src="images/news/healthcare-moxi.jpg" alt="Moxi mobile manipulator robot">
-                    <div class="featured-category">Healthcare</div>
-                </div>
-                <div class="featured-content">
-                    <div class="featured-date"><i class="far fa-calendar-alt"></i> April 18, 2025</div>
-                    <h3 class="featured-title">Healthcare Robot 'Moxi' Saves Clinical Staff Over 1.5 Billion Steps</h3>
-                    <p class="featured-excerpt">Diligent Robotics' Moxi, a mobile manipulation robot designed specifically for healthcare environments, has reached a significant milestone in assisting medical professionals. The robot's ability to autonomously handle routine logistics tasks has dramatically improved workflow efficiency in hospitals across the country.</p>
-                    <a href="healthcare-robot-moxi-milestone.html" class="read-more">Read Full Story <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+        .news-hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-<!-- Latest News Section -->
-<section class="news-section">
-    <div class="container">
-        <h2 class="section-title">Latest Developments</h2>
+        .news-hero-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
         
-        <div class="news-grid">
-            <div class="news-card shimmer">
-                <div class="news-image">
-                    <img src="images/news/3d-printer.jpg" alt="3D printer robot">
-                    <div class="news-category">Innovation</div>
+        .news-hero-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: var(--light);
+            opacity: 0.9;
+        }
+        
+        .search-filter-bar {
+            padding: 30px 0;
+            background-color: var(--dark-2);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .search-filter-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+        
+        .news-search {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+        
+        .news-search:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        .categories-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .category-filter {
+            padding: 8px 16px;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.07);
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .category-filter:hover, .category-filter.active {
+            background-color: var(--primary);
+            color: var(--dark);
+        }
+        
+        .news-section {
+            padding: 60px 0;
+        }
+        
+        .section-title {
+            text-align: left;
+            margin-bottom: 40px;
+            font-size: 2rem;
+            padding-bottom: 15px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+        }
+        
+        .featured-news {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .featured-news-card {
+            background-color: var(--dark-2);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .featured-news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(32, 227, 178, 0.2);
+        }
+        
+        .featured-image {
+            position: relative;
+        }
+        
+        .featured-image img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+        }
+        
+        .featured-category {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 6px 12px;
+            border-radius: 50px;
+            background-color: var(--primary);
+            color: var(--dark);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .featured-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .featured-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .featured-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--light);
+            line-height: 1.4;
+        }
+        
+        .featured-excerpt {
+            color: var(--light);
+            opacity: 0.7;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+        
+        .read-more {
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .read-more:hover {
+            color: var(--secondary);
+        }
+        
+        .read-more i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+        
+        .read-more:hover i {
+            transform: translateX(5px);
+        }
+        
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        
+        .news-card {
+            background-color: var(--dark-2);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(32, 227, 178, 0.15);
+        }
+        
+        .news-image {
+            position: relative;
+        }
+        
+        .news-image img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .news-category {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            border-radius: 50px;
+            background-color: var(--primary);
+            color: var(--dark);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .news-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .news-date {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        
+        .news-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--light);
+            line-height: 1.4;
+        }
+        
+        .news-excerpt {
+            color: var(--light);
+            opacity: 0.7;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        
+        .newsletter-section {
+            padding: 80px 0;
+            margin-top: 80px;
+            background-color: var(--dark-2);
+            border-radius: 15px;
+        }
+        
+        .newsletter-container {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .newsletter-title {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .newsletter-text {
+            margin-bottom: 30px;
+            color: var(--light);
+            opacity: 0.8;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .newsletter-input {
+            flex-grow: 1;
+            padding: 15px 20px;
+            border-radius: 50px 0 0 50px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            font-size: 1rem;
+        }
+        
+        .newsletter-input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .newsletter-btn {
+            padding: 15px 30px;
+            border-radius: 0 50px 50px 0;
+            border: none;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .newsletter-btn:hover {
+            opacity: 0.9;
+        }
+        
+        /* Shimmer effect for lazy loading */
+        .shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.05) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .featured-news {
+                grid-template-columns: 1fr;
+            }
+            
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .search-filter-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .categories-filter {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .news-hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .newsletter-form {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .newsletter-input, .newsletter-btn {
+                width: 100%;
+                border-radius: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
+            </a>
+            <nav class="nav-links">
+                <a href="encyclopedia.html">Encyclopedia</a>
+                <a href="news.html" class="active">News</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <button class="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- News Hero Section -->
+        <section class="news-hero">
+            <div class="container news-hero-content">
+                <h1 class="news-hero-title">Robotics News & Innovations</h1>
+                <p class="news-hero-text">Stay updated with the latest advancements, discoveries, and trends in the world of robotics and AI technology.</p>
+            </div>
+        </section>
+
+        <!-- Search and Filter Bar -->
+        <section class="search-filter-bar">
+            <div class="container search-filter-container">
+                <div class="search-box">
+                    <input type="text" class="news-search" id="news-search" placeholder="Search articles...">
+                    <div class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
                 </div>
-                <div class="news-content">
-                    <div class="news-date"><i class="far fa-calendar-alt"></i> April 15, 2025</div>
-                    <h3 class="news-title">RIC Technology Unveils Advanced Construction Robotic 3D Printer</h3>
-                    <p class="news-excerpt">RIC-PRIMUS represents a significant leap forward in construction automation, capable of printing large-scale structures with unprecedented precision and speed.</p>
-                    <a href="news-detail.html?id=1" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                
+                <div class="categories-filter">
+                    <div class="category-filter active" data-category="all">All</div>
+                    <div class="category-filter" data-category="industry">Industry</div>
+                    <div class="category-filter" data-category="healthcare">Healthcare</div>
+                    <div class="category-filter" data-category="innovation">Innovation</div>
+                    <div class="category-filter" data-category="research">Research</div>
+                    <div class="category-filter" data-category="ai">AI</div>
+                    <div class="category-filter" data-category="humanoid">Humanoid</div>
                 </div>
             </div>
-            
-            <div class="news-card shimmer">
-                <div class="news-image">
-                    <img src="images/news/mit-research.jpg" alt="MIT robotic cable manufacturing">
-                    <div class="news-category">Research</div>
-                </div>
-                <div class="news-content">
-                    <div class="news-date"><i class="far fa-calendar-alt"></i> April 12, 2025</div>
-                    <h3 class="news-title">MIT's "Xstrings" Method Enables Automated Assembly of Cable-Driven Robots</h3>
-                    <p class="news-excerpt">This groundbreaking approach allows users to produce cable-driven objects, automatically assembling bionic robots, sculptures, and dynamic fashion designs.</p>
-                    <a href="news-detail.html?id=2" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-            
-            <div class="news-card shimmer">
-                <div class="news-image">
-                    <img src="images/news/warehouse-robots.jpg" alt="Autonomous mobile robots in warehouse">
-                    <div class="news-category">Industry</div>
-                </div>
-                <div class="news-content">
-                    <div class="news-date"><i class="far fa-calendar-alt"></i> April 10, 2025</div>
-                    <h3 class="news-title">Startups Accelerate Development of Autonomous Mobile Robots for Material Movement</h3>
-                    <p class="news-excerpt">A new wave of startups and scaleups are developing advanced autonomous mobile robots (AMRs) designed for seamless material movement in warehouses and factories.</p>
-                    <a href="news-detail.html?id=3" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-            
-            <div class="news-card shimmer">
-                <div class="news-image">
-                    <img src="images/news/robot-video-learning.jpg" alt="Robot learning from videos">
-                    <div class="news-category">AI</div>
-                </div>
-                <div class="news-content">
-                    <div class="news-date"><i class="far fa-calendar-alt"></i> April 8, 2025</div>
-                    <h3 class="news-title">Robot See, Robot Do: New AI System Learns After Watching How-to Videos</h3>
-                    <p class="news-excerpt">A breakthrough in robot learning allows machines to acquire new skills simply by watching instructional videos, similar to how humans learn visual tasks.</p>
-                    <a href="news-detail.html?id=4" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+        </section>
+
+        <!-- Featured News Section -->
+        <section class="news-section">
+            <div class="container">
+                <h2 class="section-title">Featured Stories</h2>
+                
+                <div class="featured-news">
+                    <div class="featured-news-card shimmer">
+                        <div class="featured-image">
+                            <img src="images/news/industrial-robots.jpg" alt="Industrial robot market trends">
+                            <div class="featured-category">Industry</div>
+                        </div>
+                        <div class="featured-content">
+                            <div class="featured-date"><i class="far fa-calendar-alt"></i> April 22, 2025</div>
+                            <h3 class="featured-title">Global Market Value of Industrial Robots Reaches All-Time High of $16.5 Billion</h3>
+                            <p class="featured-excerpt">The Frankfurt-based International Federation of Robotics (IFR) reports unprecedented growth in industrial robotics adoption worldwide, with manufacturing and logistics sectors leading implementation. Companies are increasingly turning to automation to achieve greater operational resilience amid economic uncertainties.</p>
+                            <a href="industrial-robots-market-growth.html" class="read-more">Read Full Story <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="featured-news-card shimmer">
+                        <div class="featured-image">
+                            <img src="images/news/healthcare-moxi.jpg" alt="Moxi mobile manipulator robot">
+                            <div class="featured-category">Healthcare</div>
+                        </div>
+                        <div class="featured-content">
+                            <div class="featured-date"><i class="far fa-calendar-alt"></i> April 18, 2025</div>
+                            <h3 class="featured-title">Healthcare Robot 'Moxi' Saves Clinical Staff Over 1.5 Billion Steps</h3>
+                            <p class="featured-excerpt">Diligent Robotics' Moxi, a mobile manipulation robot designed specifically for healthcare environments, has reached a significant milestone in assisting medical professionals. The robot's ability to autonomously handle routine logistics tasks has dramatically improved workflow efficiency in hospitals across the country.</p>
+                            <a href="healthcare-robot-moxi-milestone.html" class="read-more">Read Full Story <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="news-card shimmer">
-                <div class="news-image">
-                    <img src="images/news/medical-ai.jpg" alt="Medical AI tool">
-                    <div class="news-category">Healthcare</div>
+        </section>
+
+        <!-- Latest News Section -->
+        <section class="news-section">
+            <div class="container">
+                <h2 class="section-title">Latest Developments</h2>
+                
+                <div class="news-grid">
+                    <div class="news-card shimmer">
+                        <div class="news-image">
+                            <img src="images/news/3d-printer.jpg" alt="3D printer robot">
+                            <div class="news-category">Innovation</div>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-date"><i class="far fa-calendar-alt"></i> April 15, 2025</div>
+                            <h3 class="news-title">RIC Technology Unveils Advanced Construction Robotic 3D Printer</h3>
+                            <p class="news-excerpt">RIC-PRIMUS represents a significant leap forward in construction automation, capable of printing large-scale structures with unprecedented precision and speed.</p>
+                            <a href="news-detail.html?id=1" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card shimmer">
+                        <div class="news-image">
+                            <img src="images/news/mit-research.jpg" alt="MIT robotic cable manufacturing">
+                            <div class="news-category">Research</div>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-date"><i class="far fa-calendar-alt"></i> April 12, 2025</div>
+                            <h3 class="news-title">MIT's "Xstrings" Method Enables Automated Assembly of Cable-Driven Robots</h3>
+                            <p class="news-excerpt">This groundbreaking approach allows users to produce cable-driven objects, automatically assembling bionic robots, sculptures, and dynamic fashion designs.</p>
+                            <a href="news-detail.html?id=2" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card shimmer">
+                        <div class="news-image">
+                            <img src="images/news/warehouse-robots.jpg" alt="Autonomous mobile robots in warehouse">
+                            <div class="news-category">Industry</div>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-date"><i class="far fa-calendar-alt"></i> April 10, 2025</div>
+                            <h3 class="news-title">Startups Accelerate Development of Autonomous Mobile Robots for Material Movement</h3>
+                            <p class="news-excerpt">A new wave of startups and scaleups are developing advanced autonomous mobile robots (AMRs) designed for seamless material movement in warehouses and factories.</p>
+                            <a href="news-detail.html?id=3" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card shimmer">
+                        <div class="news-image">
+                            <img src="images/news/robot-video-learning.jpg" alt="Robot learning from videos">
+                            <div class="news-category">AI</div>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-date"><i class="far fa-calendar-alt"></i> April 8, 2025</div>
+                            <h3 class="news-title">Robot See, Robot Do: New AI System Learns After Watching How-to Videos</h3>
+                            <p class="news-excerpt">A breakthrough in robot learning allows machines to acquire new skills simply by watching instructional videos, similar to how humans learn visual tasks.</p>
+                            <a href="news-detail.html?id=4" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card shimmer">
+                        <div class="news-image">
+                            <img src="images/news/medical-ai.jpg" alt="Medical AI tool">
+                            <div class="news-category">Healthcare</div>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-date"><i class="far fa-calendar-alt"></i> April 4, 2025</div>
+                            <h3 class="news-title">Powerful Clinical AI Tool Shows Remarkable Diagnostic Accuracy</h3>
+                            <p class="news-excerpt">Biomedical informatics researchers have developed an AI system capable of diagnosing complex medical conditions with accuracy rates exceeding those of experienced clinicians.</p>
+                            <a href="news-detail.html?id=5" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card shimmer">
+                        <div class="news-image">
+                            <img src="images/news/humanoid-robot.jpg" alt="Humanoid robot">
+                            <div class="news-category">Humanoid</div>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-date"><i class="far fa-calendar-alt"></i> April 1, 2025</div>
+                            <h3 class="news-title">Next-Generation Humanoid Robots Demonstrate Advanced Dexterity</h3>
+                            <p class="news-excerpt">The latest generation of humanoid robots is showing unprecedented levels of manual dexterity, enabling them to perform complex tasks previously reserved for humans.</p>
+                            <a href="news-detail.html?id=6" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
                 </div>
-                <div
+                
+                <div class="pagination">
+                    <div class="page-item active">1</div>
+                    <div class="page-item">2</div>
+                    <div class="page-item">3</div>
+                    <div class="page-item">4</div>
+                    <div class="page-item"><i class="fas fa-ellipsis-h"></i></div>
+                    <div class="page-item">10</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="container newsletter-section" id="newsletter">
+            <div class="newsletter-container">
+                <h2 class="newsletter-title">Stay Informed</h2>
+                <p class="newsletter-text">Subscribe to our newsletter for weekly updates on the latest robotics news, breakthroughs, and industry insights.</p>
+                
+                <form class="newsletter-form">
+                    <input type="email" class="newsletter-input" placeholder="Your email address" required>
+                    <button type="submit" class="newsletter-btn">Subscribe</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- AI Assistant Button -->
+    <div class="ai-assistant">
+        <div class="ai-button" id="ai-button">
+            <div class="ai-icon">🤖</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="news.html">Robotics News</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html?category=Industrial">Industrial Robotics</a></li>
+                        <li><a href="encyclopedia.html?category=Humanoid">Humanoids</a></li>
+                        <li><a href="encyclopedia.html?category=Autonomous">Autonomous Systems</a></li>
+                        <li><a href="encyclopedia.html">All Categories</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html#mission">Our Mission</a></li>
+                        <li><a href="about.html#vision">Our Vision</a></li>
+                        <li><a href="about.html#why">Why We Exist</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
