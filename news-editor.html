@@ -1,0 +1,1129 @@
+flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
+            </a>
+            <nav class="nav-links">
+                <a href="encyclopedia.html">Encyclopedia</a>
+                <a href="news.html">News</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="admin-dashboard.html" class="active">Admin</a>
+            </nav>
+            <button class="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="auth-buttons">
+                <a href="admin-dashboard.html" class="btn btn-primary">Admin Panel</a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main>
+        <section class="admin-section">
+            <div class="container">
+                <div class="admin-container">
+                    <h1 class="admin-title">News Article Editor</h1>
+                    
+                    <div class="preview-tabs">
+                        <div class="preview-tab active" data-tab="editor">Article Editor</div>
+                        <div class="preview-tab" data-tab="preview">Preview</div>
+                        <div class="preview-tab" data-tab="manage">Manage Articles</div>
+                    </div>
+                    
+                    <div id="editor-tab" class="tab-content active">
+                        <form class="admin-form" id="article-form">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label">Article Title:</label>
+                                        <input type="text" class="form-control" id="article-title" placeholder="Enter article title" required>
+                                        <div class="error-text" id="title-error">Please enter a title</div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label">Category:</label>
+                                        <select class="form-control" id="article-category" required>
+                                            <option value="">Select a category</option>
+                                            <option value="Industry">Industry</option>
+                                            <option value="Healthcare">Healthcare</option>
+                                            <option value="Innovation">Innovation</option>
+                                            <option value="Research">Research</option>
+                                            <option value="AI">AI</option>
+                                            <option value="Humanoid">Humanoid</option>
+                                        </select>
+                                        <div class="error-text" id="category-error">Please select a category</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label">Article Date:</label>
+                                        <input type="date" class="form-control" id="article-date" required>
+                                        <div class="error-text" id="date-error">Please enter a date</div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label">Author:</label>
+                                        <input type="text" class="form-control" id="article-author" placeholder="Enter author name" required>
+                                        <div class="error-text" id="author-error">Please enter an author</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Short Excerpt (for news listings):</label>
+                                <textarea class="form-control" id="article-excerpt" placeholder="Enter a brief excerpt (max 200 characters)" maxlength="200" required></textarea>
+                                <div class="error-text" id="excerpt-error">Please enter an excerpt</div>
+                                <small><span id="excerpt-count">0</span>/200 characters</small>
+                            </div>
+                            
+                            <div class="form-group image-select">
+                                <label class="form-label">Featured Image:</label>
+                                <div class="image-preview" id="featured-preview">
+                                    <div class="image-placeholder">No image selected</div>
+                                </div>
+                                <button type="button" class="admin-btn" id="select-image-btn">Select Featured Image</button>
+                                <input type="hidden" id="featured-image-url" required>
+                                <input type="hidden" id="featured-image-alt">
+                                <div class="error-text" id="image-error">Please select a featured image</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Article Content:</label>
+                                <div class="editor-toolbar">
+                                    <button type="button" class="tool-btn" data-command="heading2"><i class="fas fa-heading"></i> Heading</button>
+                                    <button type="button" class="tool-btn" data-command="paragraph"><i class="fas fa-paragraph"></i> Paragraph</button>
+                                    <button type="button" class="tool-btn" data-command="bold"><i class="fas fa-bold"></i> Bold</button>
+                                    <button type="button" class="tool-btn" data-command="list"><i class="fas fa-list"></i> List</button>
+                                    <button type="button" class="tool-btn" data-command="quote"><i class="fas fa-quote-left"></i> Quote</button>
+                                    <button type="button" class="tool-btn" data-command="image"><i class="fas fa-image"></i> Insert Image</button>
+                                </div>
+                                <textarea class="form-control" id="article-content" placeholder="Write your article content here..." rows="15" required></textarea>
+                                <div class="error-text" id="content-error">Please enter article content</div>
+                                <small>Use markdown for formatting: ## for headings, * for lists, > for quotes, **text** for bold</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Tags:</label>
+                                <div class="tags-container" id="tags-container">
+                                    <!-- Tags will be added dynamically -->
+                                </div>
+                                <div class="tag-input">
+                                    <input type="text" class="form-control" id="tag-input" placeholder="Add a tag...">
+                                    <button type="button" class="admin-btn" id="add-tag-btn">Add Tag</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Related Articles:</label>
+                                <select class="form-control" id="related-articles" multiple>
+                                    <!-- Options will be populated dynamically -->
+                                    <option value="1">Global Market Value of Industrial Robots Reaches All-Time High</option>
+                                    <option value="2">Healthcare Robot 'Moxi' Saves Clinical Staff Over 1.5 Billion Steps</option>
+                                    <option value="3">RIC Technology Unveils Advanced Construction Robotic 3D Printer</option>
+                                    <option value="4">MIT's "Xstrings" Method Enables Automated Assembly of Cable-Driven Robots</option>
+                                    <option value="5">Startups Accelerate Development of Autonomous Mobile Robots</option>
+                                </select>
+                                <small>Hold Ctrl/Cmd to select multiple articles</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="submit" class="admin-btn">Create Article</button>
+                                <button type="button" class="admin-btn" id="preview-btn" style="background: linear-gradient(90deg, #0cebeb, #20e3b2);">Preview</button>
+                                <button type="reset" class="admin-btn" style="background: #333;">Reset Form</button>
+                            </div>
+                        </form>
+                        
+                        <div class="article-result" id="article-result"></div>
+                    </div>
+                    
+                    <div id="preview-tab" class="tab-content">
+                        <h2 class="admin-subtitle">Article Preview</h2>
+                        <div id="article-preview">
+                            <div class="article-preview-content"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="manage-tab" class="tab-content">
+                        <h2 class="admin-subtitle">Manage Articles</h2>
+                        <div class="existing-articles">
+                            <table class="articles-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="articles-list">
+                                    <!-- Articles will be populated dynamically -->
+                                    <tr>
+                                        <td>Global Market Value of Industrial Robots Reaches All-Time High</td>
+                                        <td>Industry</td>
+                                        <td>Apr 22, 2025</td>
+                                        <td>
+                                            <a href="#" class="article-action"><i class="fas fa-edit"></i></a>
+                                            <a href="#" class="article-action delete-action"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Healthcare Robot 'Moxi' Saves Clinical Staff Over 1.5 Billion Steps</td>
+                                        <td>Healthcare</td>
+                                        <td>Apr 18, 2025</td>
+                                        <td>
+                                            <a href="#" class="article-action"><i class="fas fa-edit"></i></a>
+                                            <a href="#" class="article-action delete-action"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Media Browser Modal -->
+    <div class="media-browser" id="media-browser">
+        <div class="media-browser-content">
+            <div class="media-browser-header">
+                <h2 class="media-browser-title">Select an Image</h2>
+                <div class="close-browser" id="close-browser"><i class="fas fa-times"></i></div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Filter by Category:</label>
+                <select class="form-control" id="media-filter">
+                    <option value="all">All Images</option>
+                    <option value="news">News</option>
+                    <option value="robots">Robots</option>
+                    <option value="events">Events</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            
+            <div class="media-items" id="media-items">
+                <!-- Images will be populated dynamically -->
+            </div>
+            
+            <div class="form-group" style="margin-top: 20px; text-align: right;">
+                <button type="button" class="admin-btn" id="select-media-btn">Select Image</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html#mission">Our Mission</a></li>
+                        <li><a href="about.html#vision">Our Vision</a></li>
+                        <li><a href="about.html#why">Why We Exist</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="news.html">Robotics News</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html?category=Industrial">Industrial Robotics</a></li>
+                        <li><a href="encyclopedia.html?category=Humanoid">Humanoids</a></li>
+                        <li><a href="encyclopedia.html?category=Autonomous">Autonomous Systems</a></li>
+                        <li><a href="encyclopedia.html">All Categories</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const previewTabs = document.querySelectorAll('.preview-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const articleForm = document.getElementById('article-form');
+            const articleTitle = document.getElementById('article-title');
+            const articleCategory = document.getElementById('article-category');
+            const articleDate = document.getElementById('article-date');
+            const articleAuthor = document.getElementById('article-author');
+            const articleExcerpt = document.getElementById('article-excerpt');
+            const articleContent = document.getElementById('article-content');
+            const featuredPreview = document.getElementById('featured-preview');
+            const featuredImageUrl = document.getElementById('featured-image-url');
+            const featuredImageAlt = document.getElementById('featured-image-alt');
+            const selectImageBtn = document.getElementById('select-image-btn');
+            const excerptCount = document.getElementById('excerpt-count');
+            const articleResult = document.getElementById('article-result');
+            const previewBtn = document.getElementById('preview-btn');
+            const articlePreview = document.getElementById('article-preview');
+            const articlePreviewContent = document.querySelector('.article-preview-content');
+            const tagInput = document.getElementById('tag-input');
+            const addTagBtn = document.getElementById('add-tag-btn');
+            const tagsContainer = document.getElementById('tags-container');
+            const mediaBrowser = document.getElementById('media-browser');
+            const closeMediaBrowser = document.getElementById('close-browser');
+            const mediaItems = document.getElementById('media-items');
+            const selectMediaBtn = document.getElementById('select-media-btn');
+            const mediaFilter = document.getElementById('media-filter');
+            const toolbarButtons = document.querySelectorAll('.tool-btn');
+            
+            // Set current date as default
+            const today = new Date();
+            const formattedDate = today.toISOString().substring(0, 10);
+            articleDate.value = formattedDate;
+            
+            // Enable mobile navigation
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const navLinks = document.querySelector('.nav-links');
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                navLinks.classList.toggle('mobile-active');
+                authButtons.classList.toggle('mobile-active');
+            });
+            
+            // Tab switching
+            previewTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    previewTabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+                    
+                    // If preview tab is active, update preview
+                    if (tab.dataset.tab === 'preview') {
+                        updatePreview();
+                    }
+                    
+                    // If manage tab is active, load articles
+                    if (tab.dataset.tab === 'manage') {
+                        loadArticles();
+                    }
+                });
+            });
+            
+            // Excerpt character count
+            articleExcerpt.addEventListener('input', function() {
+                excerptCount.textContent = this.value.length;
+            });
+            
+            // Media browser
+            selectImageBtn.addEventListener('click', function() {
+                openMediaBrowser('featured');
+            });
+            
+            closeMediaBrowser.addEventListener('click', function() {
+                mediaBrowser.style.display = 'none';
+            });
+            
+            mediaFilter.addEventListener('change', function() {
+                loadMediaItems(this.value);
+            });
+            
+            // Toolbar buttons
+            toolbarButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const command = this.dataset.command;
+                    executeCommand(command);
+                });
+            });
+            
+            // Tag management
+            addTagBtn.addEventListener('click', function() {
+                addTag();
+            });
+            
+            tagInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addTag();
+                }
+            });
+            
+            // Select media button
+            selectMediaBtn.addEventListener('click', function() {
+                const selectedImage = document.querySelector('.media-item.selected');
+                if (!selectedImage) {
+                    alert('Please select an image');
+                    return;
+                }
+                
+                const imageUrl = selectedImage.dataset.url;
+                const imageAlt = selectedImage.dataset.alt || selectedImage.dataset.name;
+                const mediaType = mediaBrowser.dataset.type;
+                
+                if (mediaType === 'featured') {
+                    featuredImageUrl.value = imageUrl;
+                    featuredImageAlt.value = imageAlt;
+                    featuredPreview.innerHTML = `<img src="${imageUrl}" alt="${imageAlt}">`;
+                } else if (mediaType === 'content') {
+                    // Insert image at cursor position in content
+                    const imageMarkdown = `![${imageAlt}](${imageUrl})`;
+                    insertTextAtCursor(articleContent, imageMarkdown);
+                }
+                
+                mediaBrowser.style.display = 'none';
+            });
+            
+            // Preview button
+            previewBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                updatePreview();
+                
+                // Switch to preview tab
+                previewTabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                previewTabs[1].classList.add('active');
+                document.getElementById('preview-tab').classList.add('active');
+            });
+            
+            // Form submission
+            articleForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // Get tags
+                const tags = [];
+                document.querySelectorAll('.tag-text').forEach(tag => {
+                    tags.push(tag.textContent);
+                });
+                
+                // Get related articles
+                const relatedArticles = [];
+                Array.from(document.getElementById('related-articles').selectedOptions).forEach(option => {
+                    relatedArticles.push(option.value);
+                });
+                
+                // Create article object
+                const articleData = {
+                    title: articleTitle.value,
+                    category: articleCategory.value,
+                    date: articleDate.value,
+                    author: articleAuthor.value,
+                    excerpt: articleExcerpt.value,
+                    content: articleContent.value,
+                    featuredImage: featuredImageUrl.value,
+                    featuredImageAlt: featuredImageAlt.value,
+                    tags: tags,
+                    relatedArticles: relatedArticles,
+                    id: Date.now().toString(), // Use timestamp as ID
+                    slug: slugify(articleTitle.value),
+                    created: new Date().toISOString()
+                };
+                
+                // Save article
+                saveArticle(articleData);
+                
+                // Show success message
+                showResult('Article created successfully! Generating HTML file...', true);
+                
+                // Simulate HTML file generation (in a real app, this would be done server-side)
+                setTimeout(() => {
+                    generateHtmlFile(articleData);
+                }, 1500);
+            });
+            
+            // Helper functions
+            function validateForm() {
+                let isValid = true;
+                
+                // Reset error messages
+                document.querySelectorAll('.error-text').forEach(error => {
+                    error.style.display = 'none';
+                });
+                
+                // Validate required fields
+                if (!articleTitle.value.trim()) {
+                    document.getElementById('title-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                if (!articleCategory.value) {
+                    document.getElementById('category-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                if (!articleDate.value) {
+                    document.getElementById('date-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                if (!articleAuthor.value.trim()) {
+                    document.getElementById('author-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                if (!articleExcerpt.value.trim()) {
+                    document.getElementById('excerpt-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                if (!featuredImageUrl.value) {
+                    document.getElementById('image-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                if (!articleContent.value.trim()) {
+                    document.getElementById('content-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            function showResult(message, isSuccess) {
+                articleResult.textContent = message;
+                articleResult.className = isSuccess ? 'article-result result-success' : 'article-result result-error';
+                articleResult.style.display = 'block';
+                
+                // Scroll to result
+                articleResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                // Hide after a few seconds (for success messages)
+                if (isSuccess) {
+                    setTimeout(() => {
+                        articleResult.style.display = 'none';
+                    }, 5000);
+                }
+            }
+            
+            function slugify(text) {
+                return text
+                    .toLowerCase()
+                    .replace(/[^\w ]+/g, '')
+                    .replace(/ +/g, '-');
+            }
+            
+            function addTag() {
+                const tagText = tagInput.value.trim();
+                if (!tagText) return;
+                
+                // Check if tag already exists
+                const existingTags = Array.from(document.querySelectorAll('.tag-text')).map(el => el.textContent);
+                if (existingTags.includes(tagText)) {
+                    tagInput.value = '';
+                    return;
+                }
+                
+                // Create tag element
+                const tag = document.createElement('div');
+                tag.className = 'tag';
+                tag.innerHTML = `
+                    <span class="tag-text">${tagText}</span>
+                    <span class="tag-remove"><i class="fas fa-times"></i></span>
+                `;
+                
+                // Add remove functionality
+                tag.querySelector('.tag-remove').addEventListener('click', function() {
+                    tag.remove();
+                });
+                
+                // Add to container
+                tagsContainer.appendChild(tag);
+                
+                // Clear input
+                tagInput.value = '';
+                tagInput.focus();
+            }
+            
+            function openMediaBrowser(type) {
+                mediaBrowser.dataset.type = type;
+                mediaBrowser.style.display = 'block';
+                loadMediaItems('all');
+            }
+            
+            function loadMediaItems(category = 'all') {
+                // Clear existing items
+                mediaItems.innerHTML = '';
+                
+                // Get images from localStorage (in a real app, this would come from a database)
+                let images = JSON.parse(localStorage.getItem('cloudinary_images') || '[]');
+                
+                // Filter by category if specified
+                if (category !== 'all') {
+                    images = images.filter(img => img.category === category);
+                }
+                
+                if (images.length === 0) {
+                    mediaItems.innerHTML = '<div class="empty-state">No images found. Upload some images first in the Media Manager.</div>';
+                    return;
+                }
+                
+                // Add images to browser
+                images.forEach(image => {
+                    const mediaItem = document.createElement('div');
+                    mediaItem.className = 'media-item';
+                    mediaItem.dataset.url = image.url;
+                    mediaItem.dataset.alt = image.alt || '';
+                    mediaItem.dataset.name = image.name || '';
+                    
+                    mediaItem.innerHTML = `<img src="${image.thumbnail || image.url}" alt="${image.alt || image.name}">`;
+                    
+                    // Add selection functionality
+                    mediaItem.addEventListener('click', function() {
+                        // Remove selected class from all items
+                        document.querySelectorAll('.media-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
+                        // Add selected class to clicked item
+                        this.classList.add('selected');
+                    });
+                    
+                    mediaItems.appendChild(mediaItem);
+                });
+            }
+            
+            function updatePreview() {
+                // Convert markdown to HTML
+                const converter = new showdown.Converter();
+                const contentHtml = converter.makeHtml(articleContent.value);
+                
+                // Create preview HTML
+                let previewHtml = '';
+                
+                // Add featured image if available
+                if (featuredImageUrl.value) {
+                    previewHtml += `<img src="${featuredImageUrl.value}" alt="${featuredImageAlt.value || 'Featured image'}" style="max-width: 100%; border-radius: 8px; margin-bottom: 20px;">`;
+                }
+                
+                // Add title and metadata
+                previewHtml += `
+                    <h1 style="color: var(--accent-color);">${articleTitle.value || 'Article Title'}</h1>
+                    <p style="color: var(--gray); margin-bottom: 20px;">
+                        <span style="margin-right: 15px;"><i class="far fa-calendar-alt"></i> ${formatDate(articleDate.value) || 'Date'}</span>
+                        <span><i class="far fa-user"></i> By ${articleAuthor.value || 'Author'}</span>
+                    </p>
+                `;
+                
+                // Add content
+                previewHtml += `<div class="article-preview-content">${contentHtml || '<p>Article content will appear here...</p>'}</div>`;
+                
+                // Add tags if available
+                const tags = Array.from(document.querySelectorAll('.tag-text')).map(el => el.textContent);
+                if (tags.length > 0) {
+                    previewHtml += '<div style="margin-top: 30px; display: flex; flex-wrap: wrap; gap: 10px;">';
+                    tags.forEach(tag => {
+                        previewHtml += `<span style="background-color: var(--dark-3); padding: 5px 12px; border-radius: 50px;">#${tag}</span>`;
+                    });
+                    previewHtml += '</div>';
+                }
+                
+                // Update preview
+                articlePreviewContent.innerHTML = previewHtml;
+                articlePreview.style.display = 'block';
+            }
+            
+            function formatDate(dateString) {
+                if (!dateString) return '';
+                
+                const date = new Date(dateString);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            }
+            
+            function saveArticle(articleData) {
+                // In a real app, this would be saved to a database
+                // For demo purposes, we'll save to localStorage
+                let articles = JSON.parse(localStorage.getItem('news_articles') || '[]');
+                articles.unshift(articleData); // Add to the beginning
+                localStorage.setItem('news_articles', JSON.stringify(articles));
+            }
+            
+            function loadArticles() {
+                const articlesList = document.getElementById('articles-list');
+                
+                // Clear existing list
+                articlesList.innerHTML = '';
+                
+                // Get articles from localStorage
+                const articles = JSON.parse(localStorage.getItem('news_articles') || '[]');
+                
+                if (articles.length === 0) {
+                    articlesList.innerHTML = '<tr><td colspan="4" style="text-align: center;">No articles found</td></tr>';
+                    return;
+                }
+                
+                // Add articles to table
+                articles.forEach(article => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${article.title}</td>
+                        <td>${article.category}</td>
+                        <td>${formatDate(article.date)}</td>
+                        <td>
+                            <a href="#" class="article-action" data-id="${article.id}"><i class="fas fa-edit"></i></a>
+                            <a href="#" class="article-action delete-action" data-id="${article.id}"><i class="fas fa-trash"></i></a>
+                        </td>
+                    `;
+                    
+                    // Add edit functionality
+                    row.querySelector('.article-action').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        editArticle(article.id);
+                    });
+                    
+                    // Add delete functionality
+                    row.querySelector('.delete-action').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        deleteArticle(article.id);
+                    });
+                    
+                    articlesList.appendChild(row);<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Edit News Article - Tgen Robotics Hub</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .admin-section {
+            padding: 140px 0 60px;
+        }
+        
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: var(--dark-2);
+            border-radius: 10px;
+        }
+        
+        .admin-title {
+            margin-bottom: 30px;
+            color: var(--accent-color);
+        }
+        
+        .admin-subtitle {
+            margin: 20px 0;
+            color: var(--accent-color);
+        }
+        
+        .admin-form {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--dark-3);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .admin-btn {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .admin-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .admin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .article-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .result-success {
+            background-color: rgba(32, 227, 178, 0.2);
+            color: var(--primary);
+        }
+        
+        .result-error {
+            background-color: rgba(255, 107, 107, 0.2);
+            color: var(--accent);
+        }
+        
+        .error-text {
+            color: var(--accent);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        .image-select {
+            margin-bottom: 20px;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            background-color: var(--dark-3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .image-placeholder {
+            color: var(--gray);
+            font-style: italic;
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .tag {
+            background-color: var(--dark-3);
+            padding: 5px 12px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tag-text {
+            color: var(--text-color);
+        }
+        
+        .tag-remove {
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .tag-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag-input input {
+            flex: 1;
+        }
+        
+        .tag-input button {
+            white-space: nowrap;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tool-btn {
+            padding: 8px 12px;
+            background-color: var(--dark-3);
+            border: none;
+            border-radius: 4px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-btn:hover {
+            background-color: var(--dark);
+        }
+        
+        .tool-btn i {
+            margin-right: 5px;
+        }
+        
+        .preview-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .preview-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .preview-tab:hover {
+            color: var(--text-color);
+        }
+        
+        .preview-tab.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+        
+        #article-preview {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--dark-3);
+            border-radius: 10px;
+        }
+        
+        .article-preview-content h1, 
+        .article-preview-content h2, 
+        .article-preview-content h3 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+        
+        .article-preview-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .article-preview-content ul, 
+        .article-preview-content ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+        
+        .article-preview-content li {
+            margin-bottom: 5px;
+        }
+        
+        .article-preview-content blockquote {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 3px solid var(--accent-color);
+            background-color: rgba(12, 230, 202, 0.05);
+        }
+        
+        .existing-articles {
+            margin-top: 30px;
+        }
+        
+        .articles-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .articles-table th, 
+        .articles-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .articles-table th {
+            background-color: var(--dark-3);
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+        
+        .article-action {
+            color: var(--primary);
+            margin-right: 10px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .article-action:hover {
+            color: var(--accent-color);
+        }
+        
+        .delete-action {
+            color: var(--accent);
+        }
+        
+        .media-browser {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            z-index: 1000;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        
+        .media-browser-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--dark-2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .media-browser-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .media-browser-title {
+            font-size: 24px;
+            color: var(--accent-color);
+        }
+        
+        .close-browser {
+            font-size: 24px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .close-browser:hover {
+            color: var(--accent-color);
+        }
+        
+        .media-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .media-item {
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            aspect-ratio: 1/1;
+        }
+        
+        .media-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .media-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-item.selected::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-color);
+            color: var(--dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--gray);
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction:
