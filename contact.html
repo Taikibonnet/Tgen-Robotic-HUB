@@ -390,6 +390,17 @@
             text-shadow: 0 0 10px var(--primary);
         }
 
+        /* Override the nav-links a::after styles from main.css */
+        .nav-links a::after {
+            display: none;
+        }
+
+        /* Custom styles for the active navigation link */
+        .nav-links a.active {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
         @media (max-width: 992px) {
             .contact-container {
                 grid-template-columns: 1fr;
