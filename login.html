@@ -3,514 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TGen Robotic HUB - Log In</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Log In - TGen Robotics</title>
     <style>
-        /* Hero Section */
-        .hero {
-            height: 40vh;
-            display: flex;
-            align-items: center;
-            padding-top: 90px;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #121212 100%);
-            position: relative;
-            overflow: hidden;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        /* Header styles */
+        header {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('images/background-pattern.png') center/cover no-repeat;
-            opacity: 0.1;
-            z-index: 0;
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-        }
-        
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            max-width: 700px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Override the nav-links a::after styles from main.css */
-        .nav-links a::after {
-            display: none;
-        }
-
-        /* Custom styles for the active navigation link */
-        .nav-links a.active {
-            color: var(--primary);
+        .logo {
+            font-size: 1.5rem;
             font-weight: bold;
         }
 
-        /* Login Form Styles */
-        .login-section {
-            padding: 80px 0;
-            position: relative;
+        nav ul {
+            display: flex;
+            list-style: none;
         }
 
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #4CAF50;
+        }
+
+        /* Account dropdown */
+        .account-dropdown {
+            position: relative;
+            display: none; /* Hidden by default, shown when logged in */
+        }
+
+        .account-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        .account-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .account-dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .account-dropdown:hover .account-dropdown-content {
+            display: block;
+        }
+
+        .account-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .account-btn i {
+            margin-right: 5px;
+        }
+
+        /* Main content */
+        main {
+            padding: 7rem 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Login form */
         .login-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
             max-width: 500px;
             margin: 0 auto;
         }
 
-        .login-form {
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(32, 227, 178, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-form::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(32, 227, 178, 0.05), transparent);
-            z-index: -1;
-        }
-
-        .form-title {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 25px;
-            position: relative;
-            padding-bottom: 10px;
+        .login-title {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
             text-align: center;
         }
 
-        .form-title::after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: var(--primary);
-            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #555;
         }
 
-        .form-control {
+        .form-group input {
             width: 100%;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid rgba(32, 227, 178, 0.3);
-            background-color: rgba(0, 0, 0, 0.2);
-            color: var(--light);
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             font-size: 1rem;
-            transition: all 0.3s ease;
         }
 
-        .form-control:focus {
+        .form-group input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(32, 227, 178, 0.3);
+            border-color: #4CAF50;
         }
 
-        .error-message {
-            color: var(--accent);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .show-error {
-            display: block;
-        }
-
-        .password-toggle {
-            position: relative;
-        }
-
-        .password-toggle .toggle-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: var(--gray);
-        }
-
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .forgot-password a {
-            color: var(--primary);
-        }
-
-        .forgot-password a:hover {
-            text-decoration: underline;
-        }
-
-        .submit-btn {
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            color: var(--dark);
-            padding: 15px 30px;
+        .login-btn {
+            background-color: #4CAF50;
+            color: white;
             border: none;
-            border-radius: 50px;
+            border-radius: 4px;
+            padding: 0.8rem 1.5rem;
             font-size: 1rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
             width: 100%;
-            margin-top: 10px;
+            transition: background-color 0.3s;
         }
 
-        .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(32, 227, 178, 0.4);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 30px 0;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .divider span {
-            padding: 0 15px;
-        }
-
-        .social-login {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--light);
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-
-        .social-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .google {
-            color: #ea4335;
-        }
-
-        .facebook {
-            color: #1877f2;
-        }
-
-        .twitter {
-            color: #1da1f2;
-        }
-
-        .github {
-            color: #fff;
+        .login-btn:hover {
+            background-color: #45a049;
         }
 
         .signup-link {
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            color: #666;
         }
 
         .signup-link a {
-            color: var(--primary);
-            font-weight: 500;
+            color: #4CAF50;
+            text-decoration: none;
         }
 
         .signup-link a:hover {
             text-decoration: underline;
         }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
-        <div class="container header-container">
-            <a href="index.html">
-                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
-            </a>
-            <nav class="nav-links">
-                <a href="encyclopedia.html">Encyclopedia</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
-            </nav>
-            <button class="mobile-menu-button">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="auth-buttons">
-                <a href="login.html" class="btn btn-outline active">Log In</a>
-                <a href="signup.html" class="btn btn-primary">Sign Up</a>
-            </div>
-        </div>
+        <div class="logo">TGen Robotics</div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../projects.html">Projects</a></li>
+                <li><a href="../contact.html">Contact</a></li>
+                <li><a href="login.html" id="login-link">Log In</a></li>
+                <li class="account-dropdown" id="account-dropdown">
+                    <button class="account-btn">
+                        <i class="fas fa-user"></i> My Account
+                    </button>
+                    <div class="account-dropdown-content">
+                        <a href="../profile.html">Profile</a>
+                        <a href="../dashboard/dashboard.html" id="admin-dashboard">Dashboard</a>
+                        <a href="#" id="logout-btn">Log Out</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container hero-content">
-            <h1>Welcome Back</h1>
-            <p>Log in to access your robotics dashboard, contribute to discussions, and connect with the community</p>
-        </div>
-    </section>
-
-    <!-- Main Content -->
     <main>
-        <!-- Login Section -->
-        <section class="login-section">
-            <div class="container login-container">
-                <div class="login-form">
-                    <h2 class="form-title">Log In to Your Account</h2>
-                    
-                    <form id="loginForm">
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" class="form-control" required>
-                            <div class="error-message" id="emailError">Please enter a valid email address</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <div class="password-toggle">
-                                <input type="password" id="password" name="password" class="form-control" required>
-                                <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
-                            </div>
-                            <div class="error-message" id="passwordError">Please enter your password</div>
-                        </div>
-
-                        <div class="remember-forgot">
-                            <div class="remember-me">
-                                <input type="checkbox" id="rememberMe" name="rememberMe">
-                                <label for="rememberMe">Remember me</label>
-                            </div>
-                            <div class="forgot-password">
-                                <a href="reset-password.html">Forgot password?</a>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="submit-btn">Log In</button>
-                    </form>
-
-                    <div class="divider">
-                        <span>OR</span>
-                    </div>
-
-                    <div class="social-login">
-                        <a href="#" class="social-btn google">
-                            <i class="fab fa-google"></i>
-                        </a>
-                        <a href="#" class="social-btn facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-btn twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-btn github">
-                            <i class="fab fa-github"></i>
-                        </a>
-                    </div>
-                    
-                    <div class="signup-link">
-                        Don't have an account? <a href="signup.html">Sign Up</a>
-                    </div>
+        <div class="login-container">
+            <h1 class="login-title">Log In</h1>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
                 </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">Log In</button>
+            </form>
+            <div class="signup-link">
+                Don't have an account? <a href="../signup/signup.html">Sign up here</a>
             </div>
-        </section>
+        </div>
     </main>
 
-    <!-- AI Assistant Button -->
-    <div class="ai-assistant">
-        <div class="ai-button" id="ai-button">
-            <div class="ai-icon">🤖</div>
-        </div>
-    </div>
-
-    <!-- Footer -->
     <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>About</h3>
-                    <ul class="footer-links">
-                        <li><a href="about.html#mission">Our Mission</a></li>
-                        <li><a href="about.html#vision">Our Vision</a></li>
-                        <li><a href="about.html#why">Why We Exist</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Resources</h3>
-                    <ul class="footer-links">
-                        <li><a href="encyclopedia.html">Robot Database</a></li>
-                        <li><a href="about.html#research">Research</a></li>
-                        <li><a href="about.html#education">Education</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Connect</h3>
-                    <ul class="footer-links">
-                        <li><a href="contact.html">Contact Us</a></li>
-                        <li><a href="contact.html#newsletter">Newsletter</a></li>
-                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
-                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                &copy; 2025 Tgen Robotics Hub. All rights reserved.
-            </div>
-        </div>
+        <p>&copy; 2025 TGen Robotics. All rights reserved.</p>
     </footer>
 
-    <!-- Scripts -->
-    <script src="js/main.js"></script>
+    <!-- Font Awesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    
     <script>
+        // Check if user is logged in
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile navigation
-            const mobileMenuButton = document.querySelector('.mobile-menu-button');
-            const navLinks = document.querySelector('.nav-links');
-            const authButtons = document.querySelector('.auth-buttons');
-            
-            mobileMenuButton.addEventListener('click', function() {
-                navLinks.classList.toggle('mobile-active');
-                authButtons.classList.toggle('mobile-active');
-            });
+            checkLoginStatus();
+        });
 
-            // Password toggle visibility
-            const togglePassword = document.getElementById('togglePassword');
-            const password = document.getElementById('password');
+        function checkLoginStatus() {
+            // Get user data from localStorage
+            const userData = JSON.parse(localStorage.getItem('userData'));
             
-            togglePassword.addEventListener('click', function() {
-                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                password.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-            });
-            
-            // Form validation
-            const loginForm = document.getElementById('loginForm');
-            const email = document.getElementById('email');
-            
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+            if (userData && userData.isLoggedIn) {
+                // User is logged in
+                document.getElementById('login-link').style.display = 'none';
+                document.getElementById('account-dropdown').style.display = 'block';
                 
-                let isValid = true;
-                
-                // Reset error messages
-                document.querySelectorAll('.error-message').forEach(el => {
-                    el.classList.remove('show-error');
-                });
-                
-                // Validate email
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email.value)) {
-                    document.getElementById('emailError').classList.add('show-error');
-                    isValid = false;
+                // Check if admin
+                if (userData.email === 'tgen.robotics@gmail.com') {
+                    document.getElementById('admin-dashboard').style.display = 'block';
+                } else {
+                    document.getElementById('admin-dashboard').style.display = 'none';
                 }
+            } else {
+                // User is not logged in
+                document.getElementById('login-link').style.display = 'block';
+                document.getElementById('account-dropdown').style.display = 'none';
+            }
+        }
+
+        // Handle login form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Check if admin login
+            if (email === 'tgen.robotics@gmail.com' && password === 'Admin123!') {
+                // Admin login
+                const adminData = {
+                    fullname: 'Admin User',
+                    email: email,
+                    password: password,
+                    isLoggedIn: true,
+                    isAdmin: true
+                };
                 
-                // Validate password
-                if (password.value.trim() === '') {
-                    document.getElementById('passwordError').classList.add('show-error');
-                    isValid = false;
-                }
+                localStorage.setItem('userData', JSON.stringify(adminData));
+                alert('Admin login successful!');
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            // Check for existing user data
+            const storedData = localStorage.getItem('userData');
+            
+            if (storedData) {
+                const userData = JSON.parse(storedData);
                 
-                if (isValid) {
-                    // Here you would typically send the data to a server for authentication
-                    // For now, we'll just show an alert and redirect to a dashboard
-                    alert('Login successful! Welcome back to TGen Robotic HUB!');
+                // Validate credentials
+                if (userData.email === email && userData.password === password) {
+                    // Update login status
+                    userData.isLoggedIn = true;
+                    localStorage.setItem('userData', JSON.stringify(userData));
                     
-                    // Redirect to the dashboard or homepage
-                    // window.location.href = 'index.html';
+                    alert('Login successful!');
+                    window.location.href = '../index.html';
+                } else {
+                    alert('Invalid email or password!');
                 }
-            });
+            } else {
+                alert('No account found with these credentials. Please sign up first.');
+            }
+        });
 
-            // Social login demo functionality
-            document.querySelectorAll('.social-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const provider = this.className.split(' ')[1];
-                    alert(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login functionality will be implemented here.`);
-                });
-            });
+        // Handle logout
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get user data
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            if (userData) {
+                // Update login status
+                userData.isLoggedIn = false;
+                localStorage.setItem('userData', JSON.stringify(userData));
+            }
+            
+            alert('Logged out successfully!');
+            
+            // Update navigation
+            checkLoginStatus();
+            
+            // Redirect to home page
+            window.location.href = '../index.html';
         });
     </script>
 </body>
