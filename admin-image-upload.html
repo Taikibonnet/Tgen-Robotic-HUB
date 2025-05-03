@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Cloudinary Image Upload - Tgen Robotics Hub</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .admin-section {
+            padding: 140px 0 60px;
+        }
+        
+        .admin-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: var(--dark-2);
+            border-radius: 10px;
+        }
+        
+        .admin-title {
+            margin-bottom: 30px;
+            color: var(--accent-color);
+        }
+        
+        .admin-subtitle {
+            margin: 20px 0;
+            color: var(--accent-color);
+        }
+        
+        .admin-form {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--dark-3);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 300px;
+            padding: 20px;
+            background-color: var(--dark-3);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 260px;
+            display: none;
+        }
+        
+        .preview-placeholder {
+            font-style: italic;
+            color: var(--gray);
+        }
+        
+        .admin-btn {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .admin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .upload-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .upload-success {
+            background-color: rgba(32, 227, 178, 0.2);
+            color: var(--primary);
+        }
+        
+        .upload-error {
+            background-color: rgba(255, 107, 107, 0.2);
+            color: var(--accent);
+        }
+        
+        .uploaded-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .uploaded-image-item {
+            position: relative;
+            background-color: var(--dark-3);
+            border-radius: 5px;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+        }
+        
+        .uploaded-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+        
+        .uploaded-image-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .uploaded-image-item:hover .uploaded-image-actions {
+            opacity: 1;
+        }
+        
+        .uploaded-image-item:hover img {
+            filter: brightness(0.8);
+        }
+        
+        .image-action {
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .image-action:hover {
+            color: var(--accent-color);
+        }
+        
+        .copy-action {
+            color: var(--primary);
+        }
+        
+        .image-path {
+            font-family: monospace;
+            padding: 5px;
+            background-color: var(--dark-3);
+            border-radius: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab:hover {
+            color: var(--text-color);
+        }
+        
+        .tab.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .uploaded-images {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
+            </a>
+            <nav class="nav-links">
+                <a href="encyclopedia.html">Encyclopedia</a>
+                <a href="news.html">News</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="admin-dashboard.html" class="active">Admin</a>
+            </nav>
+            <button class="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="auth-buttons">
+                <a href="admin-dashboard.html" class="btn btn-primary">Admin Panel</a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main>
+        <section class="admin-section">
+            <div class="container">
+                <div class="admin-container">
+                    <h1 class="admin-title">Image Management</h1>
+                    
+                    <div class="tabs">
+                        <div class="tab active" data-tab="upload">Upload Images</div>
+                        <div class="tab" data-tab="gallery">Media Gallery</div>
+                        <div class="tab" data-tab="settings">Settings</div>
+                    </div>
+                    
+                    <div id="upload-tab" class="tab-content active">
+                        <h2 class="admin-subtitle">Upload New Image</h2>
+                        
+                        <div class="image-preview">
+                            <img id="preview-image" alt="Image preview">
+                            <div class="preview-placeholder" id="preview-placeholder">Image preview will appear here</div>
+                        </div>
+                        
+                        <form class="admin-form" id="upload-form">
+                            <div class="form-group">
+                                <label class="form-label">Select Image:</label>
+                                <input type="file" class="form-control" id="image-file" accept="image/*">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Image Name:</label>
+                                <input type="text" class="form-control" id="image-name" placeholder="e.g., robot-arm">
+                                <small>A descriptive name helps you find this image later.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Category:</label>
+                                <select class="form-control" id="image-category">
+                                    <option value="news">News</option>
+                                    <option value="robots">Robots</option>
+                                    <option value="events">Events</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Alt Text:</label>
+                                <input type="text" class="form-control" id="image-alt" placeholder="e.g., Industrial robot arm assembling electronics">
+                                <small>Important for accessibility and SEO.</small>
+                            </div>
+                            
+                            <button type="submit" class="admin-btn" id="upload-btn" disabled>Upload Image</button>
+                        </form>
+                        
+                        <div class="upload-result" id="upload-result"></div>
+                    </div>
+                    
+                    <div id="gallery-tab" class="tab-content">
+                        <h2 class="admin-subtitle">Media Gallery</h2>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Filter by Category:</label>
+                            <select class="form-control" id="gallery-filter">
+                                <option value="all">All Images</option>
+                                <option value="news">News</option>
+                                <option value="robots">Robots</option>
+                                <option value="events">Events</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        
+                        <div class="uploaded-images" id="image-gallery">
+                            <!-- Images will be populated dynamically -->
+                            <div class="preview-placeholder">Loading your images...</div>
+                        </div>
+                    </div>
+                    
+                    <div id="settings-tab" class="tab-content">
+                        <h2 class="admin-subtitle">Cloudinary Settings</h2>
+                        
+                        <form class="admin-form" id="settings-form">
+                            <div class="form-group">
+                                <label class="form-label">Cloud Name:</label>
+                                <input type="text" class="form-control" id="cloud-name" placeholder="Enter your Cloudinary cloud name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">API Key:</label>
+                                <input type="text" class="form-control" id="api-key" placeholder="Enter your Cloudinary API key">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Upload Preset:</label>
+                                <input type="text" class="form-control" id="upload-preset" placeholder="Enter your unsigned upload preset">
+                                <small>Create an unsigned upload preset in the Cloudinary settings.</small>
+                            </div>
+                            
+                            <button type="submit" class="admin-btn">Save Settings</button>
+                        </form>
+                        
+                        <div class="upload-result" id="settings-result"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html#mission">Our Mission</a></li>
+                        <li><a href="about.html#vision">Our Vision</a></li>
+                        <li><a href="about.html#why">Why We Exist</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="news.html">Robotics News</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html?category=Industrial">Industrial Robotics</a></li>
+                        <li><a href="encyclopedia.html?category=Humanoid">Humanoids</a></li>
+                        <li><a href="encyclopedia.html?category=Autonomous">Autonomous Systems</a></li>
+                        <li><a href="encyclopedia.html">All Categories</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const uploadForm = document.getElementById('upload-form');
+            const imageFile = document.getElementById('image-file');
+            const imageName = document.getElementById('image-name');
+            const imageCategory = document.getElementById('image-category');
+            const imageAlt = document.getElementById('image-alt');
+            const uploadBtn = document.getElementById('upload-btn');
+            const previewImage = document.getElementById('preview-image');
+            const previewPlaceholder = document.getElementById('preview-placeholder');
+            const uploadResult = document.getElementById('upload-result');
+            const imageGallery = document.getElementById('image-gallery');
+            const galleryFilter = document.getElementById('gallery-filter');
+            const settingsForm = document.getElementById('settings-form');
+            const cloudNameInput = document.getElementById('cloud-name');
+            const apiKeyInput = document.getElementById('api-key');
+            const uploadPresetInput = document.getElementById('upload-preset');
+            const settingsResult = document.getElementById('settings-result');
+            
+            // Enable mobile navigation
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const navLinks = document.querySelector('.nav-links');
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                navLinks.classList.toggle('mobile-active');
+                authButtons.classList.toggle('mobile-active');
+            });
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+                    
+                    // If gallery tab is active, load images
+                    if (tab.dataset.tab === 'gallery') {
+                        loadImages();
+                    }
+                });
+            });
+            
+            // Load settings from localStorage
+            let cloudName = localStorage.getItem('cloudinary_cloud_name') || '';
+            let apiKey = localStorage.getItem('cloudinary_api_key') || '';
+            let uploadPreset = localStorage.getItem('cloudinary_upload_preset') || '';
+            
+            if (cloudName) cloudNameInput.value = cloudName;
+            if (apiKey) apiKeyInput.value = apiKey;
+            if (uploadPreset) uploadPresetInput.value = uploadPreset;
+            
+            // Settings form submission
+            settingsForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                cloudName = cloudNameInput.value.trim();
+                apiKey = apiKeyInput.value.trim();
+                uploadPreset = uploadPresetInput.value.trim();
+                
+                if (!cloudName || !apiKey || !uploadPreset) {
+                    showSettingsResult('Please fill in all fields', false);
+                    return;
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('cloudinary_cloud_name', cloudName);
+                localStorage.setItem('cloudinary_api_key', apiKey);
+                localStorage.setItem('cloudinary_upload_preset', uploadPreset);
+                
+                showSettingsResult('Settings saved successfully!', true);
+            });
+            
+            // Image preview
+            imageFile.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                        previewPlaceholder.style.display = 'none';
+                        
+                        // Suggest a name based on the file
+                        if (!imageName.value) {
+                            // Extract name without extension and convert spaces to hyphens
+                            const baseName = file.name.split('.').slice(0, -1).join('.')
+                                .replace(/\s+/g, '-').toLowerCase();
+                            imageName.value = baseName;
+                        }
+                        
+                        // Enable upload button
+                        uploadBtn.disabled = false;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Upload form submission
+            uploadForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!cloudName || !apiKey || !uploadPreset) {
+                    showResult('Please configure Cloudinary settings first', false);
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    tabs[2].classList.add('active'); // Settings tab
+                    document.getElementById('settings-tab').classList.add('active');
+                    return;
+                }
+                
+                const file = imageFile.files[0];
+                if (!file) {
+                    showResult('Please select an image', false);
+                    return;
+                }
+                
+                const name = imageName.value.trim();
+                if (!name) {
+                    showResult('Please enter an image name', false);
+                    return;
+                }
+                
+                // Disable form during upload
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = 'Uploading...';
+                
+                // Create a new upload widget
+                const cloudinaryWidget = cloudinary.createUploadWidget({
+                    cloudName: cloudName,
+                    uploadPreset: uploadPreset,
+                    folder: imageCategory.value,
+                    tags: [imageCategory.value],
+                    context: {
+                        alt: imageAlt.value,
+                        custom_filename: name
+                    },
+                    sources: ['local'],
+                    multiple: false
+                }, (error, result) => {
+                    if (!error && result && result.event === "success") {
+                        console.log('Upload successful:', result.info);
+                        
+                        // Create a database entry or store the reference
+                        const imageData = {
+                            public_id: result.info.public_id,
+                            url: result.info.secure_url,
+                            thumbnail: getCloudinaryThumbnail(result.info.secure_url),
+                            category: imageCategory.value,
+                            name: name,
+                            alt: imageAlt.value,
+                            date: new Date().toISOString()
+                        };
+                        
+                        // Store in localStorage
+                        saveImageToLocalStorage(imageData);
+                        
+                        showResult(`Image uploaded successfully!`, true);
+                        
+                        // Reset form
+                        uploadForm.reset();
+                        previewImage.style.display = 'none';
+                        previewPlaceholder.style.display = 'block';
+                        uploadBtn.textContent = 'Upload Image';
+                        uploadBtn.disabled = true;
+                    } else if (error) {
+                        console.error('Upload error:', error);
+                        showResult(`Upload failed: ${error.message}`, false);
+                        uploadBtn.textContent = 'Upload Image';
+                        uploadBtn.disabled = false;
+                    }
+                });
+                
+                // Open the widget programmatically
+                cloudinaryWidget.open();
+            });
+            
+            // Gallery filter change
+            galleryFilter.addEventListener('change', function() {
+                loadImages(this.value);
+            });
+            
+            // Helper functions
+            function showResult(message, isSuccess) {
+                uploadResult.textContent = message;
+                uploadResult.className = isSuccess ? 'upload-result upload-success' : 'upload-result upload-error';
+                uploadResult.style.display = 'block';
+                
+                // Hide after a few seconds
+                setTimeout(() => {
+                    uploadResult.style.display = 'none';
+                }, 5000);
+            }
+            
+            function showSettingsResult(message, isSuccess) {
+                settingsResult.textContent = message;
+                settingsResult.className = isSuccess ? 'upload-result upload-success' : 'upload-result upload-error';
+                settingsResult.style.display = 'block';
+                
+                // Hide after a few seconds
+                setTimeout(() => {
+                    settingsResult.style.display = 'none';
+                }, 5000);
+            }
+            
+            function getCloudinaryThumbnail(url) {
+                // Assuming standard Cloudinary URL format
+                return url.replace('/upload/', '/upload/c_thumb,h_200,w_200/');
+            }
+            
+            function saveImageToLocalStorage(imageData) {
+                let images = JSON.parse(localStorage.getItem('cloudinary_images') || '[]');
+                images.unshift(imageData); // Add to the beginning
+                localStorage.setItem('cloudinary_images', JSON.stringify(images));
+            }
+            
+            function loadImages(category = 'all') {
+                let images = JSON.parse(localStorage.getItem('cloudinary_images') || '[]');
+                
+                // Filter by category if specified
+                if (category !== 'all') {
+                    images = images.filter(img => img.category === category);
+                }
+                
+                // Clear gallery
+                imageGallery.innerHTML = '';
+                
+                if (images.length === 0) {
+                    imageGallery.innerHTML = '<div class="preview-placeholder">No images found. Upload some images first!</div>';
+                    return;
+                }
+                
+                // Add images to gallery
+                images.forEach(image => {
+                    const imageEl = document.createElement('div');
+                    imageEl.className = 'uploaded-image-item';
+                    
+                    imageEl.innerHTML = `
+                        <img src="${image.thumbnail || image.url}" alt="${image.alt || image.name}">
+                        <div class="uploaded-image-actions">
+                            <span class="image-action copy-action" title="Copy URL"><i class="fas fa-copy"></i></span>
+                        </div>
+                        <span class="image-path">${image.name}</span>
+                    `;
+                    
+                    // Add copy functionality
+                    const copyBtn = imageEl.querySelector('.copy-action');
+                    copyBtn.addEventListener('click', () => {
+                        navigator.clipboard.writeText(image.url)
+                            .then(() => {
+                                showResult('Image URL copied to clipboard!', true);
+                            })
+                            .catch(err => {
+                                console.error('Could not copy text: ', err);
+                            });
+                    });
+                    
+                    imageGallery.appendChild(imageEl);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
