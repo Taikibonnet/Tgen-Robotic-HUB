@@ -1,0 +1,137 @@
+/**
+ * Custom Select Styling for Tgen Robotic HUB
+ * Provides a stylish replacement for multi-select dropdowns
+ */
+
+/* Fix for header spacing issue */
+.hero {
+    padding-top: 130px !important; /* Increase this value to move content down */
+    margin-top: 0;
+}
+
+.main-content {
+    padding-top: 120px; /* Adjust this value as needed */
+}
+
+/* Custom Select Box Styling */
+.custom-select-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.custom-select-header {
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid rgba(32, 227, 178, 0.3);
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--light);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-select-header i {
+    color: var(--primary);
+    transition: transform 0.3s ease;
+}
+
+.custom-select-header.active i {
+    transform: rotate(180deg);
+}
+
+.custom-select-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: rgba(18, 18, 18, 0.95);
+    border: 1px solid rgba(32, 227, 178, 0.3);
+    border-radius: 5px;
+    margin-top: 5px;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.custom-select-options.show {
+    display: block;
+}
+
+.option-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.option-item:hover {
+    background-color: rgba(32, 227, 178, 0.1);
+}
+
+.option-item.selected {
+    background-color: rgba(32, 227, 178, 0.2);
+}
+
+.option-item input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: var(--primary);
+}
+
+.option-item label {
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.selected-option {
+    background-color: rgba(32, 227, 178, 0.1);
+    border: 1px solid rgba(32, 227, 178, 0.3);
+    border-radius: 30px;
+    padding: 5px 12px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.selected-option i {
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--primary);
+}
+
+.selected-option i:hover {
+    color: var(--accent);
+}
+
+/* Custom scrollbar for the options */
+.custom-select-options::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-select-options::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.custom-select-options::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 4px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .hero {
+        padding-top: 100px !important;
+    }
+}
