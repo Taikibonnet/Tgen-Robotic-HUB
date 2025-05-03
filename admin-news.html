@@ -1,0 +1,1212 @@
+</div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">...</button>
+                <button class="page-btn">8</button>
+            </div>
+        </div>
+        
+        <!-- Quick Access Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Content Management Tools</h2>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <a href="news-editor.html" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-plus-circle" style="margin-right: 10px;"></i> Add New Article
+                </a>
+                <a href="admin-image-upload.html" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-cloud-upload-alt" style="margin-right: 10px;"></i> Upload Images
+                </a>
+                <a href="news.html" target="_blank" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-eye" style="margin-right: 10px;"></i> View News Section
+                </a>
+                <a href="#" id="generate-report-btn" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-chart-bar" style="margin-right: 10px;"></i> Generate Report
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load news articles from localStorage if available
+            loadStoredArticles();
+            
+            // Initialize event listeners
+            initEventListeners();
+            
+            // Update stats
+            updateStats();
+        });
+        
+        function loadStoredArticles() {
+            // Check if there are articles in localStorage
+            const storedArticles = localStorage.getItem('news_articles');
+            
+            if (storedArticles) {
+                const articles = JSON.parse(storedArticles);
+                
+                if (articles.length > 0) {
+                    // We have articles, but for now we'll keep the demo articles
+                    // In a real app, you would replace the table with the stored articles
+                    console.log('Found stored articles:', articles.length);
+                }
+            }
+        }
+        
+        function initEventListeners() {
+            // Select all checkbox
+            const selectAllCheckbox = document.getElementById('select-all');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('.article-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                });
+            }
+            
+            // Individual checkboxes
+            const checkboxes = document.querySelectorAll('.article-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // If any checkbox is unchecked, uncheck the "select all" checkbox
+                    if (!this.checked) {
+                        if (selectAllCheckbox) selectAllCheckbox.checked = false;
+                    } 
+                    // If all checkboxes are checked, check the "select all" checkbox
+                    else {
+                        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                        if (allChecked && selectAllCheckbox) selectAllCheckbox.checked = true;
+                    }
+                });
+            });
+            
+            // Delete buttons
+            const deleteButtons = document.querySelectorAll('.delete-icon');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const articleId = this.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+                        deleteArticle(articleId);
+                    }
+                });
+            });
+            
+            // Apply bulk action button
+            const applyBulkActionBtn = document.getElementById('apply-bulk-action');
+            if (applyBulkActionBtn) {
+                applyBulkActionBtn.addEventListener('click', function() {
+                    const action = document.getElementById('bulk-action-select').value;
+                    
+                    if (!action) {
+                        alert('Please select an action to apply.');
+                        return;
+                    }
+                    
+                    const selectedCheckboxes = document.querySelectorAll('.article-checkbox:checked');
+                    if (selectedCheckboxes.length === 0) {
+                        alert('Please select at least one article to apply the action to.');
+                        return;
+                    }
+                    
+                    const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.getAttribute('data-id'));
+                    
+                    // Apply the selected action
+                    applyBulkAction(action, selectedIds);
+                });
+            }
+            
+            // Clear filters button
+            const clearFiltersBtn = document.getElementById('clear-filters');
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function() {
+                    // Reset all filters
+                    document.getElementById('search-filter').value = '';
+                    document.getElementById('category-filter').value = '';
+                    document.getElementById('status-filter').value = '';
+                    document.getElementById('date-filter').value = '';
+                    
+                    // Reset the table to show all articles
+                    resetTable();
+                });
+            }
+            
+            // Search and filter inputs
+            const filterInputs = [
+                document.getElementById('search-filter'),
+                document.getElementById('category-filter'),
+                document.getElementById('status-filter'),
+                document.getElementById('date-filter')
+            ];
+            
+            filterInputs.forEach(input => {
+                if (input) {
+                    input.addEventListener('change', function() {
+                        applyFilters();
+                    });
+                }
+            });
+            
+            // Search input should also respond to typing
+            const searchInput = document.getElementById('search-filter');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function() {
+                    applyFilters();
+                });
+            }
+            
+            // Generate report button
+            const generateReportBtn = document.getElementById('generate-report-btn');
+            if (generateReportBtn) {
+                generateReportBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('Report generation functionality will be implemented in a future update.');
+                });
+            }
+            
+            // Pagination buttons
+            const pageBtns = document.querySelectorAll('.page-btn');
+            pageBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    pageBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // In a real app, this would load the corresponding page
+                    // For this demo, we'll just show an alert
+                    if (this.textContent !== '...') {
+                        alert(`Navigating to page ${this.textContent}`);
+                    }
+                });
+            });
+        }
+        
+        function updateStats() {
+            // In a real app, these would be calculated from the actual data
+            // For this demo, we'll just use the default values
+            document.getElementById('total-articles').textContent = '28';
+            document.getElementById('published-articles').textContent = '24';
+            document.getElementById('draft-articles').textContent = '4';
+            document.getElementById('total-views').textContent = '48.3k';
+            
+            // Check if we have actual articles in localStorage
+            const storedArticles = localStorage.getItem('news_articles');
+            if (storedArticles) {
+                const articles = JSON.parse(storedArticles);
+                
+                if (articles.length > 0) {
+                    // Update with actual counts
+                    document.getElementById('total-articles').textContent = articles.length.toString();
+                    
+                    // Count published vs. draft
+                    const published = articles.filter(a => a.status === 'published').length;
+                    const drafts = articles.filter(a => a.status === 'draft').length;
+                    
+                    document.getElementById('published-articles').textContent = published.toString();
+                    document.getElementById('draft-articles').textContent = drafts.toString();
+                }
+            }
+        }
+        
+        function deleteArticle(articleId) {
+            // Try to delete from localStorage if it exists
+            const storedArticles = localStorage.getItem('news_articles');
+            if (storedArticles) {
+                let articles = JSON.parse(storedArticles);
+                articles = articles.filter(article => article.id !== articleId);
+                localStorage.setItem('news_articles', JSON.stringify(articles));
+            }
+            
+            // For the demo, remove the row from the table
+            const row = document.querySelector(`.article-checkbox[data-id="${articleId}"]`).closest('tr');
+            if (row) {
+                row.remove();
+                alert('Article deleted successfully');
+                
+                // Update stats
+                updateStats();
+                
+                // Check if table is now empty
+                const tableBody = document.getElementById('articles-table-body');
+                if (tableBody && tableBody.children.length === 0) {
+                    // Show empty state
+                    document.getElementById('articles-container').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <h3 class="empty-title">No articles found</h3>
+                            <p class="empty-desc">There are no articles in the system. Create your first article to get started.</p>
+                            <a href="news-editor.html" class="btn btn-primary">Create New Article</a>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        function applyBulkAction(action, selectedIds) {
+            // For the demo, just show an alert
+            alert(`Action '${action}' would be applied to ${selectedIds.length} articles`);
+            
+            // In a real app, you would update the articles in localStorage and refresh the table
+            
+            // For now, just update the UI for the selected rows
+            selectedIds.forEach(id => {
+                const row = document.querySelector(`.article-checkbox[data-id="${id}"]`).closest('tr');
+                if (row) {
+                    const statusCell = row.querySelector('td:nth-child(7)');
+                    if (statusCell) {
+                        const statusSpan = statusCell.querySelector('.news-status');
+                        if (statusSpan) {
+                            // Update the status based on the action
+                            switch (action) {
+                                case 'publish':
+                                    statusSpan.className = 'news-status status-published';
+                                    statusSpan.textContent = 'Published';
+                                    break;
+                                case 'draft':
+                                    statusSpan.className = 'news-status status-draft';
+                                    statusSpan.textContent = 'Draft';
+                                    break;
+                                case 'archive':
+                                    statusSpan.className = 'news-status status-archived';
+                                    statusSpan.textContent = 'Archived';
+                                    break;
+                                case 'delete':
+                                    // This would be handled by deleteArticle
+                                    break;
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // If action is delete, call deleteArticle for each selected ID
+            if (action === 'delete') {
+                if (confirm(`Are you sure you want to delete ${selectedIds.length} articles? This action cannot be undone.`)) {
+                    selectedIds.forEach(id => deleteArticle(id));
+                }
+            }
+            
+            // Uncheck all checkboxes
+            document.getElementById('select-all').checked = false;
+            document.querySelectorAll('.article-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+        }
+        
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-filter').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const dateFilter = document.getElementById('date-filter').value;
+            
+            // Get all rows
+            const rows = document.querySelectorAll('#articles-table-body tr');
+            
+            let visibleCount = 0;
+            
+            // Filter rows
+            rows.forEach(row => {
+                let shouldShow = true;
+                
+                // Check search term
+                if (searchTerm) {
+                    const title = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    if (!title.includes(searchTerm)) {
+                        shouldShow = false;
+                    }
+                }
+                
+                // Check category
+                if (categoryFilter && shouldShow) {
+                    const category = row.querySelector('td:nth-child(4)').textContent;
+                    if (category !== categoryFilter) {
+                        shouldShow = false;
+                    }
+                }
+                
+                // Check status
+                if (statusFilter && shouldShow) {
+                    const statusText = row.querySelector('.news-status').textContent.toLowerCase();
+                    if (statusText !== statusFilter) {
+                        shouldShow = false;
+                    }
+                }
+                
+                // Check date filter (simplified for demo)
+                if (dateFilter && shouldShow) {
+                    // In a real app, you would parse the date and apply the filter
+                    // For this demo, we'll just show an alert if it's anything other than "all time"
+                    if (dateFilter !== 'all-time') {
+                        console.log(`Date filter applied: ${dateFilter}`);
+                    }
+                }
+                
+                // Show or hide the row
+                if (shouldShow) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Show/hide empty state
+            const emptyState = document.getElementById('empty-state');
+            const tableContainer = document.querySelector('.news-table');
+            
+            if (visibleCount === 0) {
+                if (emptyState) emptyState.style.display = 'block';
+                if (tableContainer) tableContainer.style.display = 'none';
+            } else {
+                if (emptyState) emptyState.style.display = 'none';
+                if (tableContainer) tableContainer.style.display = 'table';
+            }
+        }
+        
+        function resetTable() {
+            // Show all rows
+            const rows = document.querySelectorAll('#articles-table-body tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+            
+            // Hide empty state
+            const emptyState = document.getElementById('empty-state');
+            if (emptyState) emptyState.style.display = 'none';
+            
+            // Show table
+            const tableContainer = document.querySelector('.news-table');
+            if (tableContainer) tableContainer.style.display = 'table';
+        }
+    </script>
+</body>
+</html>            min-height: 100vh;
+        }
+        
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #ff6b6b, #ff8080);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark-2);
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-logo {
+            height: 40px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(32, 227, 178, 0.1);
+            color: var(--primary);
+        }
+        
+        .sidebar-menu-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .sidebar-menu-text {
+            font-size: 0.95rem;
+        }
+        
+        .sidebar-divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 15px 20px;
+        }
+        
+        .sidebar-section-title {
+            padding: 0 20px;
+            margin: 15px 0 10px;
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 30px;
+            max-width: calc(100% - 250px);
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+        
+        .card {
+            background-color: var(--dark-2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        /* News Management Styles */
+        .news-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .filter-control {
+            padding: 10px 15px;
+            background-color: var(--dark-3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+        
+        .filter-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .news-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        
+        .news-table th, .news-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .news-table th {
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .news-table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .news-table tbody tr:hover {
+            background-color: rgba(32, 227, 178, 0.05);
+        }
+        
+        .news-thumbnail {
+            width: 60px;
+            height: 40px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+        
+        .news-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .status-published {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4caf50;
+        }
+        
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+        
+        .status-archived {
+            background-color: rgba(158, 158, 158, 0.15);
+            color: #9e9e9e;
+        }
+        
+        .status-scheduled {
+            background-color: rgba(33, 150, 243, 0.15);
+            color: #2196f3;
+        }
+        
+        .actions-cell {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-icon {
+            background-color: rgba(32, 227, 178, 0.1);
+            color: var(--primary);
+        }
+        
+        .view-icon {
+            background-color: rgba(73, 139, 255, 0.1);
+            color: #498bff;
+        }
+        
+        .delete-icon {
+            background-color: rgba(255, 107, 107, 0.1);
+            color: var(--accent);
+        }
+        
+        .action-icon:hover {
+            transform: translateY(-2px);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .page-btn.active {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
+        }
+        
+        .page-btn:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .bulk-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background-color: var(--dark-3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px 0;
+            font-style: italic;
+            color: var(--gray);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px 0;
+        }
+        
+        .empty-icon {
+            font-size: 2.5rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
+        .empty-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .empty-desc {
+            color: var(--gray);
+            margin-bottom: 20px;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar-menu-text, .sidebar-header, .sidebar-section-title {
+                display: none;
+            }
+            
+            .sidebar-menu a {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .sidebar-menu-icon {
+                margin-right: 0;
+                font-size: 1.5rem;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                max-width: calc(100% - 70px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .news-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .bulk-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="sidebar-logo">
+            </a>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="admin-dashboard.html">
+                    <i class="fas fa-tachometer-alt sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin-robot-management.html">
+                    <i class="fas fa-robot sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Robots</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin-news.html" class="active">
+                    <i class="fas fa-newspaper sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">News</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin-image-upload.html">
+                    <i class="fas fa-images sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Media</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin-content-editor.html">
+                    <i class="fas fa-edit sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Editor</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-users sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Users</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-cog sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Settings</span>
+                </a>
+            </li>
+            
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-title">Public Site</div>
+            
+            <li>
+                <a href="index.html">
+                    <i class="fas fa-home sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="encyclopedia.html">
+                    <i class="fas fa-book sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Encyclopedia</span>
+                </a>
+            </li>
+            <li>
+                <a href="news.html">
+                    <i class="fas fa-newspaper sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">News</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            &copy; 2025 Tgen Robotics Hub
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title">News Management</h1>
+            
+            <div class="user-info">
+                <div>
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <img src="images/avatar-placeholder.jpg" alt="Admin User" class="user-avatar">
+            </div>
+        </div>
+        
+        <!-- News Management -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">All News Articles</h2>
+                <a href="news-editor.html" class="btn btn-primary">+ Create New Article</a>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-articles">28</div>
+                    <div class="stat-label">Total Articles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="published-articles">24</div>
+                    <div class="stat-label">Published</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="draft-articles">4</div>
+                    <div class="stat-label">Drafts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-views">48.3k</div>
+                    <div class="stat-label">Total Views</div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="news-filters">
+                <div class="filter-group">
+                    <label class="filter-label">Search</label>
+                    <input type="text" class="filter-control" id="search-filter" placeholder="Search articles...">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select class="filter-control" id="category-filter">
+                        <option value="">All Categories</option>
+                        <option value="Industry">Industry</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Innovation">Innovation</option>
+                        <option value="Research">Research</option>
+                        <option value="AI">AI</option>
+                        <option value="Humanoid">Humanoid</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select class="filter-control" id="status-filter">
+                        <option value="">All Statuses</option>
+                        <option value="published">Published</option>
+                        <option value="draft">Draft</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Date Range</label>
+                    <select class="filter-control" id="date-filter">
+                        <option value="">All Time</option>
+                        <option value="last-7-days">Last 7 Days</option>
+                        <option value="last-30-days">Last 30 Days</option>
+                        <option value="last-90-days">Last 90 Days</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Bulk Actions -->
+            <div class="bulk-actions">
+                <select class="filter-control" id="bulk-action-select">
+                    <option value="">Bulk Actions</option>
+                    <option value="publish">Publish Selected</option>
+                    <option value="draft">Move to Draft</option>
+                    <option value="archive">Archive Selected</option>
+                    <option value="delete">Delete Selected</option>
+                </select>
+                <button class="btn btn-primary" id="apply-bulk-action">Apply</button>
+                <button class="btn" style="background: rgba(255, 255, 255, 0.1);" id="clear-filters">Clear Filters</button>
+            </div>
+            
+            <!-- Articles Table -->
+            <div id="articles-container">
+                <table class="news-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all"></th>
+                            <th>Image</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Author</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Views</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articles-table-body">
+                        <!-- Articles will be loaded here -->
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" data-id="1"></td>
+                            <td><img src="images/news/industrial-robots.jpg" alt="Industrial Robots" class="news-thumbnail"></td>
+                            <td>Global Market Value of Industrial Robots Reaches All-Time High</td>
+                            <td>Industry</td>
+                            <td>Industry Team</td>
+                            <td>Apr 22, 2025</td>
+                            <td><span class="news-status status-published">Published</span></td>
+                            <td>1,253</td>
+                            <td class="actions-cell">
+                                <a href="news-editor.html?id=1" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="industrial-robots-market-growth.html" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-icon delete-icon" title="Delete" data-id="1"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" data-id="2"></td>
+                            <td><img src="images/news/healthcare-moxi.jpg" alt="Healthcare Robot" class="news-thumbnail"></td>
+                            <td>Healthcare Robot 'Moxi' Saves Clinical Staff Over 1.5 Billion Steps</td>
+                            <td>Healthcare</td>
+                            <td>Healthcare Team</td>
+                            <td>Apr 18, 2025</td>
+                            <td><span class="news-status status-published">Published</span></td>
+                            <td>987</td>
+                            <td class="actions-cell">
+                                <a href="news-editor.html?id=2" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="healthcare-robot-moxi-milestone.html" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-icon delete-icon" title="Delete" data-id="2"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" data-id="3"></td>
+                            <td><img src="images/news/3d-printer.jpg" alt="3D Printer Robot" class="news-thumbnail"></td>
+                            <td>RIC Technology Unveils Advanced Construction Robotic 3D Printer</td>
+                            <td>Innovation</td>
+                            <td>Tech Team</td>
+                            <td>Apr 15, 2025</td>
+                            <td><span class="news-status status-published">Published</span></td>
+                            <td>763</td>
+                            <td class="actions-cell">
+                                <a href="news-editor.html?id=3" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="news-detail.html?id=1" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-icon delete-icon" title="Delete" data-id="3"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" data-id="4"></td>
+                            <td><img src="images/news/mit-research.jpg" alt="MIT Research" class="news-thumbnail"></td>
+                            <td>MIT's "Xstrings" Method Enables Automated Assembly of Cable-Driven Robots</td>
+                            <td>Research</td>
+                            <td>Research Team</td>
+                            <td>Apr 12, 2025</td>
+                            <td><span class="news-status status-published">Published</span></td>
+                            <td>589</td>
+                            <td class="actions-cell">
+                                <a href="news-editor.html?id=4" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="news-detail.html?id=2" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-icon delete-icon" title="Delete" data-id="4"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" data-id="5"></td>
+                            <td><img src="images/news/robot-video-learning.jpg" alt="AI Learning" class="news-thumbnail"></td>
+                            <td>Robot See, Robot Do: New AI System Learns After Watching How-to Videos</td>
+                            <td>AI</td>
+                            <td>AI Team</td>
+                            <td>Apr 8, 2025</td>
+                            <td><span class="news-status status-draft">Draft</span></td>
+                            <td>0</td>
+                            <td class="actions-cell">
+                                <a href="news-editor.html?id=5" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="#" class="action-icon view-icon" title="Preview"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-icon delete-icon" title="Delete" data-id="5"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" data-id="6"></td>
+                            <td><img src="images/news/medical-ai.jpg" alt="Medical AI" class="news-thumbnail"></td>
+                            <td>Powerful Clinical AI Tool Shows Remarkable Diagnostic Accuracy</td>
+                            <td>Healthcare</td>
+                            <td>Healthcare Team</td>
+                            <td>Apr 4, 2025</td>
+                            <td><span class="news-status status-draft">Draft</span></td>
+                            <td>0</td>
+                            <td class="actions-cell">
+                                <a href="news-editor.html?id=6" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="#" class="action-icon view-icon" title="Preview"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-icon delete-icon" title="Delete" data-id="6"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" data-id="7"></td>
+                            <td><img src="images/news/humanoid-robot.jpg" alt="Humanoid Robot" class="news-thumbnail"></td>
+                            <td>Next-Generation Humanoid Robots Demonstrate Advanced Dexterity</td>
+                            <td>Humanoid</td>
+                            <td>Tech Team</td>
+                            <td>Apr 1, 2025</td>
+                            <td><span class="news-status status-scheduled">Scheduled</span></td>
+                            <td>0</td>
+                            <td class="actions-cell">
+                                <a href="news-editor.html?id=7" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="#" class="action-icon view-icon" title="Preview"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-icon delete-icon" title="Delete" data-id="7"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" data-id="8"></td>
+                            <td><img src="images/news/warehouse-robots.jpg" alt="Warehouse Robots" class="news-thumbnail"></td>
+                            <td>Startups Accelerate Development of Autonomous Mobile Robots for Material Movement</td>
+                            <td>Industry</td>
+                            <td>Industry Team</td>
+                            <td>Mar 25, 2025</td>
+                            <td><span class="news-status status-archived">Archived</span></td>
+                            <td>321</td>
+                            <td class="actions-cell">
+                                <a href="news-editor.html?id=8" class="action-icon edit-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="news-detail.html?id=3" class="action-icon view-icon" title="View Article"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-icon delete-icon" title="Delete" data-id="8"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Loading State (initially hidden) -->
+                <div class="loading" id="loading-state" style="display: none;">
+                    Loading articles...
+                </div>
+                
+                <!-- Empty State (initially hidden) -->
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h3 class="empty-title">No articles found</h3>
+                    <p class="empty-desc">No articles match your current filters. Try adjusting your search criteria or create a new article.</p>
+                    <a href="news-editor.html" class="btn btn-primary">Create New Article</a>
+                </div>
+            </div<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Management - Tgen Robotics Hub</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #20e3b2;
+            --secondary: #0cebeb;
+            --accent: #ff6b6b;
+            --dark: #121212;
+            --dark-2: #1a1a1a;
+            --dark-3: #222222;
+            --light: #f8f9fa;
+            --gray: #adb5bd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            display: flex;
+            min-
