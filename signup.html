@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TGen Robotic HUB - Sign Up</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/custom-select.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Hero Section */
@@ -442,7 +443,9 @@
 
                         <div class="form-group">
                             <label for="interests">Areas of Interest</label>
-                            <select id="interests" name="interests" class="form-control" multiple>
+                            
+                            <!-- Hidden original select element for form submission -->
+                            <select id="interests" name="interests" multiple style="display: none;">
                                 <option value="industrial">Industrial Robotics</option>
                                 <option value="medical">Medical Robotics</option>
                                 <option value="ai">AI & Machine Learning</option>
@@ -452,8 +455,54 @@
                                 <option value="education">Educational Robotics</option>
                                 <option value="research">Research & Development</option>
                             </select>
+                            
+                            <!-- Custom select replacement -->
+                            <div class="custom-select-container">
+                                <div class="custom-select-header">
+                                    <span class="selected-display">Select your interests</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="custom-select-options">
+                                    <div class="option-item">
+                                        <input type="checkbox" id="opt-industrial" value="industrial">
+                                        <label for="opt-industrial">Industrial Robotics</label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="opt-medical" value="medical">
+                                        <label for="opt-medical">Medical Robotics</label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="opt-ai" value="ai">
+                                        <label for="opt-ai">AI & Machine Learning</label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="opt-programming" value="programming">
+                                        <label for="opt-programming">Robotics Programming</label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="opt-hardware" value="hardware">
+                                        <label for="opt-hardware">Hardware & Electronics</label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="opt-drones" value="drones">
+                                        <label for="opt-drones">Drones & UAVs</label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="opt-education" value="education">
+                                        <label for="opt-education">Educational Robotics</label>
+                                    </div>
+                                    <div class="option-item">
+                                        <input type="checkbox" id="opt-research" value="research">
+                                        <label for="opt-research">Research & Development</label>
+                                    </div>
+                                </div>
+                                <div class="selected-options">
+                                    <!-- Selected options will appear here as tags -->
+                                </div>
+                            </div>
+                            
                             <div class="requirements">
-                                Hold Ctrl/Cmd key to select multiple options
+                                Click on multiple options to select your areas of interest
                             </div>
                         </div>
 
@@ -523,6 +572,7 @@
 
     <!-- Scripts -->
     <script src="js/main.js"></script>
+    <script src="js/custom-select.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile navigation
@@ -640,13 +690,49 @@
                 
                 if (isValid) {
                     // Here you would typically send the data to a server
-                    // For now, we'll just show an alert
+                    // For now, we'll just show an alert and redirect
                     alert('Account created successfully! Welcome to TGen Robotic HUB!');
                     
-                    // Redirect to the homepage or dashboard
-                    // window.location.href = 'index.html';
+                    // In a real implementation, you would:
+                    // 1. Send data to the server
+                    // 2. Create the user account
+                    // 3. Log the user in
+                    // 4. Redirect to the dashboard or homepage
+                    
+                    // For demo purposes, store the user data in localStorage
+                    // using the auth.js module we created earlier
+                    const interestsSelect = document.getElementById('interests');
+                    const selectedInterests = Array.from(interestsSelect.selectedOptions).map(option => option.value);
+                    
+                    try {
+                        // If auth.js is properly loaded and the authService is available
+                        if (typeof authService !== 'undefined') {
+                            // Register and login the user
+                            authService.register(fullName.value, email.value, password.value, selectedInterests);
+                            authService.login(email.value, password.value);
+                            
+                            // Redirect to the homepage or dashboard
+                            window.location.href = 'index.html';
+                        } else {
+                            // Fallback if authService is not available
+                            console.log('Auth service not available, form validated successfully');
+                            window.location.href = 'index.html';
+                        }
+                    } catch (error) {
+                        console.error('Error during registration:', error);
+                        alert('There was an error creating your account: ' + error.message);
+                    }
                 }
             });
+            
+            // If auth.js is loaded, initialize it
+            if (typeof authService !== 'undefined') {
+                // Check if user is already logged in
+                if (authService.isLoggedIn()) {
+                    // Redirect to the dashboard or homepage
+                    window.location.href = 'index.html';
+                }
+            }
         });
     </script>
 </body>
