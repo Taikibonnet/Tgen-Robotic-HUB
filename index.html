@@ -94,60 +94,6 @@
             position: relative;
         }
         
-        /* News Section */
-        .latest-news {
-            padding: 100px 0;
-            background-color: rgba(30, 30, 30, 0.5);
-        }
-        
-        .news-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
-        }
-        
-        .news-card {
-            background: rgba(18, 18, 18, 0.9);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .news-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(32, 227, 178, 0.15);
-        }
-        
-        .news-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-        
-        .news-content {
-            padding: 20px;
-        }
-        
-        .news-date {
-            font-size: 0.8rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .news-title {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: var(--light);
-        }
-        
-        .news-excerpt {
-            font-size: 0.9rem;
-            color: var(--light);
-            opacity: 0.7;
-            margin-bottom: 15px;
-        }
-        
         /* Mobile Menu Button */
         .mobile-menu-button {
             display: none;
@@ -190,7 +136,6 @@
             </a>
             <nav class="nav-links">
                 <a href="encyclopedia.html">Encyclopedia</a>
-                <a href="news.html">News</a>
                 <a href="about.html">About</a>
                 <a href="contact.html">Contact</a>
             </nav>
@@ -219,7 +164,6 @@
             
             <div class="hero-buttons">
                 <a href="encyclopedia.html" class="btn btn-primary">Explore Encyclopedia</a>
-                <a href="news.html" class="btn btn-outline" style="margin-left: 15px;">Latest Innovations</a>
             </div>
         </div>
     </section>
@@ -238,20 +182,6 @@
             
             <div style="text-align: center; margin-top: 50px;">
                 <a href="encyclopedia.html" class="btn btn-outline">View All Robots</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Latest News Section -->
-    <section class="latest-news">
-        <div class="container">
-            <h2 class="section-title">Latest Robotics News</h2>
-            
-            <div class="news-container" id="latest-news">
-                <!-- News cards will be loaded dynamically -->
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                </div>
             </div>
         </div>
     </section>
@@ -281,19 +211,8 @@
                     <h3>Resources</h3>
                     <ul class="footer-links">
                         <li><a href="encyclopedia.html">Robot Database</a></li>
-                        <li><a href="news.html">Robotics News</a></li>
                         <li><a href="about.html#research">Research</a></li>
                         <li><a href="about.html#education">Education</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Categories</h3>
-                    <ul class="footer-links">
-                        <li><a href="encyclopedia.html?category=Industrial">Industrial Robotics</a></li>
-                        <li><a href="encyclopedia.html?category=Humanoid">Humanoids</a></li>
-                        <li><a href="encyclopedia.html?category=Autonomous">Autonomous Systems</a></li>
-                        <li><a href="encyclopedia.html">All Categories</a></li>
                     </ul>
                 </div>
                 
@@ -323,7 +242,6 @@
         // Function to initialize the homepage
         function initHomepage() {
             loadFeaturedRobots();
-            loadLatestNews();
             setupHeroSearch();
         }
 
@@ -362,7 +280,6 @@
                     <p class="robot-desc">${robot.summary}</p>
                     <div class="robot-meta">
                         <span>${robot.manufacturer.name}</span>
-                        <span>${robot.categories[0]}</span>
                     </div>
                 </div>
             `;
@@ -373,45 +290,6 @@
             });
             
             return card;
-        }
-
-        // Load latest news
-        function loadLatestNews() {
-            const latestNewsContainer = document.getElementById('latest-news');
-            
-            // Clear loading spinner
-            latestNewsContainer.innerHTML = '';
-            
-            // Get 3 latest news
-            const latestNews = window.robotsData.news
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 3);
-            
-            // Add news cards to the container
-            latestNews.forEach(article => {
-                const newsCard = document.createElement('div');
-                newsCard.className = 'news-card';
-                
-                // Format date
-                const date = new Date(article.date);
-                const formattedDate = date.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-                
-                newsCard.innerHTML = `
-                    <img src="${article.image}" alt="${article.title}" class="news-image">
-                    <div class="news-content">
-                        <div class="news-date">${formattedDate}</div>
-                        <h3 class="news-title">${article.title}</h3>
-                        <p class="news-excerpt">${article.summary}</p>
-                        <a href="news-detail.html?id=${article.id}" class="btn btn-outline">Read More</a>
-                    </div>
-                `;
-                
-                latestNewsContainer.appendChild(newsCard);
-            });
         }
 
         // Setup hero search functionality
