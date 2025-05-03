@@ -3,218 +3,514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Tgen Robotics Hub</title>
+    <title>TGen Robotic HUB - Log In</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        :root {
-            --primary: #20e3b2;
-            --secondary: #0cebeb;
-            --dark: #121212;
-            --light: #f8f9fa;
-            --accent: #ff6b6b;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #121212;
-            color: var(--light);
-            line-height: 1.6;
+        /* Hero Section */
+        .hero {
+            height: 40vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding-top: 90px;
             background: radial-gradient(circle at center, #1a1a1a 0%, #121212 100%);
+            position: relative;
+            overflow: hidden;
         }
         
-        .login-container {
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            background: rgba(30, 30, 30, 0.8);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            height: 100%;
+            background: url('images/background-pattern.png') center/cover no-repeat;
+            opacity: 0.1;
+            z-index: 0;
         }
         
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
         }
         
-        .login-header h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
             background: linear-gradient(90deg, var(--secondary), var(--primary));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
         
-        .login-header p {
-            color: var(--light);
-            opacity: 0.8;
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 700px;
         }
-        
+
+        /* Override the nav-links a::after styles from main.css */
+        .nav-links a::after {
+            display: none;
+        }
+
+        /* Custom styles for the active navigation link */
+        .nav-links a.active {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Login Form Styles */
+        .login-section {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .login-form {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(32, 227, 178, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(32, 227, 178, 0.05), transparent);
+            z-index: -1;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .form-title::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
-        
-        .form-label {
+
+        .form-group label {
             display: block;
             margin-bottom: 8px;
+            color: var(--primary);
             font-weight: 500;
         }
-        
+
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
             border-radius: 5px;
+            border: 1px solid rgba(32, 227, 178, 0.3);
+            background-color: rgba(0, 0, 0, 0.2);
             color: var(--light);
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
-        
+
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
+            box-shadow: 0 0 10px rgba(32, 227, 178, 0.3);
         }
-        
-        .forgot-password {
-            text-align: right;
-            margin-bottom: 20px;
+
+        .error-message {
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
         }
-        
-        .forgot-password a {
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 0.9rem;
+
+        .show-error {
+            display: block;
         }
-        
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 5px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            font-size: 1rem;
+
+        .password-toggle {
+            position: relative;
         }
-        
-        .btn-primary {
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            color: var(--dark);
-        }
-        
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
-        }
-        
-        .register-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .register-link a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-        
-        .back-home {
+
+        .password-toggle .toggle-icon {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            color: var(--primary);
-            text-decoration: none;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-        
-        .error-message {
-            background-color: rgba(255, 107, 107, 0.2);
-            color: var(--accent);
-            padding: 10px;
-            border-radius: 5px;
+
+        .forgot-password a {
+            color: var(--primary);
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: var(--dark);
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(32, 227, 178, 0.4);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
             margin-bottom: 20px;
-            display: none;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .google {
+            color: #ea4335;
+        }
+
+        .facebook {
+            color: #1877f2;
+        }
+
+        .twitter {
+            color: #1da1f2;
+        }
+
+        .github {
+            color: #fff;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .signup-link a {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-home">
-        ← Back to Home
-    </a>
-    
-    <div class="login-container">
-        <div class="login-header">
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
+            </a>
+            <nav class="nav-links">
+                <a href="encyclopedia.html">Encyclopedia</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <button class="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline active">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
             <h1>Welcome Back</h1>
-            <p>Sign in to access your Tgen Robotics Hub account</p>
+            <p>Log in to access your robotics dashboard, contribute to discussions, and connect with the community</p>
         </div>
-        
-        <div id="error-message" class="error-message">
-            Invalid email or password. Please try again.
-        </div>
-        
-        <form id="login-form">
-            <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Login Section -->
+        <section class="login-section">
+            <div class="container login-container">
+                <div class="login-form">
+                    <h2 class="form-title">Log In to Your Account</h2>
+                    
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                            <div class="error-message" id="emailError">Please enter a valid email address</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="password-toggle">
+                                <input type="password" id="password" name="password" class="form-control" required>
+                                <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
+                            </div>
+                            <div class="error-message" id="passwordError">Please enter your password</div>
+                        </div>
+
+                        <div class="remember-forgot">
+                            <div class="remember-me">
+                                <input type="checkbox" id="rememberMe" name="rememberMe">
+                                <label for="rememberMe">Remember me</label>
+                            </div>
+                            <div class="forgot-password">
+                                <a href="reset-password.html">Forgot password?</a>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Log In</button>
+                    </form>
+
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+
+                    <div class="social-login">
+                        <a href="#" class="social-btn google">
+                            <i class="fab fa-google"></i>
+                        </a>
+                        <a href="#" class="social-btn facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-btn twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-btn github">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="signup-link">
+                        Don't have an account? <a href="signup.html">Sign Up</a>
+                    </div>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
-            </div>
-            
-            <div class="forgot-password">
-                <a href="#">Forgot password?</a>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Sign In</button>
-        </form>
-        
-        <div class="register-link">
-            Don't have an account? <a href="register.html">Register</a>
+        </section>
+    </main>
+
+    <!-- AI Assistant Button -->
+    <div class="ai-assistant">
+        <div class="ai-button" id="ai-button">
+            <div class="ai-icon">🤖</div>
         </div>
     </div>
-    
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html#mission">Our Mission</a></li>
+                        <li><a href="about.html#vision">Our Vision</a></li>
+                        <li><a href="about.html#why">Why We Exist</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
     <script>
-        const loginForm = document.getElementById('login-form');
-        const errorMessage = document.getElementById('error-message');
-        
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile navigation
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const navLinks = document.querySelector('.nav-links');
+            const authButtons = document.querySelector('.auth-buttons');
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            mobileMenuButton.addEventListener('click', function() {
+                navLinks.classList.toggle('mobile-active');
+                authButtons.classList.toggle('mobile-active');
+            });
+
+            // Password toggle visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
             
-            // For demonstration purposes - hardcoded credentials
-            // In a real application, this would be validated on the server
-            if (email === 'tgen.robotics@gmail.com' && password === 'Admin123!') {
-                // Store login state in localStorage
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', 'admin');
-                localStorage.setItem('userEmail', email);
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+            
+            // Form validation
+            const loginForm = document.getElementById('loginForm');
+            const email = document.getElementById('email');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                // Redirect to admin dashboard
-                window.location.href = 'admin-dashboard.html';
-            } else {
-                // Show error message
-                errorMessage.style.display = 'block';
+                let isValid = true;
                 
-                // Clear password field
-                document.getElementById('password').value = '';
-            }
+                // Reset error messages
+                document.querySelectorAll('.error-message').forEach(el => {
+                    el.classList.remove('show-error');
+                });
+                
+                // Validate email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email.value)) {
+                    document.getElementById('emailError').classList.add('show-error');
+                    isValid = false;
+                }
+                
+                // Validate password
+                if (password.value.trim() === '') {
+                    document.getElementById('passwordError').classList.add('show-error');
+                    isValid = false;
+                }
+                
+                if (isValid) {
+                    // Here you would typically send the data to a server for authentication
+                    // For now, we'll just show an alert and redirect to a dashboard
+                    alert('Login successful! Welcome back to TGen Robotic HUB!');
+                    
+                    // Redirect to the dashboard or homepage
+                    // window.location.href = 'index.html';
+                }
+            });
+
+            // Social login demo functionality
+            document.querySelectorAll('.social-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const provider = this.className.split(' ')[1];
+                    alert(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login functionality will be implemented here.`);
+                });
+            });
         });
     </script>
 </body>
