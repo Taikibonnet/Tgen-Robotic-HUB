@@ -3,736 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TGen Robotic HUB - Sign Up</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/custom-select.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Sign Up - TGen Robotics</title>
     <style>
-        /* Hero Section */
-        .hero {
-            height: 40vh;
-            display: flex;
-            align-items: center;
-            padding-top: 90px;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #121212 100%);
-            position: relative;
-            overflow: hidden;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        /* Header styles */
+        header {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('images/background-pattern.png') center/cover no-repeat;
-            opacity: 0.1;
-            z-index: 0;
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-        }
-        
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            max-width: 700px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Override the nav-links a::after styles from main.css */
-        .nav-links a::after {
-            display: none;
-        }
-
-        /* Custom styles for the active navigation link */
-        .nav-links a.active {
-            color: var(--primary);
+        .logo {
+            font-size: 1.5rem;
             font-weight: bold;
         }
 
-        /* Signup Form Styles */
-        .signup-section {
-            padding: 80px 0;
-            position: relative;
+        nav ul {
+            display: flex;
+            list-style: none;
         }
 
-        .signup-container {
-            max-width: 800px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #4CAF50;
+        }
+
+        /* Account dropdown */
+        .account-dropdown {
+            position: relative;
+            display: none; /* Hidden by default, shown when logged in */
+        }
+
+        .account-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        .account-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .account-dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .account-dropdown:hover .account-dropdown-content {
+            display: block;
+        }
+
+        .account-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
             align-items: center;
         }
 
-        .signup-form {
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(32, 227, 178, 0.1);
-            position: relative;
-            overflow: hidden;
+        .account-btn i {
+            margin-right: 5px;
         }
 
-        .signup-form::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(32, 227, 178, 0.05), transparent);
-            z-index: -1;
+        /* Main content */
+        main {
+            padding: 7rem 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .form-title {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 25px;
-            position: relative;
-            padding-bottom: 10px;
+        /* Sign up form */
+        .signup-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        .form-title::after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            bottom: 0;
-            left: 0;
+        .signup-title {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            text-align: center;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: var(--primary);
-            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #555;
         }
 
-        .form-control {
+        .form-group input {
             width: 100%;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid rgba(32, 227, 178, 0.3);
-            background-color: rgba(0, 0, 0, 0.2);
-            color: var(--light);
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             font-size: 1rem;
-            transition: all 0.3s ease;
         }
 
-        .form-control:focus {
+        .form-group input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(32, 227, 178, 0.3);
+            border-color: #4CAF50;
         }
 
-        .requirements {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-top: 5px;
-        }
-
-        .error-message {
-            color: var(--accent);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .show-error {
-            display: block;
-        }
-
-        .password-toggle {
-            position: relative;
-        }
-
-        .password-toggle .toggle-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: var(--gray);
-        }
-
-        .submit-btn {
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            color: var(--dark);
-            padding: 15px 30px;
+        .signup-btn {
+            background-color: #4CAF50;
+            color: white;
             border: none;
-            border-radius: 50px;
+            border-radius: 4px;
+            padding: 0.8rem 1.5rem;
             font-size: 1rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-            box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
             width: 100%;
-            margin-top: 10px;
+            transition: background-color 0.3s;
         }
 
-        .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(32, 227, 178, 0.4);
+        .signup-btn:hover {
+            background-color: #45a049;
         }
 
         .login-link {
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            color: #666;
         }
 
         .login-link a {
-            color: var(--primary);
-            font-weight: 500;
+            color: #4CAF50;
+            text-decoration: none;
         }
 
         .login-link a:hover {
             text-decoration: underline;
         }
 
-        .benefits-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .benefits-title {
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .benefit-item {
-            display: flex;
-            gap: 15px;
-            align-items: flex-start;
-        }
-
-        .benefit-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: rgba(32, 227, 178, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 20px;
-            flex-shrink: 0;
-            border: 1px solid rgba(32, 227, 178, 0.3);
-        }
-
-        .benefit-content h3 {
-            color: var(--primary);
-            margin-bottom: 5px;
-            font-size: 1.2rem;
-        }
-
-        .benefit-content p {
-            color: var(--light);
-            opacity: 0.8;
-            font-size: 0.95rem;
-        }
-
-        .strength-meter {
-            height: 5px;
-            width: 100%;
-            background-color: #e0e0e0;
-            margin-top: 8px;
-            border-radius: 3px;
-            position: relative;
-        }
-
-        .strength-meter::before {
-            content: '';
-            height: 100%;
-            width: 0;
-            border-radius: 3px;
-            transition: all 0.3s ease;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .strength-meter.weak::before {
-            width: 25%;
-            background-color: #ff4d4d;
-        }
-
-        .strength-meter.medium::before {
-            width: 50%;
-            background-color: #ffaa00;
-        }
-
-        .strength-meter.strong::before {
-            width: 75%;
-            background-color: #9cff00;
-        }
-
-        .strength-meter.very-strong::before {
-            width: 100%;
-            background-color: #00ff00;
-        }
-
-        .strength-text {
-            font-size: 0.85rem;
-            margin-top: 8px;
-        }
-
-        @media (max-width: 992px) {
-            .signup-container {
-                grid-template-columns: 1fr;
-            }
-
-            .benefits-section {
-                margin-bottom: 40px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
-        <div class="container header-container">
-            <a href="index.html">
-                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
-            </a>
-            <nav class="nav-links">
-                <a href="encyclopedia.html">Encyclopedia</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
-            </nav>
-            <button class="mobile-menu-button">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="auth-buttons">
-                <a href="login.html" class="btn btn-outline">Log In</a>
-                <a href="signup.html" class="btn btn-primary active">Sign Up</a>
-            </div>
-        </div>
+        <div class="logo">TGen Robotics</div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../projects.html">Projects</a></li>
+                <li><a href="../contact.html">Contact</a></li>
+                <li><a href="../login/login.html" id="login-link">Log In</a></li>
+                <li class="account-dropdown" id="account-dropdown">
+                    <button class="account-btn">
+                        <i class="fas fa-user"></i> My Account
+                    </button>
+                    <div class="account-dropdown-content">
+                        <a href="../profile.html">Profile</a>
+                        <a href="../dashboard/dashboard.html" id="admin-dashboard">Dashboard</a>
+                        <a href="#" id="logout-btn">Log Out</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container hero-content">
-            <h1>Join Our Community</h1>
-            <p>Create an account to access exclusive content, contribute to discussions, and connect with fellow robotics enthusiasts</p>
-        </div>
-    </section>
-
-    <!-- Main Content -->
     <main>
-        <!-- Signup Section -->
-        <section class="signup-section">
-            <div class="container signup-container">
-                <div class="benefits-section">
-                    <h2 class="benefits-title">Why Join Tgen Robotic HUB?</h2>
-                    
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-lock"></i>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Exclusive Content</h3>
-                            <p>Access our exclusive robotics resources, research papers, and detailed tutorials not available to non-members.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Community Discussions</h3>
-                            <p>Engage with a global community of robotics enthusiasts, researchers, and industry professionals.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Event Notifications</h3>
-                            <p>Receive updates about the latest robotics events, conferences, and webinars around the world.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Project Showcase</h3>
-                            <p>Share your robotics projects and get feedback from experts and fellow enthusiasts.</p>
-                        </div>
-                    </div>
+        <div class="signup-container">
+            <h1 class="signup-title">Create Your Account</h1>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" name="fullname" required>
                 </div>
-
-                <div class="signup-form">
-                    <h2 class="form-title">Create Your Account</h2>
-                    <form id="signupForm">
-                        <div class="form-group">
-                            <label for="fullName">Full Name</label>
-                            <input type="text" id="fullName" name="fullName" class="form-control" required>
-                            <div class="error-message" id="fullNameError">Please enter your full name</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" class="form-control" required>
-                            <div class="error-message" id="emailError">Please enter a valid email address</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <div class="password-toggle">
-                                <input type="password" id="password" name="password" class="form-control" required>
-                                <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
-                            </div>
-                            <div class="requirements">
-                                At least 8 characters with uppercase, lowercase, number and special character
-                            </div>
-                            <div class="strength-meter" id="passwordStrength"></div>
-                            <div class="strength-text" id="strengthText"></div>
-                            <div class="error-message" id="passwordError">Your password doesn't meet the requirements</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirmPassword">Confirm Password</label>
-                            <div class="password-toggle">
-                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
-                                <i class="fas fa-eye toggle-icon" id="toggleConfirmPassword"></i>
-                            </div>
-                            <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="interests">Areas of Interest</label>
-                            
-                            <!-- Hidden original select element for form submission -->
-                            <select id="interests" name="interests" multiple style="display: none;">
-                                <option value="industrial">Industrial Robotics</option>
-                                <option value="medical">Medical Robotics</option>
-                                <option value="ai">AI & Machine Learning</option>
-                                <option value="programming">Robotics Programming</option>
-                                <option value="hardware">Hardware & Electronics</option>
-                                <option value="drones">Drones & UAVs</option>
-                                <option value="education">Educational Robotics</option>
-                                <option value="research">Research & Development</option>
-                            </select>
-                            
-                            <!-- Custom select replacement -->
-                            <div class="custom-select-container">
-                                <div class="custom-select-header">
-                                    <span class="selected-display">Select your interests</span>
-                                    <i class="fas fa-chevron-down"></i>
-                                </div>
-                                <div class="custom-select-options">
-                                    <div class="option-item">
-                                        <input type="checkbox" id="opt-industrial" value="industrial">
-                                        <label for="opt-industrial">Industrial Robotics</label>
-                                    </div>
-                                    <div class="option-item">
-                                        <input type="checkbox" id="opt-medical" value="medical">
-                                        <label for="opt-medical">Medical Robotics</label>
-                                    </div>
-                                    <div class="option-item">
-                                        <input type="checkbox" id="opt-ai" value="ai">
-                                        <label for="opt-ai">AI & Machine Learning</label>
-                                    </div>
-                                    <div class="option-item">
-                                        <input type="checkbox" id="opt-programming" value="programming">
-                                        <label for="opt-programming">Robotics Programming</label>
-                                    </div>
-                                    <div class="option-item">
-                                        <input type="checkbox" id="opt-hardware" value="hardware">
-                                        <label for="opt-hardware">Hardware & Electronics</label>
-                                    </div>
-                                    <div class="option-item">
-                                        <input type="checkbox" id="opt-drones" value="drones">
-                                        <label for="opt-drones">Drones & UAVs</label>
-                                    </div>
-                                    <div class="option-item">
-                                        <input type="checkbox" id="opt-education" value="education">
-                                        <label for="opt-education">Educational Robotics</label>
-                                    </div>
-                                    <div class="option-item">
-                                        <input type="checkbox" id="opt-research" value="research">
-                                        <label for="opt-research">Research & Development</label>
-                                    </div>
-                                </div>
-                                <div class="selected-options">
-                                    <!-- Selected options will appear here as tags -->
-                                </div>
-                            </div>
-                            
-                            <div class="requirements">
-                                Click on multiple options to select your areas of interest
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="checkbox" id="termsAgreement" name="termsAgreement" required>
-                            <label for="termsAgreement">I agree to the <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a></label>
-                            <div class="error-message" id="termsError">You must agree to the terms to continue</div>
-                        </div>
-
-                        <button type="submit" class="submit-btn">Create Account</button>
-                        
-                        <div class="login-link">
-                            Already have an account? <a href="login.html">Log In</a>
-                        </div>
-                    </form>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
                 </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
+                <button type="submit" class="signup-btn">Sign Up</button>
+            </form>
+            <div class="login-link">
+                Already have an account? <a href="../login/login.html">Log in here</a>
             </div>
-        </section>
+        </div>
     </main>
 
-    <!-- AI Assistant Button -->
-    <div class="ai-assistant">
-        <div class="ai-button" id="ai-button">
-            <div class="ai-icon">🤖</div>
-        </div>
-    </div>
-
-    <!-- Footer -->
     <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>About</h3>
-                    <ul class="footer-links">
-                        <li><a href="about.html#mission">Our Mission</a></li>
-                        <li><a href="about.html#vision">Our Vision</a></li>
-                        <li><a href="about.html#why">Why We Exist</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Resources</h3>
-                    <ul class="footer-links">
-                        <li><a href="encyclopedia.html">Robot Database</a></li>
-                        <li><a href="about.html#research">Research</a></li>
-                        <li><a href="about.html#education">Education</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Connect</h3>
-                    <ul class="footer-links">
-                        <li><a href="contact.html">Contact Us</a></li>
-                        <li><a href="contact.html#newsletter">Newsletter</a></li>
-                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
-                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                &copy; 2025 Tgen Robotics Hub. All rights reserved.
-            </div>
-        </div>
+        <p>&copy; 2025 TGen Robotics. All rights reserved.</p>
     </footer>
 
-    <!-- Scripts -->
-    <script src="js/main.js"></script>
-    <script src="js/custom-select.js"></script>
+    <!-- Font Awesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    
     <script>
+        // Check if user is logged in
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile navigation
-            const mobileMenuButton = document.querySelector('.mobile-menu-button');
-            const navLinks = document.querySelector('.nav-links');
-            const authButtons = document.querySelector('.auth-buttons');
-            
-            mobileMenuButton.addEventListener('click', function() {
-                navLinks.classList.toggle('mobile-active');
-                authButtons.classList.toggle('mobile-active');
-            });
+            checkLoginStatus();
+        });
 
-            // Form validation
-            const signupForm = document.getElementById('signupForm');
-            const fullName = document.getElementById('fullName');
-            const email = document.getElementById('email');
-            const password = document.getElementById('password');
-            const confirmPassword = document.getElementById('confirmPassword');
-            const termsAgreement = document.getElementById('termsAgreement');
+        function checkLoginStatus() {
+            // Get user data from localStorage
+            const userData = JSON.parse(localStorage.getItem('userData'));
             
-            // Password toggle visibility
-            const togglePassword = document.getElementById('togglePassword');
-            const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-            
-            togglePassword.addEventListener('click', function() {
-                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                password.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-            });
-            
-            toggleConfirmPassword.addEventListener('click', function() {
-                const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-                confirmPassword.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-            });
-            
-            // Password strength meter
-            const passwordStrength = document.getElementById('passwordStrength');
-            const strengthText = document.getElementById('strengthText');
-            
-            password.addEventListener('input', function() {
-                const value = password.value;
-                let strength = 0;
+            if (userData && userData.isLoggedIn) {
+                // User is logged in
+                document.getElementById('login-link').style.display = 'none';
+                document.getElementById('account-dropdown').style.display = 'block';
                 
-                if (value.length >= 8) strength += 1;
-                if (/[A-Z]/.test(value)) strength += 1;
-                if (/[a-z]/.test(value)) strength += 1;
-                if (/[0-9]/.test(value)) strength += 1;
-                if (/[^A-Za-z0-9]/.test(value)) strength += 1;
-                
-                passwordStrength.className = 'strength-meter';
-                
-                if (strength === 0) {
-                    strengthText.textContent = '';
-                    passwordStrength.classList.remove('weak', 'medium', 'strong', 'very-strong');
-                } else if (strength <= 2) {
-                    strengthText.textContent = 'Weak';
-                    passwordStrength.classList.add('weak');
-                } else if (strength <= 3) {
-                    strengthText.textContent = 'Medium';
-                    passwordStrength.classList.add('medium');
-                } else if (strength <= 4) {
-                    strengthText.textContent = 'Strong';
-                    passwordStrength.classList.add('strong');
+                // Check if admin
+                if (userData.email === 'tgen.robotics@gmail.com') {
+                    document.getElementById('admin-dashboard').style.display = 'block';
                 } else {
-                    strengthText.textContent = 'Very Strong';
-                    passwordStrength.classList.add('very-strong');
+                    document.getElementById('admin-dashboard').style.display = 'none';
                 }
-            });
-            
-            // Form submission
-            signupForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                let isValid = true;
-                
-                // Reset error messages
-                document.querySelectorAll('.error-message').forEach(el => {
-                    el.classList.remove('show-error');
-                });
-                
-                // Validate full name
-                if (fullName.value.trim() === '') {
-                    document.getElementById('fullNameError').classList.add('show-error');
-                    isValid = false;
-                }
-                
-                // Validate email
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email.value)) {
-                    document.getElementById('emailError').classList.add('show-error');
-                    isValid = false;
-                }
-                
-                // Validate password
-                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-                if (!passwordRegex.test(password.value)) {
-                    document.getElementById('passwordError').classList.add('show-error');
-                    isValid = false;
-                }
-                
-                // Validate password confirmation
-                if (password.value !== confirmPassword.value) {
-                    document.getElementById('confirmPasswordError').classList.add('show-error');
-                    isValid = false;
-                }
-                
-                // Validate terms agreement
-                if (!termsAgreement.checked) {
-                    document.getElementById('termsError').classList.add('show-error');
-                    isValid = false;
-                }
-                
-                if (isValid) {
-                    // Here you would typically send the data to a server
-                    // For now, we'll just show an alert and redirect
-                    alert('Account created successfully! Welcome to TGen Robotic HUB!');
-                    
-                    // In a real implementation, you would:
-                    // 1. Send data to the server
-                    // 2. Create the user account
-                    // 3. Log the user in
-                    // 4. Redirect to the dashboard or homepage
-                    
-                    // For demo purposes, store the user data in localStorage
-                    // using the auth.js module we created earlier
-                    const interestsSelect = document.getElementById('interests');
-                    const selectedInterests = Array.from(interestsSelect.selectedOptions).map(option => option.value);
-                    
-                    try {
-                        // If auth.js is properly loaded and the authService is available
-                        if (typeof authService !== 'undefined') {
-                            // Register and login the user
-                            authService.register(fullName.value, email.value, password.value, selectedInterests);
-                            authService.login(email.value, password.value);
-                            
-                            // Redirect to the homepage or dashboard
-                            window.location.href = 'index.html';
-                        } else {
-                            // Fallback if authService is not available
-                            console.log('Auth service not available, form validated successfully');
-                            window.location.href = 'index.html';
-                        }
-                    } catch (error) {
-                        console.error('Error during registration:', error);
-                        alert('There was an error creating your account: ' + error.message);
-                    }
-                }
-            });
-            
-            // If auth.js is loaded, initialize it
-            if (typeof authService !== 'undefined') {
-                // Check if user is already logged in
-                if (authService.isLoggedIn()) {
-                    // Redirect to the dashboard or homepage
-                    window.location.href = 'index.html';
-                }
+            } else {
+                // User is not logged in
+                document.getElementById('login-link').style.display = 'block';
+                document.getElementById('account-dropdown').style.display = 'none';
             }
+        }
+
+        // Handle signup form submission
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Validate password match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            // Create user object
+            const userData = {
+                fullname: fullname,
+                email: email,
+                password: password,
+                isLoggedIn: true
+            };
+            
+            // Save to localStorage (in a real app, you'd send this to a server)
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            alert('Account created successfully!');
+            
+            // Redirect to home page
+            window.location.href = '../index.html';
+        });
+
+        // Handle logout
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get user data
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            if (userData) {
+                // Update login status
+                userData.isLoggedIn = false;
+                localStorage.setItem('userData', JSON.stringify(userData));
+            }
+            
+            alert('Logged out successfully!');
+            
+            // Update navigation
+            checkLoginStatus();
+            
+            // Redirect to home page
+            window.location.href = '../index.html';
         });
     </script>
 </body>
