@@ -307,6 +307,53 @@
             background-color: #45a049;
         }
 
+        /* Access denied message */
+        .access-denied {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .access-denied h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ff4d4d;
+        }
+
+        .access-denied p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .access-denied a {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .access-denied a:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
         /* Responsive styles */
         @media (max-width: 768px) {
             .sidebar {
@@ -345,6 +392,13 @@
     </style>
 </head>
 <body>
+    <!-- Access denied message (hidden by default) -->
+    <div class="access-denied" id="access-denied" style="display: none;">
+        <h2>Access Denied</h2>
+        <p>You do not have permission to access the admin dashboard. Please log in with an admin account.</p>
+        <a href="login.html">Return to Login</a>
+    </div>
+
     <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">TGen Admin</div>
         <ul class="sidebar-menu">
@@ -613,62 +667,104 @@
 
     <!-- Font Awesome for icons -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="js/main.js"></script>
     
     <script>
         // Check if user is logged in as admin
         document.addEventListener('DOMContentLoaded', function() {
             checkAdminAccess();
+
+            // Toggle sidebar on mobile
+            document.getElementById('toggle-menu').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('show');
+            });
+
+            // Navigation between sections
+            document.getElementById('users-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('users-section');
+            });
+
+            document.getElementById('projects-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('projects-section');
+            });
+
+            document.getElementById('posts-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('dashboard-section'); // Placeholder
+            });
+
+            document.getElementById('messages-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('dashboard-section'); // Placeholder
+            });
+
+            document.getElementById('settings-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('dashboard-section'); // Placeholder
+            });
+
+            // Toggle forms
+            document.getElementById('add-user-btn').addEventListener('click', function() {
+                document.getElementById('add-user-form').style.display = 'block';
+            });
+
+            document.getElementById('cancel-user-btn').addEventListener('click', function() {
+                document.getElementById('add-user-form').style.display = 'none';
+            });
+
+            document.getElementById('add-project-btn').addEventListener('click', function() {
+                document.getElementById('add-project-form').style.display = 'block';
+            });
+
+            document.getElementById('cancel-project-btn').addEventListener('click', function() {
+                document.getElementById('add-project-form').style.display = 'none';
+            });
+
+            // Handle logout
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                // Use the logout function from main.js
+                window.tgenApp.logout();
+                
+                // Redirect to home page
+                window.location.href = 'index.html';
+            });
+
+            // Form submissions (placeholders)
+            document.getElementById('user-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('User added successfully!');
+                document.getElementById('add-user-form').style.display = 'none';
+            });
+
+            document.getElementById('project-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Project added successfully!');
+                document.getElementById('add-project-form').style.display = 'none';
+            });
         });
 
         function checkAdminAccess() {
             // Get user data from localStorage
-            const userData = JSON.parse(localStorage.getItem('userData'));
+            const user = window.tgenApp.getCurrentUser();
             
-            if (!userData || !userData.isLoggedIn) {
-                // Not logged in, redirect to login page
-                alert('Please log in to access the dashboard.');
-                window.location.href = '../login/login.html';
+            if (!user || !user.isLoggedIn) {
+                // Not logged in, show access denied
+                document.getElementById('access-denied').style.display = 'flex';
+                document.getElementById('sidebar').style.display = 'none';
+                document.querySelector('.main-content').style.display = 'none';
                 return;
             }
             
             // Check if admin
-            if (userData.email !== 'tgen.robotics@gmail.com') {
-                // Not admin, redirect to home page
-                alert('You do not have permission to access this page.');
-                window.location.href = '../index.html';
+            if (user.email !== 'tgen.robotics@gmail.com' && user.role !== 'admin') {
+                // Not admin, show access denied
+                document.getElementById('access-denied').style.display = 'flex';
+                document.getElementById('sidebar').style.display = 'none';
+                document.querySelector('.main-content').style.display = 'none';
             }
         }
-
-        // Toggle sidebar on mobile
-        document.getElementById('toggle-menu').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
-        });
-
-        // Navigation between sections
-        document.getElementById('users-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            showSection('users-section');
-        });
-
-        document.getElementById('projects-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            showSection('projects-section');
-        });
-
-        document.getElementById('posts-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            showSection('dashboard-section'); // Placeholder, would be its own section in a full implementation
-        });
-
-        document.getElementById('messages-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            showSection('dashboard-section'); // Placeholder, would be its own section in a full implementation
-        });
-
-        document.getElementById('settings-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            showSection('dashboard-section'); // Placeholder, would be its own section in a full implementation
-        });
 
         function showSection(sectionId) {
             // Hide all sections
@@ -692,53 +788,6 @@
                 document.getElementById('projects-link').classList.add('active');
             }
         }
-
-        // Toggle forms
-        document.getElementById('add-user-btn').addEventListener('click', function() {
-            document.getElementById('add-user-form').style.display = 'block';
-        });
-
-        document.getElementById('cancel-user-btn').addEventListener('click', function() {
-            document.getElementById('add-user-form').style.display = 'none';
-        });
-
-        document.getElementById('add-project-btn').addEventListener('click', function() {
-            document.getElementById('add-project-form').style.display = 'block';
-        });
-
-        document.getElementById('cancel-project-btn').addEventListener('click', function() {
-            document.getElementById('add-project-form').style.display = 'none';
-        });
-
-        // Handle logout
-        document.getElementById('logout-btn').addEventListener('click', function() {
-            // Get user data
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            
-            if (userData) {
-                // Update login status
-                userData.isLoggedIn = false;
-                localStorage.setItem('userData', JSON.stringify(userData));
-            }
-            
-            alert('Logged out successfully!');
-            
-            // Redirect to home page
-            window.location.href = '../index.html';
-        });
-
-        // Form submissions (placeholders, would connect to backend in real implementation)
-        document.getElementById('user-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('User added successfully!');
-            document.getElementById('add-user-form').style.display = 'none';
-        });
-
-        document.getElementById('project-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Project added successfully!');
-            document.getElementById('add-project-form').style.display = 'none';
-        });
     </script>
 </body>
 </html>
