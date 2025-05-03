@@ -789,5 +789,146 @@
             }
         }
     </script>
+    <script>
+    // Check if user is logged in as admin
+    document.addEventListener('DOMContentLoaded', function() {
+        checkAdminAccess();
+
+        // Toggle sidebar on mobile
+        const toggleMenu = document.getElementById('toggle-menu');
+        if (toggleMenu) {
+            toggleMenu.style.display = 'flex';
+            toggleMenu.addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('show');
+            });
+        }
+
+        // Navigation between sections
+        document.getElementById('users-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('users-section');
+        });
+
+        document.getElementById('projects-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('projects-section');
+        });
+
+        document.getElementById('posts-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('dashboard-section'); // Placeholder, would be its own section in a full implementation
+        });
+
+        document.getElementById('messages-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('dashboard-section'); // Placeholder, would be its own section in a full implementation
+        });
+
+        document.getElementById('settings-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('dashboard-section'); // Placeholder, would be its own section in a full implementation
+        });
+
+        // Toggle forms
+        document.getElementById('add-user-btn').addEventListener('click', function() {
+            document.getElementById('add-user-form').style.display = 'block';
+        });
+
+        document.getElementById('cancel-user-btn').addEventListener('click', function() {
+            document.getElementById('add-user-form').style.display = 'none';
+        });
+
+        document.getElementById('add-project-btn').addEventListener('click', function() {
+            document.getElementById('add-project-form').style.display = 'block';
+        });
+
+        document.getElementById('cancel-project-btn').addEventListener('click', function() {
+            document.getElementById('add-project-form').style.display = 'none';
+        });
+
+        // Handle logout
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            // Use the logout function from main.js
+            window.tgenApp.logout();
+            
+            // Redirect to home page
+            window.location.href = 'index.html';
+        });
+
+        // Form submissions (placeholders)
+        document.getElementById('user-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('User added successfully!');
+            document.getElementById('add-user-form').style.display = 'none';
+        });
+
+        document.getElementById('project-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Project added successfully!');
+            document.getElementById('add-project-form').style.display = 'none';
+        });
+
+        // Add event handlers for edit and delete buttons
+        document.querySelectorAll('.edit-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Edit functionality coming soon!');
+            });
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to delete this item?')) {
+                    alert('Delete functionality coming soon!');
+                }
+            });
+        });
+    });
+
+    function checkAdminAccess() {
+        // Get user data from localStorage
+        const user = window.tgenApp.getCurrentUser();
+        
+        if (!user || !user.isLoggedIn) {
+            // Not logged in, show access denied
+            document.getElementById('access-denied').style.display = 'flex';
+            document.getElementById('sidebar').style.display = 'none';
+            document.querySelector('.main-content').style.display = 'none';
+            return;
+        }
+        
+        // Check if admin
+        if (user.email !== 'tgen.robotics@gmail.com' && user.role !== 'admin') {
+            // Not admin, show access denied
+            document.getElementById('access-denied').style.display = 'flex';
+            document.getElementById('sidebar').style.display = 'none';
+            document.querySelector('.main-content').style.display = 'none';
+        }
+    }
+
+    function showSection(sectionId) {
+        // Hide all sections
+        document.getElementById('dashboard-section').style.display = 'none';
+        document.getElementById('users-section').style.display = 'none';
+        document.getElementById('projects-section').style.display = 'none';
+        
+        // Show selected section
+        document.getElementById(sectionId).style.display = 'block';
+        
+        // Update active menu item
+        document.querySelectorAll('.sidebar-menu a').forEach(function(item) {
+            item.classList.remove('active');
+        });
+        
+        if (sectionId === 'dashboard-section') {
+            document.querySelector('.sidebar-menu a:first-child').classList.add('active');
+        } else if (sectionId === 'users-section') {
+            document.getElementById('users-link').classList.add('active');
+        } else if (sectionId === 'projects-section') {
+            document.getElementById('projects-link').classList.add('active');
+        }
+    }
+</script>
 </body>
 </html>
