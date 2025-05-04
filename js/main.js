@@ -1,11 +1,5 @@
 // main.js - Common functionality for Tgen Robotics Hub
 
-// DOM Elements
-const mobileMenuButton = document.querySelector('.mobile-menu-button');
-const navLinks = document.querySelector('.nav-links');
-const authButtons = document.querySelector('.auth-buttons');
-const aiButton = document.getElementById('ai-button');
-
 // Initialize the site
 document.addEventListener('DOMContentLoaded', () => {
     // Set up event listeners
@@ -13,12 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setupActiveNavLink();
     setupAIAssistant();
     
-    // Check if user is logged in
+    // Check if user is logged in and update UI accordingly
     checkUserStatus();
 });
 
 // Mobile menu toggle
 function setupMenuToggle() {
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const navLinks = document.querySelector('.nav-links');
+    const authButtons = document.querySelector('.auth-buttons');
+    
     if (mobileMenuButton) {
         mobileMenuButton.addEventListener('click', () => {
             navLinks.classList.toggle('mobile-active');
@@ -46,6 +44,7 @@ function setupActiveNavLink() {
 
 // AI Assistant functionality
 function setupAIAssistant() {
+    const aiButton = document.getElementById('ai-button');
     if (aiButton) {
         aiButton.addEventListener('click', openAIAssistant);
     }
@@ -82,19 +81,22 @@ function updateUserUI(user) {
                 <i class="fas fa-chevron-down"></i>
             </div>
             <div class="dropdown-menu">
-                <a href="profile.html">Profile</a>
-                ${user.role === 'admin' ? '<a href="admin-dashboard.html">Admin Dashboard</a>' : ''}
-                <a href="#" id="logout-btn">Logout</a>
+                <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+                ${user.role === 'admin' ? '<a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>' : ''}
+                <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
     `;
     
     // Add click handler for dropdown toggle
     const userInfo = document.querySelector('.user-info');
-    if (userInfo) {
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    
+    if (userInfo && dropdownMenu) {
         userInfo.addEventListener('click', (e) => {
             e.stopPropagation();
-            document.querySelector('.dropdown-menu').classList.toggle('active');
+            dropdownMenu.classList.toggle('active');
+            userInfo.querySelector('i').style.transform = dropdownMenu.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
         });
     }
     
@@ -110,8 +112,12 @@ function updateUserUI(user) {
     // Close dropdown when clicking outside
     document.addEventListener('click', () => {
         const dropdown = document.querySelector('.dropdown-menu');
+        const userInfoIcon = document.querySelector('.user-info i');
         if (dropdown && dropdown.classList.contains('active')) {
             dropdown.classList.remove('active');
+            if (userInfoIcon) {
+                userInfoIcon.style.transform = 'rotate(0)';
+            }
         }
     });
 }
