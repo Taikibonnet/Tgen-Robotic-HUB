@@ -842,12 +842,43 @@
                                 <div class="media-preview" id="additional-images-preview"></div>
                             </div>
                             
+                            <h3 style="margin-top: 20px;">Video Media</h3>
+                            
                             <div class="form-group">
-                                <label class="form-label">Video URL</label>
-                                <input type="url" class="form-control" id="video-url" placeholder="e.g., https://www.youtube.com/watch?v=...">
-                                <label class="form-label">Video URL</label>
-                                <input type="url" class="form-control" id="video-url" placeholder="e.g., https://www.youtube.com/watch?v=...">
-                                <p class="small" style="margin-top: 5px; color: var(--gray);">YouTube or Vimeo URLs are supported</p>
+                                <label class="form-label">Video Upload</label>
+                                <div class="media-upload" id="video-upload">
+                                    <div class="media-upload-icon">
+                                        <i class="fas fa-video"></i>
+                                    </div>
+                                    <p>Click to upload or drag and drop</p>
+                                    <p class="small">MP4, WebM or OGG (Max. 50MB)</p>
+                                </div>
+                                <div class="media-preview" id="video-preview"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Or Add Video URLs</label>
+                                <div id="video-url-container">
+                                    <div class="video-url-group" data-index="0">
+                                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                            <input type="url" class="form-control video-url-input" placeholder="e.g., https://www.youtube.com/watch?v=...">
+                                            <button type="button" class="btn remove-video-url" style="background: rgba(255, 107, 107, 0.1); color: var(--accent); padding: 0 10px;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control video-title-input" placeholder="Video Title" style="margin-bottom: 10px;">
+                                        <textarea class="form-control video-description-input" placeholder="Video Description (optional)" style="margin-bottom: 20px;"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn" id="add-video-url" style="background: rgba(32, 227, 178, 0.1); color: var(--primary);">
+                                    <i class="fas fa-plus"></i> Add Another Video URL
+                                </button>
+                                
+                                <p class="small" style="margin-top: 5px; color: var(--gray);">
+                                    YouTube, Vimeo, or other embeddable video URLs are supported.
+                                    <br>Videos will be displayed in the robot detail page in their own tab.
+                                </p>
                             </div>
                         </div>
                     </div>
