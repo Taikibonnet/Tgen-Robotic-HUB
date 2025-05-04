@@ -131,6 +131,72 @@ header {
     box-shadow: 0 5px 15px rgba(32, 227, 178, 0.3);
 }
 
+/* User Dropdown Menu */
+.user-dropdown {
+    position: relative;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--light);
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.user-info:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.user-info i {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: rgba(30, 30, 30, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    width: 180px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.dropdown-menu.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: var(--light);
+    transition: all 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    background-color: rgba(32, 227, 178, 0.1);
+    color: var(--primary);
+}
+
+.dropdown-menu a i {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
 /* Main Content Area */
 .main-content {
     padding: 100px 0 60px;
@@ -387,6 +453,16 @@ footer {
     animation: fadeIn 0.5s ease-in-out;
 }
 
+/* Mobile Menu Button - hidden by default on desktop */
+.mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--light);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .section-title {
@@ -399,11 +475,6 @@ footer {
     
     .mobile-menu-button {
         display: block;
-        background: none;
-        border: none;
-        color: var(--light);
-        font-size: 1.5rem;
-        cursor: pointer;
     }
     
     .nav-links.mobile-active {
