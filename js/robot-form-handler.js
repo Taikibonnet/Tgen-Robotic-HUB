@@ -774,3 +774,246 @@ function closeModal() {
     document.querySelector('.modal-tab[data-tab="basic"]').classList.add('active');
     document.getElementById('tab-basic').classList.add('active');
 }
+// Add these functions to robot-form-handler.js
+
+// Global variable to store video files
+let videoFiles = [];
+let videoUrls = [{ url: '', title: '', description: '' }];
+
+// Initialize video uploads
+function initializeVideoUploads() {
+    // Setup video upload
+    const videoUpload = document.getElementById('video-upload');
+    const videoPreview = document.getElementById('video-preview');
+    
+    videoUpload.addEventListener('click', function() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'video/*';
+        input.multiple = true;
+        
+        input.onchange = function(e) {
+            if (e.target.files && e.target.files.length > 0) {
+                // Add new files to the array
+                for (const file of e.target.files) {
+                    videoFiles.push(file);
+                    
+                    // Create video preview
+                    const videoId = `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                    const videoElement = document.createElement('video');
+                    videoElement.controls = true;
+                    videoElement.width = 280;
+                    videoElement.style.borderRadius = '5px';
+                    videoElement.style.marginBottom = '10px';
+                    
+                    // Create container
+                    const container = document.createElement('div');
+                    container.className = 'media-item video-item';
+                    container.id = videoId;
+                    container.style.width = '280px';
+                    container.style.marginRight = '10px';
+                    
+                    // Create remove button
+                    const removeBtn = document.createElement('div');
+                    removeBtn.className = 'media-remove';
+                    removeBtn.setAttribute('data-id', videoId);
+                    removeBtn.innerHTML = '×';
+                    
+                    // Add elements to container
+                    container.appendChild(videoElement);
+                    container.appendChild(removeBtn);
+                    
+                    // Add to preview
+                    videoPreview.appendChild(container);
+                    
+                    // Set source for video
+                    const objectURL = URL.createObjectURL(file);
+                    videoElement.src = objectURL;
+                    
+                    // Add event listener to remove button
+                    removeBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const index = videoFiles.findIndex(f => f === file);
+                        if (index !== -1) {
+                            videoFiles.splice(index, 1);
+                        }
+                        document.getElementById(videoId).remove();
+                        URL.revokeObjectURL(objectURL);
+                    });
+                }
+            }
+        };
+        
+        input.click();
+    });
+    
+    // Allow drag and drop for videos
+    setupDragAndDrop(videoUpload, videoPreview, 'video');
+    
+    // Setup video URL inputs
+    initializeVideoUrlInputs();
+}
+
+// Initialize video URL inputs
+function initializeVideoUrlInputs() {
+    const addVideoUrlBtn = document.getElementById('add-video-url');
+    const videoUrlContainer = document.getElementById('video-url-container');
+    
+    addVideoUrlBtn.addEventListener('click', function() {
+        // Add new video URL input group
+        const index = videoUrls.length;
+        videoUrls.push({ url: '', title: '', description: '' });
+        
+        const urlGroupHTML = `
+            <div class="video-url-group" data-index="${index}">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="url" class="form-control video-url-input" placeholder="e.g., https://www.youtube.com/watch?v=...">
+                    <button type="button" class="btn remove-video-url" style="background: rgba(255, 107, 107, 0.1); color: var(--accent); padding: 0 10px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <input type="text" class="form-control video-title-input" placeholder="Video Title" style="margin-bottom: 10px;">
+                <textarea class="form-control video-description-input" placeholder="Video Description (optional)" style="margin-bottom: 20px;"></textarea>
+            </div>
+        `;
+        
+        videoUrlContainer.insertAdjacentHTML('beforeend', urlGroupHTML);
+        
+        // Add event listeners for the new elements
+        attachVideoUrlEventListeners(index);
+    });
+    
+    // Initialize event listeners for the first URL input
+    attachVideoUrlEventListeners(0);
+}
+
+// Add event listeners to video URL inputs
+function attachVideoUrlEventListeners(index) {
+    const group = document.querySelector(`.video-url-group[data-index="${index}"]`);
+    if (!group) return;
+    
+    const urlInput = group.querySelector('.video-url-input');
+    const titleInput = group.querySelector('.video-title-input');
+    const descInput = group.querySelector('.video-description-input');
+    const removeBtn = group.querySelector('.remove-video-url');
+    
+    // URL input change
+    urlInput.addEventListener('input', function() {
+        videoUrls[index].url = this.value;
+    });
+    
+    // Title input change
+    titleInput.addEventListener('input', function() {
+        videoUrls[index].title = this.value;
+    });
+    
+    // Description input change
+    descInput.addEventListener('input', function() {
+        videoUrls[index].description = this.value;
+    });
+    
+    // Remove button
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+            if (videoUrls.length <= 1) {
+                // Just clear the inputs for the first group
+                urlInput.value = '';
+                titleInput.value = '';
+                descInput.value = '';
+                videoUrls[index] = { url: '', title: '', description: '' };
+            } else {
+                // Remove the group
+                group.remove();
+                videoUrls.splice(index, 1);
+                
+                // Update data-index attributes for remaining groups
+                document.querySelectorAll('.video-url-group').forEach((g, i) => {
+                    g.setAttribute('data-index', i);
+                    
+                    // Update event listeners
+                    const inputs = g.querySelectorAll('input, textarea');
+                    inputs.forEach(input => {
+                        // Remove existing event listeners
+                        const newInput = input.cloneNode(true);
+                        input.parentNode.replaceChild(newInput, input);
+                    });
+                    
+                    // Reattach event listeners
+                    attachVideoUrlEventListeners(i);
+                });
+            }
+        });
+    }
+}
+
+// Collect video data
+function collectVideoData() {
+    const videos = [];
+    
+    // Add video files
+    videoFiles.forEach(file => {
+        videos.push({
+            type: 'file',
+            file: file,
+            url: URL.createObjectURL(file),
+            title: file.name.split('.')[0],
+            description: ''
+        });
+    });
+    
+    // Add video URLs
+    videoUrls.forEach(videoUrl => {
+        if (videoUrl.url) {
+            videos.push({
+                type: 'url',
+                url: videoUrl.url,
+                title: videoUrl.title || 'Video',
+                description: videoUrl.description || '',
+                thumbnail: getThumbnailForVideoUrl(videoUrl.url)
+            });
+        }
+    });
+    
+    return videos;
+}
+
+// Function to get thumbnail URL for video URLs (YouTube, Vimeo, etc.)
+function getThumbnailForVideoUrl(url) {
+    if (!url) return '';
+    
+    // YouTube
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const youtubeMatch = url.match(youtubeRegex);
+    
+    if (youtubeMatch && youtubeMatch[1]) {
+        return `https://img.youtube.com/vi/${youtubeMatch[1]}/maxresdefault.jpg`;
+    }
+    
+    // Vimeo
+    const vimeoRegex = /vimeo.com\/(\d+)/;
+    const vimeoMatch = url.match(vimeoRegex);
+    
+    if (vimeoMatch && vimeoMatch[1]) {
+        // Note: In a real application, you'd need to use the Vimeo API to get the thumbnail
+        // For this demo, we'll just return a placeholder
+        return 'images/video-placeholder.jpg';
+    }
+    
+    // Default placeholder
+    return 'images/video-placeholder.jpg';
+}
+
+// Helper function to determine if a URL is an external video (YouTube, Vimeo, etc.)
+function isExternalVideoUrl(url) {
+    if (!url) return false;
+    
+    const videoPatterns = [
+        /youtube\.com/,
+        /youtu\.be/,
+        /vimeo\.com/,
+        /dailymotion\.com/,
+        /facebook\.com.*\/videos\//
+    ];
+    
+    return videoPatterns.some(pattern => pattern.test(url));
+}
