@@ -972,5 +972,23 @@
             });
         });
     </script>
+    <!-- Add these script imports right before the closing </body> tag in admin-robot-management.html -->
+
+<!-- Script imports -->
+<script src="robot-storage-adapter.js"></script>
+<script src="robot-form-handler.js"></script>
+<script src="robot-manager-integration.js"></script>
+
+<script>
+    // Initialize robot management when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // This function is defined in robot-manager-integration.js
+        if (typeof initializeRobotManager === 'function') {
+            initializeRobotManager();
+        } else {
+            console.error('Robot manager integration not loaded.');
+        }
+    });
+</script>
 </body>
 </html>
