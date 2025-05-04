@@ -18,11 +18,28 @@ function setupMenuToggle() {
     const authButtons = document.querySelector('.auth-buttons');
     
     if (mobileMenuButton) {
-        mobileMenuButton.addEventListener('click', () => {
+        mobileMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent click from bubbling
             navLinks.classList.toggle('mobile-active');
             authButtons.classList.toggle('mobile-active');
         });
     }
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.mobile-menu-button') && 
+            !e.target.closest('.nav-links.mobile-active') && 
+            !e.target.closest('.auth-buttons.mobile-active')) {
+            
+            if (navLinks && navLinks.classList.contains('mobile-active')) {
+                navLinks.classList.remove('mobile-active');
+            }
+            
+            if (authButtons && authButtons.classList.contains('mobile-active')) {
+                authButtons.classList.remove('mobile-active');
+            }
+        }
+    });
 }
 
 // Set active nav link based on current page
