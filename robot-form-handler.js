@@ -1,231 +1,120 @@
-// Global variables for storing uploaded files
+// Global variables for media management
 let featuredImageFile = null;
 let additionalImageFiles = [];
 let videoFiles = [];
 let videoUrls = [{ url: '', title: '', description: '' }];
 
 /**
- * Initializes all form handlers and UI elements
+ * Function to initialize robot form handling
  */
-function initializeFormHandlers() {
-    const robotForm = document.getElementById('robot-form');
+function initializeRobotForm() {
+    const form = document.getElementById('robot-form');
     
-    robotForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveRobot();
-    });
-    
-    // Name to slug automation
-    const nameInput = document.getElementById('robot-name');
-    const slugInput = document.getElementById('robot-slug');
-    
-    nameInput.addEventListener('blur', function() {
-        if (!slugInput.value) {
-            slugInput.value = generateSlug(nameInput.value);
-        }
-    });
-    
-    // Initialize media uploads
-    initializeMediaUploads();
-    
-    // Initialize video uploads
-    initializeVideoUploads();
-    
-    // Initialize custom specification fields
-    initializeCustomSpecFields();
+    if (form) {
+        // Set up form submission
+        form.addEventListener('submit', handleFormSubmit);
+        
+        // Set up media preview
+        setupMediaPreview();
+        
+        // Set up video URL management
+        setupVideoUrlManagement();
+        
+        // Set up custom specification fields
+        initializeCustomSpecFields();
+    }
 }
 
 /**
- * Initializes media uploads for featured and additional images
+ * Set up media preview functionality
  */
-function initializeMediaUploads() {
-    // Setup featured image upload
-    const featuredImageUpload = document.getElementById('featured-image-upload');
+function setupMediaPreview() {
+    // Featured image preview
+    const featuredImageInput = document.getElementById('featured-image');
     const featuredImagePreview = document.getElementById('featured-image-preview');
     
-    featuredImageUpload.addEventListener('click', function() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        
-        input.onchange = function(e) {
-            if (e.target.files && e.target.files[0]) {
-                featuredImageFile = e.target.files[0];
+    if (featuredImageInput && featuredImagePreview) {
+        featuredImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                featuredImageFile = file;
                 
-                // Create preview
-                featuredImagePreview.innerHTML = '';
-                const container = document.createElement('div');
-                container.className = 'media-item';
-                
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(featuredImageFile);
-                
-                const removeBtn = document.createElement('div');
-                removeBtn.className = 'media-remove';
-                removeBtn.innerHTML = '×';
-                removeBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    featuredImageFile = null;
-                    featuredImagePreview.innerHTML = '';
-                    URL.revokeObjectURL(img.src);
-                });
-                
-                container.appendChild(img);
-                container.appendChild(removeBtn);
-                featuredImagePreview.appendChild(container);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    featuredImagePreview.innerHTML = `
+                        <div style="position: relative; display: inline-block; margin-right: 10px; margin-bottom: 10px;">
+                            <img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 5px;">
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
             }
-        };
-        
-        input.click();
-    });
+        });
+    }
     
-    // Setup additional images upload
-    const additionalImagesUpload = document.getElementById('additional-images-upload');
+    // Additional images preview
+    const additionalImagesInput = document.getElementById('additional-images');
     const additionalImagesPreview = document.getElementById('additional-images-preview');
     
-    additionalImagesUpload.addEventListener('click', function() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.multiple = true;
-        
-        input.onchange = function(e) {
-            if (e.target.files && e.target.files.length > 0) {
-                // Add new files to the array
-                for (const file of e.target.files) {
-                    additionalImageFiles.push(file);
-                    
-                    // Create preview
-                    const imgId = `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                    const container = document.createElement('div');
-                    container.className = 'media-item';
-                    container.id = imgId;
-                    
-                    const img = document.createElement('img');
-                    const objectURL = URL.createObjectURL(file);
-                    img.src = objectURL;
-                    
-                    const removeBtn = document.createElement('div');
-                    removeBtn.className = 'media-remove';
-                    removeBtn.setAttribute('data-id', imgId);
-                    removeBtn.innerHTML = '×';
-                    
-                    container.appendChild(img);
-                    container.appendChild(removeBtn);
-                    additionalImagesPreview.appendChild(container);
-                    
-                    // Add event listener to remove button
-                    removeBtn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const index = additionalImageFiles.findIndex(f => f === file);
-                        if (index !== -1) {
-                            additionalImageFiles.splice(index, 1);
-                        }
-                        document.getElementById(imgId).remove();
-                        URL.revokeObjectURL(objectURL);
-                    });
-                }
+    if (additionalImagesInput && additionalImagesPreview) {
+        additionalImagesInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                additionalImageFiles = [...additionalImageFiles, ...files];
+                
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageContainer = document.createElement('div');
+                        imageContainer.style.position = 'relative';
+                        imageContainer.style.display = 'inline-block';
+                        imageContainer.style.marginRight = '10px';
+                        imageContainer.style.marginBottom = '10px';
+                        
+                        imageContainer.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+                            <button type="button" class="remove-image" style="position: absolute; top: -5px; right: -5px; background: rgba(255, 107, 107, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer;">×</button>
+                        `;
+                        
+                        // Add event listener to remove button
+                        const removeBtn = imageContainer.querySelector('.remove-image');
+                        removeBtn.addEventListener('click', function() {
+                            const index = additionalImageFiles.indexOf(file);
+                            if (index > -1) {
+                                additionalImageFiles.splice(index, 1);
+                            }
+                            imageContainer.remove();
+                        });
+                        
+                        additionalImagesPreview.appendChild(imageContainer);
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
-        };
-        
-        input.click();
-    });
-    
-    // Setup drag and drop for media uploads
-    setupDragAndDrop(featuredImageUpload, featuredImagePreview, 'image', false);
-    setupDragAndDrop(additionalImagesUpload, additionalImagesPreview, 'image', true);
+        });
+    }
 }
 
 /**
- * Initialize video uploads and URL inputs
+ * Set up video URL management
  */
-function initializeVideoUploads() {
-    // Setup video upload
-    const videoUpload = document.getElementById('video-upload');
-    const videoPreview = document.getElementById('video-preview');
-    
-    videoUpload.addEventListener('click', function() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'video/*';
-        input.multiple = true;
-        
-        input.onchange = function(e) {
-            if (e.target.files && e.target.files.length > 0) {
-                // Add new files to the array
-                for (const file of e.target.files) {
-                    videoFiles.push(file);
-                    
-                    // Create video preview
-                    const videoId = `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                    const videoElement = document.createElement('video');
-                    videoElement.controls = true;
-                    videoElement.width = 280;
-                    videoElement.style.borderRadius = '5px';
-                    videoElement.style.marginBottom = '10px';
-                    
-                    // Create container
-                    const container = document.createElement('div');
-                    container.className = 'media-item video-item';
-                    container.id = videoId;
-                    container.style.width = '280px';
-                    container.style.marginRight = '10px';
-                    
-                    // Create remove button
-                    const removeBtn = document.createElement('div');
-                    removeBtn.className = 'media-remove';
-                    removeBtn.setAttribute('data-id', videoId);
-                    removeBtn.innerHTML = '×';
-                    
-                    // Add elements to container
-                    container.appendChild(videoElement);
-                    container.appendChild(removeBtn);
-                    
-                    // Add to preview
-                    videoPreview.appendChild(container);
-                    
-                    // Set source for video
-                    const objectURL = URL.createObjectURL(file);
-                    videoElement.src = objectURL;
-                    
-                    // Add event listener to remove button
-                    removeBtn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const index = videoFiles.findIndex(f => f === file);
-                        if (index !== -1) {
-                            videoFiles.splice(index, 1);
-                        }
-                        document.getElementById(videoId).remove();
-                        URL.revokeObjectURL(objectURL);
-                    });
-                }
-            }
-        };
-        
-        input.click();
-    });
-    
-    // Allow drag and drop for videos
-    setupDragAndDrop(videoUpload, videoPreview, 'video');
-    
-    // Setup video URL inputs
-    initializeVideoUrlInputs();
-}
-
-/**
- * Initialize video URL inputs
- */
-function initializeVideoUrlInputs() {
+function setupVideoUrlManagement() {
     const addVideoUrlBtn = document.getElementById('add-video-url');
     const videoUrlContainer = document.getElementById('video-url-container');
     
-    addVideoUrlBtn.addEventListener('click', function() {
-        // Add new video URL input group
-        const index = videoUrls.length;
-        videoUrls.push({ url: '', title: '', description: '' });
-        
-        const urlGroupHTML = `
-            <div class="video-url-group" data-index="${index}">
+    if (addVideoUrlBtn && videoUrlContainer) {
+        // Add video URL button
+        addVideoUrlBtn.addEventListener('click', function() {
+            // Add a new entry to videoUrls array
+            videoUrls.push({ url: '', title: '', description: '' });
+            
+            // Create new video URL group
+            const newIndex = videoUrls.length - 1;
+            const videoUrlGroup = document.createElement('div');
+            videoUrlGroup.className = 'video-url-group';
+            videoUrlGroup.dataset.index = newIndex;
+            
+            videoUrlGroup.innerHTML = `
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                     <input type="url" class="form-control video-url-input" placeholder="e.g., https://www.youtube.com/watch?v=...">
                     <button type="button" class="btn remove-video-url" style="background: rgba(255, 107, 107, 0.1); color: var(--accent); padding: 0 10px;">
@@ -234,405 +123,219 @@ function initializeVideoUrlInputs() {
                 </div>
                 <input type="text" class="form-control video-title-input" placeholder="Video Title" style="margin-bottom: 10px;">
                 <textarea class="form-control video-description-input" placeholder="Video Description (optional)" style="margin-bottom: 20px;"></textarea>
-            </div>
-        `;
+            `;
+            
+            videoUrlContainer.appendChild(videoUrlGroup);
+            
+            // Attach event listeners
+            attachVideoUrlEventListeners(newIndex);
+        });
         
-        videoUrlContainer.insertAdjacentHTML('beforeend', urlGroupHTML);
-        
-        // Add event listeners for the new elements
-        attachVideoUrlEventListeners(index);
-    });
-    
-    // Initialize event listeners for the first URL input
-    attachVideoUrlEventListeners(0);
+        // Initialize first video URL group
+        attachVideoUrlEventListeners(0);
+    }
 }
 
 /**
- * Add event listeners to video URL inputs
+ * Attach event listeners to a video URL group
+ * @param {number} index - Index of the video URL group
  */
 function attachVideoUrlEventListeners(index) {
-    const group = document.querySelector(`.video-url-group[data-index="${index}"]`);
-    if (!group) return;
+    const videoUrlGroup = document.querySelector(`.video-url-group[data-index="${index}"]`);
     
-    const urlInput = group.querySelector('.video-url-input');
-    const titleInput = group.querySelector('.video-title-input');
-    const descInput = group.querySelector('.video-description-input');
-    const removeBtn = group.querySelector('.remove-video-url');
-    
-    // URL input change
-    urlInput.addEventListener('input', function() {
-        videoUrls[index].url = this.value;
-    });
-    
-    // Title input change
-    titleInput.addEventListener('input', function() {
-        videoUrls[index].title = this.value;
-    });
-    
-    // Description input change
-    descInput.addEventListener('input', function() {
-        videoUrls[index].description = this.value;
-    });
-    
-    // Remove button
-    if (removeBtn) {
-        removeBtn.addEventListener('click', function() {
-            if (videoUrls.length <= 1) {
-                // Just clear the inputs for the first group
-                urlInput.value = '';
-                titleInput.value = '';
-                descInput.value = '';
-                videoUrls[index] = { url: '', title: '', description: '' };
-            } else {
-                // Remove the group
-                group.remove();
-                videoUrls.splice(index, 1);
-                
-                // Update data-index attributes for remaining groups
-                document.querySelectorAll('.video-url-group').forEach((g, i) => {
-                    g.setAttribute('data-index', i);
+    if (videoUrlGroup) {
+        const urlInput = videoUrlGroup.querySelector('.video-url-input');
+        const titleInput = videoUrlGroup.querySelector('.video-title-input');
+        const descInput = videoUrlGroup.querySelector('.video-description-input');
+        const removeBtn = videoUrlGroup.querySelector('.remove-video-url');
+        
+        // Update videoUrls array on input changes
+        urlInput.addEventListener('input', function() {
+            videoUrls[index].url = this.value;
+            
+            // Try to auto-fill title from YouTube video
+            if (this.value.includes('youtube.com/watch') || this.value.includes('youtu.be/')) {
+                // Implement YouTube API call to get video title (optional)
+            }
+        });
+        
+        titleInput.addEventListener('input', function() {
+            videoUrls[index].title = this.value;
+        });
+        
+        descInput.addEventListener('input', function() {
+            videoUrls[index].description = this.value;
+        });
+        
+        // Initialize with any existing values
+        if (videoUrls[index]) {
+            urlInput.value = videoUrls[index].url || '';
+            titleInput.value = videoUrls[index].title || '';
+            descInput.value = videoUrls[index].description || '';
+        }
+        
+        // Remove video URL
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                if (document.querySelectorAll('.video-url-group').length > 1) {
+                    videoUrls.splice(index, 1);
+                    videoUrlGroup.remove();
                     
-                    // Update event listeners
-                    const inputs = g.querySelectorAll('input, textarea');
-                    inputs.forEach(input => {
-                        // Remove existing event listeners
-                        const newInput = input.cloneNode(true);
-                        input.parentNode.replaceChild(newInput, input);
+                    // Re-index remaining groups
+                    document.querySelectorAll('.video-url-group').forEach((group, idx) => {
+                        group.dataset.index = idx;
+                        attachVideoUrlEventListeners(idx);
                     });
-                    
-                    // Reattach event listeners
-                    attachVideoUrlEventListeners(i);
-                });
-            }
-        });
-    }
-}
-
-/**
- * Collects video data from forms
- */
-function collectVideoData() {
-    const videos = [];
-    
-    // Add video files
-    videoFiles.forEach(file => {
-        videos.push({
-            type: 'file',
-            file: file,
-            url: URL.createObjectURL(file),
-            title: file.name.split('.')[0],
-            description: ''
-        });
-    });
-    
-    // Add video URLs
-    videoUrls.forEach(videoUrl => {
-        if (videoUrl.url) {
-            videos.push({
-                type: 'url',
-                url: videoUrl.url,
-                title: videoUrl.title || 'Video',
-                description: videoUrl.description || '',
-                thumbnail: getThumbnailForVideoUrl(videoUrl.url)
-            });
-        }
-    });
-    
-    return videos;
-}
-
-/**
- * Function to get thumbnail URL for video URLs (YouTube, Vimeo, etc.)
- */
-function getThumbnailForVideoUrl(url) {
-    if (!url) return '';
-    
-    // YouTube
-    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const youtubeMatch = url.match(youtubeRegex);
-    
-    if (youtubeMatch && youtubeMatch[1]) {
-        return `https://img.youtube.com/vi/${youtubeMatch[1]}/maxresdefault.jpg`;
-    }
-    
-    // Vimeo
-    const vimeoRegex = /vimeo.com\/(\d+)/;
-    const vimeoMatch = url.match(vimeoRegex);
-    
-    if (vimeoMatch && vimeoMatch[1]) {
-        // Note: In a real application, you'd need to use the Vimeo API to get the thumbnail
-        // For this demo, we'll just return a placeholder
-        return 'images/video-placeholder.jpg';
-    }
-    
-    // Default placeholder
-    return 'images/video-placeholder.jpg';
-}
-
-/**
- * Sets up drag and drop functionality for file uploads
- */
-function setupDragAndDrop(dropZone, previewElement, fileType, multiple = false) {
-    // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-    });
-    
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
-    // Highlight drop zone when item is dragged over it
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, highlight, false);
-    });
-    
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, unhighlight, false);
-    });
-    
-    function highlight() {
-        dropZone.style.borderColor = 'var(--primary)';
-        dropZone.style.backgroundColor = 'rgba(32, 227, 178, 0.05)';
-    }
-    
-    function unhighlight() {
-        dropZone.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-        dropZone.style.backgroundColor = 'transparent';
-    }
-    
-    // Handle dropped files
-    dropZone.addEventListener('drop', handleDrop, false);
-    
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        
-        if (fileType === 'image') {
-            if (multiple) {
-                // For additional images (multiple)
-                handleAdditionalImages(files);
-            } else {
-                // For featured image (single)
-                handleFeaturedImage(files[0]);
-            }
-        } else if (fileType === 'video') {
-            // For videos
-            handleVideos(files);
-        }
-    }
-    
-    function handleFeaturedImage(file) {
-        if (!file || !file.type.startsWith('image/')) return;
-        
-        featuredImageFile = file;
-        
-        // Create preview
-        previewElement.innerHTML = '';
-        const container = document.createElement('div');
-        container.className = 'media-item';
-        
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        
-        const removeBtn = document.createElement('div');
-        removeBtn.className = 'media-remove';
-        removeBtn.innerHTML = '×';
-        removeBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            featuredImageFile = null;
-            previewElement.innerHTML = '';
-            URL.revokeObjectURL(img.src);
-        });
-        
-        container.appendChild(img);
-        container.appendChild(removeBtn);
-        previewElement.appendChild(container);
-    }
-    
-    function handleAdditionalImages(files) {
-        for (const file of files) {
-            if (!file || !file.type.startsWith('image/')) continue;
-            
-            additionalImageFiles.push(file);
-            
-            // Create preview
-            const imgId = `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            const container = document.createElement('div');
-            container.className = 'media-item';
-            container.id = imgId;
-            
-            const img = document.createElement('img');
-            const objectURL = URL.createObjectURL(file);
-            img.src = objectURL;
-            
-            const removeBtn = document.createElement('div');
-            removeBtn.className = 'media-remove';
-            removeBtn.setAttribute('data-id', imgId);
-            removeBtn.innerHTML = '×';
-            
-            container.appendChild(img);
-            container.appendChild(removeBtn);
-            previewElement.appendChild(container);
-            
-            // Add event listener to remove button
-            removeBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const index = additionalImageFiles.findIndex(f => f === file);
-                if (index !== -1) {
-                    additionalImageFiles.splice(index, 1);
+                } else {
+                    // Clear values of the last group instead of removing it
+                    urlInput.value = '';
+                    titleInput.value = '';
+                    descInput.value = '';
+                    videoUrls[0] = { url: '', title: '', description: '' };
                 }
-                document.getElementById(imgId).remove();
-                URL.revokeObjectURL(objectURL);
-            });
-        }
-    }
-    
-    function handleVideos(files) {
-        for (const file of files) {
-            if (!file || !file.type.startsWith('video/')) continue;
-            
-            videoFiles.push(file);
-            
-            // Create video preview
-            const videoId = `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            const videoElement = document.createElement('video');
-            videoElement.controls = true;
-            videoElement.width = 280;
-            videoElement.style.borderRadius = '5px';
-            videoElement.style.marginBottom = '10px';
-            
-            // Create container
-            const container = document.createElement('div');
-            container.className = 'media-item video-item';
-            container.id = videoId;
-            container.style.width = '280px';
-            container.style.marginRight = '10px';
-            
-            // Create remove button
-            const removeBtn = document.createElement('div');
-            removeBtn.className = 'media-remove';
-            removeBtn.setAttribute('data-id', videoId);
-            removeBtn.innerHTML = '×';
-            
-            // Add elements to container
-            container.appendChild(videoElement);
-            container.appendChild(removeBtn);
-            
-            // Add to preview
-            previewElement.appendChild(container);
-            
-            // Set source for video
-            const objectURL = URL.createObjectURL(file);
-            videoElement.src = objectURL;
-            
-            // Add event listener to remove button
-            removeBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const index = videoFiles.findIndex(f => f === file);
-                if (index !== -1) {
-                    videoFiles.splice(index, 1);
-                }
-                document.getElementById(videoId).remove();
-                URL.revokeObjectURL(objectURL);
             });
         }
     }
 }
 
 /**
- * Collects all form data into a structured object
+ * Handle form submission
+ * @param {Event} e - Form submit event
  */
-function collectFormData() {
+function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const robotId = form.getAttribute('data-robot-id');
+    const isEdit = !!robotId;
+    
+    // Get form values
     const robotData = {
-        basic: {
-            name: document.getElementById('robot-name').value,
-            slug: document.getElementById('robot-slug').value,
-            manufacturerName: document.getElementById('manufacturer-name').value,
-            manufacturerCountry: document.getElementById('manufacturer-country').value,
-            manufacturerWebsite: document.getElementById('manufacturer-website').value,
-            yearIntroduced: document.getElementById('year-introduced').value,
-            status: document.getElementById('robot-status').value,
-            summary: document.getElementById('robot-summary').value,
-            description: document.getElementById('robot-description').value
+        name: document.getElementById('robot-name').value,
+        manufacturer: {
+            name: document.getElementById('robot-manufacturer').value,
+            country: document.getElementById('robot-country').value || null
         },
+        releaseYear: document.getElementById('robot-year').value ? parseInt(document.getElementById('robot-year').value) : null,
+        category: document.getElementById('robot-category').value || null,
+        summary: document.getElementById('robot-summary').value,
+        description: document.getElementById('robot-description').value,
+        features: parseListText(document.getElementById('robot-features').value),
+        applications: parseListText(document.getElementById('robot-applications').value),
         specifications: {
-            physical: {
-                height: {
-                    value: document.getElementById('spec-height').value || null,
-                    unit: document.getElementById('spec-height-unit').value
-                },
-                weight: {
-                    value: document.getElementById('spec-weight').value || null,
-                    unit: document.getElementById('spec-weight-unit').value
-                },
-                payload: {
-                    value: document.getElementById('spec-payload').value || null,
-                    unit: document.getElementById('spec-payload-unit').value
-                },
-                maxDeadlift: {
-                    value: document.getElementById('spec-deadlift').value || null,
-                    unit: document.getElementById('spec-deadlift-unit').value
-                }
+            dimensions: {
+                height: document.getElementById('robot-height').value ? parseFloat(document.getElementById('robot-height').value) : null,
+                heightUnit: document.getElementById('robot-height-unit').value
             },
-            performance: {
-                batteryRuntime: document.getElementById('spec-battery-runtime').value || null,
-                maxSpeed: {
-                    value: document.getElementById('spec-speed').value || null,
-                    unit: document.getElementById('spec-speed-unit').value
-                }
+            weight: {
+                value: document.getElementById('robot-weight').value ? parseFloat(document.getElementById('robot-weight').value) : null,
+                unit: document.getElementById('robot-weight-unit').value
             },
-            hardware: {
-                hands: document.getElementById('spec-hands').value,
-                actuators: document.getElementById('spec-actuators').value,
-                sensors: document.getElementById('spec-sensors').value,
-                powerSource: document.getElementById('spec-power-source').value,
-                processor: document.getElementById('spec-processor').value,
-                connectivity: document.getElementById('spec-connectivity').value
+            speed: {
+                value: document.getElementById('robot-speed').value ? parseFloat(document.getElementById('robot-speed').value) : null,
+                unit: document.getElementById('robot-speed-unit').value
             },
-            customFields: []
+            batteryLife: {
+                value: document.getElementById('robot-battery').value ? parseFloat(document.getElementById('robot-battery').value) : null,
+                unit: document.getElementById('robot-battery-unit').value
+            },
+            custom: getCustomSpecifications()
         },
         media: {
-            featuredImage: featuredImageFile,
-            additionalImages: additionalImageFiles,
-            videos: collectVideoData() // This collects the video data
-        }
+            featuredImage: featuredImageFile ? {
+                url: URL.createObjectURL(featuredImageFile),
+                alt: document.getElementById('robot-name').value
+            } : null,
+            additionalImages: additionalImageFiles.map(file => ({
+                url: URL.createObjectURL(file),
+                alt: document.getElementById('robot-name').value
+            })),
+            videos: videoUrls.filter(video => video.url && video.title).map(video => ({
+                url: video.url,
+                title: video.title,
+                description: video.description
+            }))
+        },
+        slug: generateSlug(document.getElementById('robot-name').value),
+        stats: {
+            views: isEdit ? getRobotById(robotId).stats?.views || 0 : 0,
+            likes: isEdit ? getRobotById(robotId).stats?.likes || 0 : 0
+        },
+        dateAdded: isEdit ? getRobotById(robotId).dateAdded : new Date().toISOString(),
+        lastUpdated: new Date().toISOString()
     };
     
-    // Collect custom specification fields
-    const customSpecRows = document.querySelectorAll('.custom-spec-row');
-    customSpecRows.forEach(row => {
-        const nameInput = row.querySelector('.custom-spec-name');
-        const valueInput = row.querySelector('.custom-spec-value');
-        const unitInput = row.querySelector('.custom-spec-unit');
+    // Save the robot
+    if (isEdit) {
+        updateRobot(robotId, robotData);
+    } else {
+        addRobot(robotData);
+    }
+    
+    // Close the modal
+    closeModal();
+    
+    // Reload the robot grid
+    if (typeof loadRobots === 'function') {
+        loadRobots();
+    } else if (typeof loadFeaturedRobots === 'function') {
+        loadFeaturedRobots();
+    }
+}
+
+/**
+ * Parse list text (bullet points or numbered list) into array
+ * @param {string} text - List text
+ * @returns {Array} Array of list items
+ */
+function parseListText(text) {
+    if (!text) return [];
+    
+    return text
+        .split('\n')
+        .map(line => line.replace(/^[\s•\-*\d.]+/, '').trim())
+        .filter(Boolean);
+}
+
+/**
+ * Get custom specifications from the form
+ * @returns {Array} Array of custom specifications
+ */
+function getCustomSpecifications() {
+    const customSpecs = [];
+    const specRows = document.querySelectorAll('.custom-spec-row');
+    
+    specRows.forEach(row => {
+        const name = row.querySelector('.custom-spec-name').value;
+        const value = row.querySelector('.custom-spec-value').value;
+        const unit = row.querySelector('.custom-spec-unit').value;
         
-        if (nameInput.value && valueInput.value) {
-            robotData.specifications.customFields.push({
-                name: nameInput.value,
-                value: valueInput.value,
-                unit: unitInput.value || null
+        if (name && value) {
+            customSpecs.push({
+                name,
+                value: parseFloat(value) || value,
+                unit: unit || null
             });
         }
     });
     
-    return robotData;
+    return customSpecs;
 }
 
 /**
- * Generates a URL-friendly slug from a string
+ * Generate a URL-friendly slug from a string
+ * @param {string} text - Input text
+ * @returns {string} URL-friendly slug
  */
 function generateSlug(text) {
     return text
-        .toString()
         .toLowerCase()
-        .trim()
-        .replace(/\s+/g, '-')       // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
-        .replace(/\-\-+/g, '-')     // Replace multiple - with single -
-        .replace(/^-+/, '')         // Trim - from start of text
-        .replace(/-+$/, '');        // Trim - from end of text
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
 }
+
 /**
  * Initialize custom specification fields
  */
@@ -724,4 +427,161 @@ function closeModal() {
     });
     document.querySelector('.modal-tab[data-tab="basic"]').classList.add('active');
     document.getElementById('tab-basic').classList.add('active');
+}
+
+/**
+ * Fill the form with robot data for editing
+ * @param {Object} robot - Robot data
+ */
+function fillFormWithRobotData(robot) {
+    const form = document.getElementById('robot-form');
+    
+    if (form && robot) {
+        // Set form data-robot-id attribute
+        form.setAttribute('data-robot-id', robot.id);
+        
+        // Update modal title
+        document.getElementById('modal-title').textContent = 'Edit Robot: ' + robot.name;
+        
+        // Fill basic info
+        document.getElementById('robot-name').value = robot.name || '';
+        document.getElementById('robot-manufacturer').value = robot.manufacturer?.name || '';
+        document.getElementById('robot-country').value = robot.manufacturer?.country || '';
+        document.getElementById('robot-year').value = robot.releaseYear || '';
+        document.getElementById('robot-category').value = robot.category || '';
+        document.getElementById('robot-summary').value = robot.summary || '';
+        
+        // Fill description
+        document.getElementById('robot-description').value = robot.description || '';
+        document.getElementById('robot-features').value = robot.features?.join('\n• ') || '';
+        document.getElementById('robot-applications').value = robot.applications?.join('\n• ') || '';
+        
+        // Fill specifications
+        document.getElementById('robot-height').value = robot.specifications?.dimensions?.height || '';
+        document.getElementById('robot-height-unit').value = robot.specifications?.dimensions?.heightUnit || 'cm';
+        document.getElementById('robot-weight').value = robot.specifications?.weight?.value || '';
+        document.getElementById('robot-weight-unit').value = robot.specifications?.weight?.unit || 'kg';
+        document.getElementById('robot-speed').value = robot.specifications?.speed?.value || '';
+        document.getElementById('robot-speed-unit').value = robot.specifications?.speed?.unit || 'km/h';
+        document.getElementById('robot-battery').value = robot.specifications?.batteryLife?.value || '';
+        document.getElementById('robot-battery-unit').value = robot.specifications?.batteryLife?.unit || 'hours';
+        
+        // Fill custom specifications
+        const customSpecsContainer = document.getElementById('custom-spec-fields');
+        customSpecsContainer.innerHTML = '';
+        
+        if (robot.specifications?.custom?.length) {
+            robot.specifications.custom.forEach(spec => {
+                const customSpecRow = document.createElement('div');
+                customSpecRow.className = 'custom-spec-row';
+                customSpecRow.style.display = 'flex';
+                customSpecRow.style.gap = '10px';
+                customSpecRow.style.marginBottom = '15px';
+                
+                customSpecRow.innerHTML = `
+                    <input type="text" class="form-control custom-spec-name" placeholder="Specification Name" style="flex: 2;" value="${spec.name || ''}">
+                    <input type="text" class="form-control custom-spec-value" placeholder="Value" style="flex: 1;" value="${spec.value || ''}">
+                    <input type="text" class="form-control custom-spec-unit" placeholder="Unit" style="flex: 1;" value="${spec.unit || ''}">
+                    <button type="button" class="btn remove-custom-spec" style="background: rgba(255, 107, 107, 0.1); color: var(--accent); padding: 0 10px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                
+                customSpecsContainer.appendChild(customSpecRow);
+                
+                // Add event listener to remove button
+                const removeBtn = customSpecRow.querySelector('.remove-custom-spec');
+                removeBtn.addEventListener('click', function() {
+                    customSpecRow.remove();
+                });
+            });
+        }
+        
+        // Fill media (for now, just show existing images)
+        if (robot.media?.featuredImage?.url) {
+            document.getElementById('featured-image-preview').innerHTML = `
+                <div style="position: relative; display: inline-block; margin-right: 10px; margin-bottom: 10px;">
+                    <img src="${robot.media.featuredImage.url}" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 5px;">
+                    <div class="form-hint" style="margin-top: 5px;">Current featured image (upload new to replace)</div>
+                </div>
+            `;
+        }
+        
+        const additionalImagesPreview = document.getElementById('additional-images-preview');
+        additionalImagesPreview.innerHTML = '';
+        
+        if (robot.media?.additionalImages?.length) {
+            robot.media.additionalImages.forEach(image => {
+                const imageContainer = document.createElement('div');
+                imageContainer.style.position = 'relative';
+                imageContainer.style.display = 'inline-block';
+                imageContainer.style.marginRight = '10px';
+                imageContainer.style.marginBottom = '10px';
+                
+                imageContainer.innerHTML = `
+                    <img src="${image.url}" alt="${image.alt || 'Additional image'}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+                    <div class="form-hint" style="font-size: 0.7rem; text-align: center;">Existing</div>
+                `;
+                
+                additionalImagesPreview.appendChild(imageContainer);
+            });
+        }
+        
+        // Fill video URLs
+        const videoUrlContainer = document.getElementById('video-url-container');
+        videoUrlContainer.innerHTML = '';
+        
+        if (robot.media?.videos?.length) {
+            videoUrls = robot.media.videos.map(video => ({
+                url: video.url || '',
+                title: video.title || '',
+                description: video.description || ''
+            }));
+            
+            videoUrls.forEach((video, index) => {
+                const videoUrlGroup = document.createElement('div');
+                videoUrlGroup.className = 'video-url-group';
+                videoUrlGroup.dataset.index = index;
+                
+                videoUrlGroup.innerHTML = `
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="url" class="form-control video-url-input" placeholder="e.g., https://www.youtube.com/watch?v=..." value="${video.url}">
+                        <button type="button" class="btn remove-video-url" style="background: rgba(255, 107, 107, 0.1); color: var(--accent); padding: 0 10px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <input type="text" class="form-control video-title-input" placeholder="Video Title" style="margin-bottom: 10px;" value="${video.title}">
+                    <textarea class="form-control video-description-input" placeholder="Video Description (optional)" style="margin-bottom: 20px;">${video.description}</textarea>
+                `;
+                
+                videoUrlContainer.appendChild(videoUrlGroup);
+                
+                // Attach event listeners
+                attachVideoUrlEventListeners(index);
+            });
+        } else {
+            // Add empty video URL field
+            videoUrls = [{ url: '', title: '', description: '' }];
+            
+            const videoUrlGroup = document.createElement('div');
+            videoUrlGroup.className = 'video-url-group';
+            videoUrlGroup.dataset.index = 0;
+            
+            videoUrlGroup.innerHTML = `
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="url" class="form-control video-url-input" placeholder="e.g., https://www.youtube.com/watch?v=...">
+                    <button type="button" class="btn remove-video-url" style="background: rgba(255, 107, 107, 0.1); color: var(--accent); padding: 0 10px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <input type="text" class="form-control video-title-input" placeholder="Video Title" style="margin-bottom: 10px;">
+                <textarea class="form-control video-description-input" placeholder="Video Description (optional)" style="margin-bottom: 20px;"></textarea>
+            `;
+            
+            videoUrlContainer.appendChild(videoUrlGroup);
+            
+            // Attach event listeners
+            attachVideoUrlEventListeners(0);
+        }
+    }
 }
