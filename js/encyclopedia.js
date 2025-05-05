@@ -43,14 +43,15 @@ function loadRobots() {
     // Clear loading spinner
     robotGrid.innerHTML = '';
     
-    // Get robots from localStorage first (added through admin interface)
+    // Get robots from localStorage (added through admin interface and default robots)
     let robots = [];
     if (window.robotsData && window.robotsData.robots) {
         robots = window.robotsData.robots;
     }
     
-    // Filter out only published robots
-    robots = robots.filter(robot => robot.status === 'published');
+    // Show all robots or filter only for published ones if implemented
+    // MODIFIED: Removed the filter to show all robots to all users
+    // robots = robots.filter(robot => robot.status === 'published');
     
     // No robots available
     if (robots.length === 0) {
