@@ -1,130 +1,217 @@
-// Namespace for the application
-window.tgenApp = window.tgenApp || {};
+/**
+ * Robot Storage Adapter
+ * This file contains functions for storing and retrieving robot data
+ * It uses localStorage for demo purposes, but could be replaced with a real API
+ */
 
-// Robot data storage module
-(function() {
-    // The key for local storage
-    const ROBOTS_STORAGE_KEY = 'tgen_robots_data';
+// Initialize the window.robotStorage object
+window.robotStorage = (function() {
+    // Private storage key
+    const STORAGE_KEY = 'tgen_robotics_data';
     
-    // Sample robots data
-    const sampleRobotsData = {
-        robots: []
+    // Initialize or load data from localStorage
+    function initializeData() {
+        let data;
+        
+        try {
+            // Try to load data from localStorage
+            const storedData = localStorage.getItem(STORAGE_KEY);
+            
+            if (storedData) {
+                data = JSON.parse(storedData);
+                
+                // Validate data structure
+                if (!data.robots || !Array.isArray(data.robots)) {
+                    throw new Error('Invalid data structure');
+                }
+            } else {
+                throw new Error('No data found');
+            }
+        } catch (error) {
+            // If loading fails or no data exists, create default structure
+            data = {
+                robots: [],
+                categories: [],
+                lastUpdated: new Date().toISOString()
+            };
+            
+            // Save the default structure
+            saveData(data);
+        }
+        
+        return data;
+    }
+    
+    // Save data to localStorage
+    function saveData(data) {
+        // Update last updated timestamp
+        data.lastUpdated = new Date().toISOString();
+        
+        // Save to localStorage
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            return true;
+        } catch (error) {
+            console.error('Error saving data:', error);
+            return false;
+        }
+    }
+    
+    // Public API
+    return {
+        // Initialize data and make it available to the window.robotsData object
+        init: function() {
+            const data = initializeData();
+            
+            // Create or update window.robotsData
+            window.robotsData = window.robotsData || {};
+            window.robotsData.robots = data.robots;
+            window.robotsData.categories = data.categories;
+            window.robotsData.lastUpdated = data.lastUpdated;
+            
+            // Add helper methods to window.robotsData
+            window.robotsData.getRobotById = function(id) {
+                return this.robots.find(robot => robot.id === parseInt(id));
+            };
+            
+            window.robotsData.getRobotBySlug = function(slug) {
+                return this.robots.find(robot => robot.slug === slug);
+            };
+            
+            window.robotsData.getRelatedRobots = function(id, limit = 3) {
+                const robot = this.getRobotById(id);
+                if (!robot) return [];
+                
+                // Get robots with the same manufacturer or category
+                return this.robots
+                    .filter(r => r.id !== id && (
+                        r.manufacturer.name === robot.manufacturer.name ||
+                        r.categories.some(cat => robot.categories.includes(cat))
+                    ))
+                    .sort(() => Math.random() - 0.5) // Shuffle
+                    .slice(0, limit);
+            };
+            
+            return data;
+        },
+        
+        // Save the current state of window.robotsData
+        save: function() {
+            const data = {
+                robots: window.robotsData.robots,
+                categories: window.robotsData.categories,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            return saveData(data);
+        },
+        
+        // Add a new robot and save
+        addRobotAndSave: function(robot) {
+            // Add the robot to the array
+            window.robotsData.robots.push(robot);
+            
+            // Add any new categories
+            if (robot.categories) {
+                robot.categories.forEach(category => {
+                    if (!window.robotsData.categories.includes(category)) {
+                        window.robotsData.categories.push(category);
+                    }
+                });
+            }
+            
+            // Save to storage
+            return this.save();
+        },
+        
+        // Update an existing robot and save
+        updateRobotAndSave: function(robotId, updatedData) {
+            // Find the robot
+            const index = window.robotsData.robots.findIndex(r => r.id === parseInt(robotId));
+            
+            if (index === -1) {
+                console.error('Robot not found with ID:', robotId);
+                return false;
+            }
+            
+            // Update the robot data
+            window.robotsData.robots[index] = {
+                ...window.robotsData.robots[index],
+                ...updatedData
+            };
+            
+            // Update categories if needed
+            if (updatedData.categories) {
+                updatedData.categories.forEach(category => {
+                    if (!window.robotsData.categories.includes(category)) {
+                        window.robotsData.categories.push(category);
+                    }
+                });
+            }
+            
+            // Save to storage
+            return this.save();
+        },
+        
+        // Delete a robot and save
+        deleteRobotAndSave: function(robotId) {
+            // Find the robot
+            const index = window.robotsData.robots.findIndex(r => r.id === parseInt(robotId));
+            
+            if (index === -1) {
+                console.error('Robot not found with ID:', robotId);
+                return false;
+            }
+            
+            // Remove the robot
+            window.robotsData.robots.splice(index, 1);
+            
+            // Save to storage
+            return this.save();
+        },
+        
+        // Import data from a JSON file
+        importFromJSON: function(jsonData) {
+            try {
+                const data = JSON.parse(jsonData);
+                
+                // Validate data structure
+                if (!data.robots || !Array.isArray(data.robots)) {
+                    throw new Error('Invalid data structure');
+                }
+                
+                // Update window.robotsData
+                window.robotsData.robots = data.robots;
+                
+                // Update categories
+                window.robotsData.categories = data.categories || [];
+                
+                // Save to storage
+                return this.save();
+            } catch (error) {
+                console.error('Error importing data:', error);
+                return false;
+            }
+        },
+        
+        // Export data to a JSON string
+        exportToJSON: function() {
+            const data = {
+                robots: window.robotsData.robots,
+                categories: window.robotsData.categories,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            return JSON.stringify(data, null, 2);
+        },
+        
+        // Get storage stats
+        getStats: function() {
+            return {
+                robotCount: window.robotsData.robots.length,
+                categoryCount: window.robotsData.categories.length,
+                lastUpdated: window.robotsData.lastUpdated
+            };
+        }
     };
-    
-    // Initialize data in local storage if not exists
-    function initStorage() {
-        if (!localStorage.getItem(ROBOTS_STORAGE_KEY)) {
-            localStorage.setItem(ROBOTS_STORAGE_KEY, JSON.stringify(sampleRobotsData));
-        }
-        
-        // Initialize the robotsData global variable
-        window.robotsData = JSON.parse(localStorage.getItem(ROBOTS_STORAGE_KEY));
-    }
-    
-    // Get all robots
-    function getAllRobots() {
-        const data = JSON.parse(localStorage.getItem(ROBOTS_STORAGE_KEY));
-        return data.robots || [];
-    }
-    
-    // Get robot by ID
-    function getRobotById(id) {
-        const robots = getAllRobots();
-        return robots.find(robot => robot.id === id);
-    }
-    
-    // Get robot by slug
-    function getRobotBySlug(slug) {
-        const robots = getAllRobots();
-        return robots.find(robot => robot.slug === slug);
-    }
-    
-    // Add a new robot
-    function addRobot(robotData) {
-        const data = JSON.parse(localStorage.getItem(ROBOTS_STORAGE_KEY));
-        
-        // Generate unique ID
-        robotData.id = 'robot_' + Date.now();
-        
-        // Add robot to the array
-        data.robots.push(robotData);
-        
-        // Save to local storage
-        localStorage.setItem(ROBOTS_STORAGE_KEY, JSON.stringify(data));
-        
-        // Update the global robotsData variable
-        window.robotsData = data;
-        
-        return robotData;
-    }
-    
-    // Update an existing robot
-    function updateRobot(id, robotData) {
-        const data = JSON.parse(localStorage.getItem(ROBOTS_STORAGE_KEY));
-        
-        // Find the robot index
-        const robotIndex = data.robots.findIndex(robot => robot.id === id);
-        
-        if (robotIndex !== -1) {
-            // Update robot data (preserve ID)
-            robotData.id = id;
-            data.robots[robotIndex] = robotData;
-            
-            // Save to local storage
-            localStorage.setItem(ROBOTS_STORAGE_KEY, JSON.stringify(data));
-            
-            // Update the global robotsData variable
-            window.robotsData = data;
-            
-            return robotData;
-        }
-        
-        return null;
-    }
-    
-    // Delete a robot
-    function deleteRobot(id) {
-        const data = JSON.parse(localStorage.getItem(ROBOTS_STORAGE_KEY));
-        
-        // Filter out the robot
-        data.robots = data.robots.filter(robot => robot.id !== id);
-        
-        // Save to local storage
-        localStorage.setItem(ROBOTS_STORAGE_KEY, JSON.stringify(data));
-        
-        // Update the global robotsData variable
-        window.robotsData = data;
-        
-        return true;
-    }
-    
-    // User management (simplified)
-    function getCurrentUser() {
-        return JSON.parse(localStorage.getItem('tgen_current_user')) || null;
-    }
-    
-    function setCurrentUser(user) {
-        localStorage.setItem('tgen_current_user', JSON.stringify(user));
-    }
-    
-    function logout() {
-        localStorage.removeItem('tgen_current_user');
-    }
-    
-    // Initialize when script is loaded
-    initStorage();
-    
-    // Export functions to global namespace
-    window.initStorage = initStorage;
-    window.getAllRobots = getAllRobots;
-    window.getRobotById = getRobotById;
-    window.getRobotBySlug = getRobotBySlug;
-    window.addRobot = addRobot;
-    window.updateRobot = updateRobot;
-    window.deleteRobot = deleteRobot;
-    
-    // User management
-    window.tgenApp.getCurrentUser = getCurrentUser;
-    window.tgenApp.setCurrentUser = setCurrentUser;
-    window.tgenApp.logout = logout;
 })();
