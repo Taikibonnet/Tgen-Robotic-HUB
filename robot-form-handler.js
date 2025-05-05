@@ -633,6 +633,40 @@ function generateSlug(text) {
         .replace(/^-+/, '')         // Trim - from start of text
         .replace(/-+$/, '');        // Trim - from end of text
 }
+/**
+ * Initialize custom specification fields
+ */
+function initializeCustomSpecFields() {
+    const addCustomSpecBtn = document.getElementById('add-custom-spec');
+    const customSpecFields = document.getElementById('custom-spec-fields');
+    
+    if (addCustomSpecBtn && customSpecFields) {
+        addCustomSpecBtn.addEventListener('click', function() {
+            const customSpecRow = document.createElement('div');
+            customSpecRow.className = 'custom-spec-row';
+            customSpecRow.style.display = 'flex';
+            customSpecRow.style.gap = '10px';
+            customSpecRow.style.marginBottom = '15px';
+            
+            customSpecRow.innerHTML = `
+                <input type="text" class="form-control custom-spec-name" placeholder="Specification Name" style="flex: 2;">
+                <input type="text" class="form-control custom-spec-value" placeholder="Value" style="flex: 1;">
+                <input type="text" class="form-control custom-spec-unit" placeholder="Unit" style="flex: 1;">
+                <button type="button" class="btn remove-custom-spec" style="background: rgba(255, 107, 107, 0.1); color: var(--accent); padding: 0 10px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            customSpecFields.appendChild(customSpecRow);
+            
+            // Add event listener to remove button
+            const removeBtn = customSpecRow.querySelector('.remove-custom-spec');
+            removeBtn.addEventListener('click', function() {
+                customSpecRow.remove();
+            });
+        });
+    }
+}
 
 /**
  * Function to close the modal and reset form
