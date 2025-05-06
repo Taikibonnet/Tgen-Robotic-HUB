@@ -43,15 +43,8 @@ function loadRobots() {
     // Clear loading spinner
     robotGrid.innerHTML = '';
     
-    // Get robots from localStorage (added through admin interface and default robots)
-    let robots = [];
-    if (window.robotsData && window.robotsData.robots) {
-        robots = window.robotsData.robots;
-    }
-    
-    // Show all robots or filter only for published ones if implemented
-    // MODIFIED: Removed the filter to show all robots to all users
-    // robots = robots.filter(robot => robot.status === 'published');
+    // Get robots from various sources
+    let robots = getAllRobots();
     
     // No robots available
     if (robots.length === 0) {
@@ -70,15 +63,65 @@ function loadRobots() {
 }
 
 /**
+ * Get all robots from all available sources
+ */
+function getAllRobots() {
+    let robots = [];
+    
+    // Get robots from the data.js file if available
+    if (window.robotsData && window.robotsData.robots) {
+        robots = [...window.robotsData.robots];
+    }
+    
+    // Get robots directly from localStorage
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('robot_')) {
+                try {
+                    const robotData = JSON.parse(localStorage.getItem(key));
+                    
+                    // Check if this robot is already in the array (avoid duplicates)
+                    const exists = robots.some(robot => 
+                        robot.id === robotData.id || robot.slug === robotData.slug
+                    );
+                    
+                    if (!exists) {
+                        robots.push(robotData);
+                    }
+                } catch (e) {
+                    // Ignore parse errors
+                    console.error('Error parsing robot data:', e);
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Error accessing localStorage:', e);
+    }
+    
+    return robots;
+}
+
+/**
  * Create a robot card element
  */
 function createRobotCard(robot) {
     const card = document.createElement('div');
     card.className = 'robot-card';
     card.dataset.slug = robot.slug;
+    card.dataset.id = robot.id;
     
-    // Use a placeholder image if no featured image is available
-    const imageUrl = robot.media?.featuredImage?.url || 'images/robot-placeholder.jpg';
+    // Use appropriate image url from different possible sources
+    let imageUrl = 'images/robot-placeholder.jpg';
+    if (robot.media) {
+        if (robot.media.featuredImage && robot.media.featuredImage.url) {
+            imageUrl = robot.media.featuredImage.url;
+        } else if (robot.media.mainImage && robot.media.mainImage.url) {
+            imageUrl = robot.media.mainImage.url;
+        } else if (robot.media.images && robot.media.images.length > 0) {
+            imageUrl = robot.media.images[0].url;
+        }
+    }
     
     card.innerHTML = `
         <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image">
@@ -86,14 +129,16 @@ function createRobotCard(robot) {
             <h3 class="robot-title">${robot.name}</h3>
             <p class="robot-desc">${robot.summary}</p>
             <div class="robot-meta">
-                <span>${robot.manufacturer.name}</span>
+                <span>${robot.manufacturer?.name || 'Unknown Manufacturer'}</span>
             </div>
         </div>
     `;
     
     // Add click event to navigate to robot detail page
     card.addEventListener('click', () => {
-        window.location.href = `robot-detail.html?slug=${robot.slug}`;
+        // Use slug if available, otherwise use ID
+        const identifier = robot.slug || robot.id;
+        window.location.href = `robot-detail.html?slug=${identifier}`;
     });
     
     return card;
