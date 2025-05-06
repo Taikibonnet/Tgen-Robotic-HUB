@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robotic Encyclopedia - Tgen Robotics Hub</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/media-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Encyclopedia specific styles */
@@ -193,6 +194,34 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* Robot article container for encyclopedia content */
+        .robot-article-container {
+            background-color: rgba(18, 18, 18, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .robot-article-header {
+            margin-bottom: 20px;
+        }
+        
+        .robot-article-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .robot-article-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .robot-article-content {
+            line-height: 1.8;
+        }
+        
         @media (max-width: 768px) {
             .robot-grid {
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -234,6 +263,13 @@
                     <input type="text" class="search-input" id="robot-search" placeholder="Search for robots by name, manufacturer, or features...">
                     <div class="search-icon">
                         <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <span class="filter-title">Admin Actions</span>
+                    <div class="filter-options">
+                        <a href="admin-form.html" class="btn btn-primary btn-sm">Add New Robot</a>
                     </div>
                 </div>
             </div>
@@ -309,5 +345,6 @@
     <script src="robot-storage-adapter.js"></script>
     <script src="js/main.js"></script>
     <script src="js/encyclopedia.js"></script>
+    <script src="js/media-display.js"></script>
 </body>
 </html>
