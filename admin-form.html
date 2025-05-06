@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Editor - Tgen Robotics Hub</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/admin-form.css">
+    <link rel="stylesheet" href="css/media-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #20e3b2;
+            --secondary: #0cebeb;
+            --accent: #ff6b6b;
+            --dark: #121212;
+            --dark-2: #1a1a1a;
+            --dark-3: #222222;
+            --light: #f8f9fa;
+            --gray: #adb5bd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .admin-form-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .form-back-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .admin-form-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-form-title i {
+            color: var(--primary);
+        }
+        
+        .admin-form {
+            background-color: var(--dark-2);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .form-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 25px;
+        }
+        
+        .form-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+        
+        .form-tab.active {
+            border-bottom: 2px solid var(--primary);
+            opacity: 1;
+            color: var(--primary);
+        }
+        
+        .form-tab:hover {
+            opacity: 1;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
+            </a>
+            <nav class="nav-links">
+                <a href="encyclopedia.html">Encyclopedia</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <button class="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="admin-form-container">
+        <a href="admin-robot-management.html" class="form-back-link">
+            <i class="fas fa-arrow-left"></i> Back to Robot Management
+        </a>
+        
+        <h1 class="admin-form-title" id="modal-title">
+            <i class="fas fa-robot"></i> Add New Robot
+        </h1>
+        
+        <form id="robot-form" class="admin-form">
+            <div class="form-tabs">
+                <div class="form-tab active" data-tab="basic">Basic Info</div>
+                <div class="form-tab" data-tab="specs">Specifications</div>
+                <div class="form-tab" data-tab="media">Media</div>
+            </div>
+            
+            <!-- Basic Info Tab -->
+            <div class="tab-content active" id="tab-basic">
+                <div class="form-section">
+                    <h2>Robot Information</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="robot-name">Robot Name *</label>
+                                <input type="text" id="robot-name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="robot-slug">Slug (URL-friendly name)</label>
+                                <input type="text" id="robot-slug" class="form-control" placeholder="Auto-generated if left empty">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="robot-summary">Summary *</label>
+                        <textarea id="robot-summary" class="form-control" rows="2" required placeholder="A brief overview of the robot (will appear in cards and previews)"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="robot-description">Full Description</label>
+                        <textarea id="robot-description" class="form-control" rows="8" placeholder="Detailed information about the robot (supports markdown)"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2>Manufacturer Information</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="manufacturer-name">Manufacturer Name *</label>
+                                <input type="text" id="manufacturer-name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="manufacturer-country">Country of Origin</label>
+                                <input type="text" id="manufacturer-country" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="manufacturer-website">Manufacturer Website</label>
+                        <input type="url" id="manufacturer-website" class="form-control" placeholder="https://example.com">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2>Additional Information</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="year-introduced">Year Introduced</label>
+                                <input type="number" id="year-introduced" class="form-control" min="1950" max="2025">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="robot-status">Status</label>
+                                <select id="robot-status" class="form-control">
+                                    <option value="draft">Draft</option>
+                                    <option value="published">Published</option>
+                                    <option value="archived">Archived</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Specifications Tab -->
+            <div class="tab-content" id="tab-specs">
+                <div class="form-section">
+                    <h2>Physical Specifications</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="spec-height">Height</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="number" id="spec-height" class="form-control" step="0.01">
+                                    <select id="spec-height-unit" class="form-control" style="width: 80px;">
+                                        <option value="m">m</option>
+                                        <option value="cm">cm</option>
+                                        <option value="in">in</option>
+                                        <option value="ft">ft</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="spec-weight">Weight</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="number" id="spec-weight" class="form-control" step="0.01">
+                                    <select id="spec-weight-unit" class="form-control" style="width: 80px;">
+                                        <option value="kg">kg</option>
+                                        <option value="g">g</option>
+                                        <option value="lb">lb</option>
+                                        <option value="oz">oz</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2>Performance</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="spec-battery-runtime">Battery Runtime (minutes)</label>
+                                <input type="number" id="spec-battery-runtime" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="spec-speed">Maximum Speed</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="number" id="spec-speed" class="form-control" step="0.01">
+                                    <select id="spec-speed-unit" class="form-control" style="width: 80px;">
+                                        <option value="m/s">m/s</option>
+                                        <option value="km/h">km/h</option>
+                                        <option value="mph">mph</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Media Tab -->
+            <div class="tab-content" id="tab-media">
+                <!-- Main Image Upload -->
+                <div class="form-section">
+                    <h2>Main Image</h2>
+                    <p>This image will be displayed as the main image for the robot in the encyclopedia and detail pages.</p>
+                    
+                    <div class="form-group">
+                        <div class="upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <p>Click to upload or drag and drop your image</p>
+                            <p class="upload-hint">JPG, PNG or GIF (Max. 5MB)</p>
+                        </div>
+                        <input type="file" id="mainImage" name="mainImage" accept="image/*" style="display: none;">
+                        <div id="mainImagePreview" class="image-preview"></div>
+                    </div>
+                </div>
+                
+                <!-- Gallery Images Upload -->
+                <div class="form-section">
+                    <h2>Gallery Images</h2>
+                    <p>Add additional images that will be displayed in the robot's gallery.</p>
+                    
+                    <div class="form-group">
+                        <div class="upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-images"></i>
+                            </div>
+                            <p>Click to upload or drag and drop your images</p>
+                            <p class="upload-hint">JPG, PNG or GIF (Max. 5MB each) • You can select multiple files</p>
+                        </div>
+                        <input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple style="display: none;">
+                        <div id="galleryPreview" class="gallery-preview"></div>
+                    </div>
+                </div>
+                
+                <!-- Video Section -->
+                <div class="form-section">
+                    <h2>Videos</h2>
+                    <p>Add videos to showcase your robot in action. You can use YouTube links, upload MP4 files, or link to external video sources.</p>
+                    
+                    <div id="videoInputsContainer">
+                        <!-- Video input template -->
+                        <div class="video-input">
+                            <div class="form-group">
+                                <label>Video Type</label>
+                                <select class="video-type" name="videoType[]">
+                                    <option value="youtube">YouTube Link</option>
+                                    <option value="mp4">Upload MP4</option>
+                                    <option value="external">External Link</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group video-url-input">
+                                <label>Video URL</label>
+                                <input type="text" class="video-url" name="videoUrl[]" placeholder="https://www.youtube.com/watch?v=...">
+                            </div>
+                            
+                            <div class="form-group video-file-input" style="display: none;">
+                                <label>Upload MP4</label>
+                                <input type="file" class="video-file" name="videoFile[]" accept="video/mp4">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Video Title (optional)</label>
+                                <input type="text" class="video-title" name="videoTitle[]" placeholder="Video title">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Video Description (optional)</label>
+                                <textarea class="video-description" name="videoDescription[]" placeholder="Video description"></textarea>
+                            </div>
+                            
+                            <div class="video-preview"></div>
+                            
+                            <button type="button" class="remove-video-btn">Remove</button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="addVideoBtn">
+                        <i class="fas fa-plus"></i> Add Another Video
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-action-buttons">
+                <button type="button" class="form-cancel-btn" onclick="window.location.href='admin-robot-management.html'">Cancel</button>
+                <button type="submit" class="form-submit-btn">Save Robot</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html">Our Mission</a></li>
+                        <li><a href="about.html#team">The Team</a></li>
+                        <li><a href="about.html#partners">Partners</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="encyclopedia.html">Robot Database</a></li>
+                        <li><a href="about.html#research">Research</a></li>
+                        <li><a href="about.html#education">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="contact.html#newsletter">Newsletter</a></li>
+                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
+                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/data.js"></script>
+    <script src="robot-storage-adapter.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/admin-form.js"></script>
+    <script>
+        // Form tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.form-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    document.getElementById('tab-' + tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
