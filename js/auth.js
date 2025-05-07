@@ -5,6 +5,7 @@
 
 // Initialize auth when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Auth.js: Initializing authentication');
     initAuth();
 });
 
@@ -17,6 +18,10 @@ window.tgenApp = window.tgenApp || {};
 function initAuth() {
     // Check if user is logged in
     const user = getLoggedInUser();
+    console.log('Auth.js: User logged in:', user ? 'Yes' : 'No');
+    if (user) {
+        console.log('Auth.js: User role:', user.role);
+    }
     
     // Update UI based on auth state
     updateAuthUI(user);
@@ -65,11 +70,13 @@ function setCurrentUser(user) {
  * Update UI based on authentication state
  */
 function updateAuthUI(user) {
+    console.log('Auth.js: Updating auth UI');
     // If user is logged in
     if (user) {
         // Hide login/signup buttons, show user info
         const authButtonsContainer = document.querySelector('.auth-buttons');
         if (authButtonsContainer) {
+            console.log('Auth.js: Updating auth buttons for logged in user');
             // Replace login/signup buttons with user dropdown
             authButtonsContainer.innerHTML = `
                 <div class="user-dropdown">
@@ -122,17 +129,27 @@ function updateAuthUI(user) {
         
         // Show/hide admin sections based on user role
         const adminElements = document.querySelectorAll('.admin-only');
+        console.log('Auth.js: Found', adminElements.length, 'admin-only elements');
         adminElements.forEach(el => {
             el.style.display = user.role === 'admin' ? 'block' : 'none';
         });
         
+        // Show admin controls if user is admin
+        const adminControls = document.getElementById('admin-controls');
+        if (adminControls) {
+            console.log('Auth.js: Setting admin-controls display to', user.role === 'admin' ? 'block' : 'none');
+            adminControls.style.display = user.role === 'admin' ? 'block' : 'none';
+        }
+        
         // Show admin actions
         const adminActions = document.querySelectorAll('.admin-actions');
+        console.log('Auth.js: Found', adminActions.length, 'admin-actions elements');
         adminActions.forEach(el => {
             el.style.display = user.role === 'admin' ? 'flex' : 'none';
         });
     } else {
         // Show login/signup buttons if user is not logged in
+        console.log('Auth.js: User not logged in, showing login/signup buttons');
         const authButtonsContainer = document.querySelector('.auth-buttons');
         if (authButtonsContainer) {
             authButtonsContainer.innerHTML = `
@@ -152,6 +169,12 @@ function updateAuthUI(user) {
         adminActions.forEach(el => {
             el.style.display = 'none';
         });
+        
+        // Hide admin controls
+        const adminControls = document.getElementById('admin-controls');
+        if (adminControls) {
+            adminControls.style.display = 'none';
+        }
     }
 }
 
@@ -192,6 +215,7 @@ function login(email, password) {
         };
         
         setCurrentUser(user);
+        console.log('Auth.js: Logged in as admin user');
         
         // Redirect after successful login
         window.location.href = 'admin-dashboard.html';
@@ -209,6 +233,7 @@ function login(email, password) {
         };
         
         setCurrentUser(user);
+        console.log('Auth.js: Logged in as regular user');
         
         // Redirect after successful login
         window.location.href = 'encyclopedia.html';
@@ -257,6 +282,7 @@ function signup(firstName, lastName, email, password) {
     };
     
     setCurrentUser(user);
+    console.log('Auth.js: Signed up new user');
     
     // Redirect after successful signup
     window.location.href = 'encyclopedia.html';
@@ -267,6 +293,7 @@ function signup(firstName, lastName, email, password) {
  * Logout the current user
  */
 function logout() {
+    console.log('Auth.js: Logging out user');
     setCurrentUser(null);
     window.location.reload();
 }
