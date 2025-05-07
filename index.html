@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tgen Robotics Hub - Your Ultimate Robotics Encyclopedia</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/media-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Hero Section */
@@ -299,17 +300,26 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Scripts - Load data.js first to ensure it's available for other scripts -->
     <script src="js/data.js"></script>
+    <script src="robot-storage-adapter.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/media-display.js"></script>
     <script>
         // Homepage specific JavaScript
 
         // Function to initialize the homepage
         function initHomepage() {
+            console.log('Initializing homepage');
             loadFeaturedRobots();
             setupHeroSearch();
             checkUserStatus();
+            
+            // Initialize robot storage if not already done
+            if (window.robotStorage && typeof window.robotStorage.init === 'function') {
+                window.robotStorage.init();
+            }
         }
 
         // Load featured robots
@@ -319,10 +329,31 @@
             // Clear loading spinner
             featuredRobotsContainer.innerHTML = '';
             
-            // Get top 3 robots by views
-            const topRobots = window.robotsData.robots
-                .sort((a, b) => (b.stats?.views || 0) - (a.stats?.views || 0))
-                .slice(0, 3);
+            // Ensure robotsData exists
+            if (!window.robotsData || !window.robotsData.robots || !Array.isArray(window.robotsData.robots)) {
+                console.error('Error: robotsData not properly initialized');
+                featuredRobotsContainer.innerHTML = '<p>Error loading robots. Please try again later.</p>';
+                return;
+            }
+            
+            // Get top 3 robots by views or just the first 3 if views aren't available
+            let topRobots = [];
+            
+            if (window.robotsData.robots.some(robot => robot.stats?.views)) {
+                // If some robots have view stats, sort by views
+                topRobots = window.robotsData.robots
+                    .sort((a, b) => (b.stats?.views || 0) - (a.stats?.views || 0))
+                    .slice(0, 3);
+            } else {
+                // Otherwise just take the first 3 robots
+                topRobots = window.robotsData.robots.slice(0, 3);
+            }
+            
+            // If still no robots, show a message
+            if (topRobots.length === 0) {
+                featuredRobotsContainer.innerHTML = '<p>No robots found in the database. Visit the <a href="admin-form.html">admin page</a> to add some!</p>';
+                return;
+            }
             
             // Add robot cards to the grid
             topRobots.forEach(robot => {
@@ -338,15 +369,24 @@
             card.dataset.slug = robot.slug;
             
             // Use a placeholder image if no featured image is available
-            const imageUrl = robot.media.featuredImage?.url || 'images/robot-placeholder.jpg';
+            let imageUrl = 'images/robot-placeholder.jpg';
+            if (robot.media) {
+                if (robot.media.featuredImage && robot.media.featuredImage.url) {
+                    imageUrl = robot.media.featuredImage.url;
+                } else if (robot.media.mainImage && robot.media.mainImage.url) {
+                    imageUrl = robot.media.mainImage.url;
+                } else if (robot.media.images && robot.media.images.length > 0) {
+                    imageUrl = robot.media.images[0].url;
+                }
+            }
             
             card.innerHTML = `
-                <img src="${imageUrl}" alt="${robot.media.featuredImage?.alt || robot.name}" class="robot-image">
+                <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="this.src='images/robot-placeholder.jpg'">
                 <div class="robot-content">
-                    <h3 class="robot-title">${robot.name}</h3>
-                    <p class="robot-desc">${robot.summary}</p>
+                    <h3 class="robot-title">${robot.name || 'Unnamed Robot'}</h3>
+                    <p class="robot-desc">${robot.summary || 'No description available.'}</p>
                     <div class="robot-meta">
-                        <span>${robot.manufacturer.name}</span>
+                        <span>${robot.manufacturer?.name || 'Unknown Manufacturer'}</span>
                     </div>
                 </div>
             `;
@@ -363,36 +403,44 @@
         function setupHeroSearch() {
             const searchInput = document.getElementById('hero-search');
             
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    const query = this.value.trim();
-                    if (query) {
-                        window.location.href = `encyclopedia.html?search=${encodeURIComponent(query)}`;
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const query = this.value.trim();
+                        if (query) {
+                            window.location.href = `encyclopedia.html?search=${encodeURIComponent(query)}`;
+                        }
                     }
-                }
-            });
+                });
 
-            // Also handle search icon click
-            const searchIcon = document.querySelector('.search-icon');
-            searchIcon.addEventListener('click', function() {
-                const query = searchInput.value.trim();
-                if (query) {
-                    window.location.href = `encyclopedia.html?search=${encodeURIComponent(query)}`;
+                // Also handle search icon click
+                const searchIcon = document.querySelector('.search-icon');
+                if (searchIcon) {
+                    searchIcon.addEventListener('click', function() {
+                        const query = searchInput.value.trim();
+                        if (query) {
+                            window.location.href = `encyclopedia.html?search=${encodeURIComponent(query)}`;
+                        }
+                    });
                 }
-            });
+            }
         }
         
         // Check user login status and update UI
         function checkUserStatus() {
-            const user = window.tgenApp.getCurrentUser();
-            if (user) {
-                updateAuthUI(user);
+            if (window.tgenApp && window.tgenApp.getCurrentUser) {
+                const user = window.tgenApp.getCurrentUser();
+                if (user) {
+                    updateAuthUI(user);
+                }
             }
         }
         
         // Update authentication UI based on user state
         function updateAuthUI(user) {
             const authButtonsContainer = document.querySelector('.auth-buttons');
+            
+            if (!authButtonsContainer) return;
             
             // Replace login/signup buttons with user dropdown
             authButtonsContainer.innerHTML = `
@@ -415,24 +463,30 @@
             const logoutBtn = document.getElementById('logout-btn');
             
             // Toggle dropdown on click
-            userInfo.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dropdownMenu.classList.toggle('active');
-                userInfo.querySelector('i').style.transform = dropdownMenu.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
-            });
-            
-            // Hide dropdown when clicking elsewhere
-            document.addEventListener('click', function() {
-                dropdownMenu.classList.remove('active');
-                userInfo.querySelector('i').style.transform = 'rotate(0)';
-            });
+            if (userInfo && dropdownMenu) {
+                userInfo.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('active');
+                    userInfo.querySelector('i').style.transform = dropdownMenu.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+                });
+                
+                // Hide dropdown when clicking elsewhere
+                document.addEventListener('click', function() {
+                    dropdownMenu.classList.remove('active');
+                    userInfo.querySelector('i').style.transform = 'rotate(0)';
+                });
+            }
             
             // Logout handler
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.tgenApp.logout();
-                window.location.reload();
-            });
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (window.tgenApp && window.tgenApp.logout) {
+                        window.tgenApp.logout();
+                        window.location.reload();
+                    }
+                });
+            }
         }
 
         // Initialize homepage when DOM is loaded
