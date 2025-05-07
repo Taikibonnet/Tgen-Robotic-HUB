@@ -302,7 +302,9 @@
 
     <!-- Scripts - Load data.js first to ensure it's available for other scripts -->
     <script src="js/data.js"></script>
+    <script src="js/github-storage.js"></script>
     <script src="robot-storage-adapter.js"></script>
+    <script src="robot-media-handler.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
     <script src="js/media-display.js"></script>
@@ -312,14 +314,19 @@
         // Function to initialize the homepage
         function initHomepage() {
             console.log('Initializing homepage');
-            loadFeaturedRobots();
+            
+            // Initialize robot storage
+            if (window.robotStorage && typeof window.robotStorage.init === 'function') {
+                window.robotStorage.init().then(() => {
+                    loadFeaturedRobots();
+                });
+            } else {
+                console.error('Robot storage not initialized');
+                loadFeaturedRobots();
+            }
+            
             setupHeroSearch();
             checkUserStatus();
-            
-            // Initialize robot storage if not already done
-            if (window.robotStorage && typeof window.robotStorage.init === 'function') {
-                window.robotStorage.init();
-            }
         }
 
         // Load featured robots
@@ -336,6 +343,12 @@
                 return;
             }
             
+            // Check if we have any robots
+            if (window.robotsData.robots.length === 0) {
+                featuredRobotsContainer.innerHTML = '<p>No robots found in the database. Visit the <a href="admin-form.html">admin page</a> to add some!</p>';
+                return;
+            }
+            
             // Get top 3 robots by views or just the first 3 if views aren't available
             let topRobots = [];
             
@@ -349,20 +362,23 @@
                 topRobots = window.robotsData.robots.slice(0, 3);
             }
             
-            // If still no robots, show a message
-            if (topRobots.length === 0) {
-                featuredRobotsContainer.innerHTML = '<p>No robots found in the database. Visit the <a href="admin-form.html">admin page</a> to add some!</p>';
-                return;
-            }
-            
             // Add robot cards to the grid
-            topRobots.forEach(robot => {
-                const robotCard = createRobotCard(robot);
-                featuredRobotsContainer.appendChild(robotCard);
-            });
+            if (window.robotMediaHandler && typeof window.robotMediaHandler.createRobotCard === 'function') {
+                // Use the media handler to create cards
+                topRobots.forEach(robot => {
+                    const robotCard = window.robotMediaHandler.createRobotCard(robot);
+                    featuredRobotsContainer.appendChild(robotCard);
+                });
+            } else {
+                // Fallback to basic card creation
+                topRobots.forEach(robot => {
+                    const robotCard = createRobotCard(robot);
+                    featuredRobotsContainer.appendChild(robotCard);
+                });
+            }
         }
 
-        // Create a robot card element
+        // Create a robot card element (fallback if media handler is not available)
         function createRobotCard(robot) {
             const card = document.createElement('div');
             card.className = 'robot-card';
