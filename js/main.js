@@ -2,6 +2,8 @@
 
 // Initialize the site
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Main.js: Initializing site functionality');
+    
     // Set up event listeners
     setupMenuToggle();
     setupActiveNavLink();
@@ -9,7 +11,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Check if user is logged in and update UI accordingly
     checkUserStatus();
+    
+    // Add event listener for auth state changes
+    window.addEventListener('authStateChanged', updateUIOnAuthChange);
 });
+
+/**
+ * Custom event listener for auth state changes from other scripts
+ */
+function updateUIOnAuthChange(event) {
+    console.log('Main.js: Auth state changed event received');
+    const user = event.detail;
+    updateUserUI(user);
+}
 
 // Mobile menu toggle
 function setupMenuToggle() {
@@ -75,239 +89,231 @@ function openAIAssistant() {
 
 // Check user login status
 function checkUserStatus() {
-    // Check for user data in localStorage
-    const userData = localStorage.getItem('tgenUser');
+    console.log('Main.js: Checking user login status');
     
-    if (userData) {
-        const user = JSON.parse(userData);
-        updateUserUI(user);
+    // Try to get user from tgenApp if available
+    if (window.tgenApp && typeof window.tgenApp.getCurrentUser === 'function') {
+        const user = window.tgenApp.getCurrentUser();
+        if (user) {
+            console.log('Main.js: User found via tgenApp:', user.firstName, '(Role:', user.role + ')');
+            updateUserUI(user);
+            return;
+        }
+    }
+    
+    // Otherwise, try to get directly from localStorage
+    try {
+        const userData = localStorage.getItem('tgen_current_user');
+        
+        if (userData) {
+            const user = JSON.parse(userData);
+            console.log('Main.js: User found via localStorage:', user.firstName, '(Role:', user.role + ')');
+            updateUserUI(user);
+        } else {
+            console.log('Main.js: No user found in localStorage');
+        }
+    } catch (e) {
+        console.error('Main.js: Error checking user status:', e);
     }
 }
 
 // Update UI based on user login status
 function updateUserUI(user) {
+    console.log('Main.js: Updating UI for user');
     const authButtonsContainer = document.querySelector('.auth-buttons');
     
-    if (!authButtonsContainer) return;
-    
-    // Replace login/signup buttons with user info
-    authButtonsContainer.innerHTML = `
-        <div class="user-dropdown">
-            <div class="user-info">
-                <span>${user.firstName}</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="dropdown-menu">
-                <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
-                ${user.role === 'admin' ? '<a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>' : ''}
-                <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </div>
-        </div>
-    `;
-    
-    // Add click handler for dropdown toggle
-    const userInfo = document.querySelector('.user-info');
-    const dropdownMenu = document.querySelector('.dropdown-menu');
-    
-    if (userInfo && dropdownMenu) {
-        userInfo.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('active');
-            userInfo.querySelector('i').style.transform = dropdownMenu.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
-        });
+    if (!authButtonsContainer) {
+        console.log('Main.js: Auth buttons container not found');
+        return;
     }
     
-    // Add click handler for logout button
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            logout();
-        });
-    }
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', () => {
-        const dropdown = document.querySelector('.dropdown-menu');
-        const userInfoIcon = document.querySelector('.user-info i');
-        if (dropdown && dropdown.classList.contains('active')) {
-            dropdown.classList.remove('active');
-            if (userInfoIcon) {
-                userInfoIcon.style.transform = 'rotate(0)';
-            }
+    if (user) {
+        console.log('Main.js: Updating UI for logged in user');
+        
+        // Replace login/signup buttons with user info
+        authButtonsContainer.innerHTML = `
+            <div class="user-dropdown">
+                <div class="user-info">
+                    <span>${user.firstName}</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+                    ${user.role === 'admin' ? '<a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>' : ''}
+                    <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        `;
+        
+        // Add click handler for dropdown toggle
+        const userInfo = document.querySelector('.user-info');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        
+        if (userInfo && dropdownMenu) {
+            userInfo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('active');
+                const icon = userInfo.querySelector('i');
+                if (icon) {
+                    icon.style.transform = dropdownMenu.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+                }
+            });
         }
-    });
+        
+        // Add click handler for logout button
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                logout();
+            });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            const dropdown = document.querySelector('.dropdown-menu');
+            const userInfoIcon = document.querySelector('.user-info i');
+            if (dropdown && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+                if (userInfoIcon) {
+                    userInfoIcon.style.transform = 'rotate(0)';
+                }
+            }
+        });
+        
+        // Show/hide admin elements based on user role
+        const adminElements = document.querySelectorAll('.admin-only');
+        console.log('Main.js: Found', adminElements.length, 'admin-only elements');
+        adminElements.forEach(el => {
+            el.style.display = user.role === 'admin' ? 'block' : 'none';
+        });
+        
+        // Show admin controls if user is admin
+        const adminControls = document.getElementById('admin-controls');
+        if (adminControls) {
+            console.log('Main.js: Setting admin-controls display to', user.role === 'admin' ? 'block' : 'none');
+            adminControls.style.display = user.role === 'admin' ? 'block' : 'none';
+        }
+    } else {
+        console.log('Main.js: Updating UI for non-logged in user');
+        
+        // Show login/signup buttons
+        authButtonsContainer.innerHTML = `
+            <a href="login.html" class="btn btn-outline">Log In</a>
+            <a href="signup.html" class="btn btn-primary">Sign Up</a>
+        `;
+        
+        // Hide admin elements
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        // Hide admin controls
+        const adminControls = document.getElementById('admin-controls');
+        if (adminControls) {
+            adminControls.style.display = 'none';
+        }
+    }
 }
 
 // Logout function
 function logout() {
-    // Remove user data from localStorage
-    localStorage.removeItem('tgenUser');
+    console.log('Main.js: Logging out user');
     
-    // Reload the page
-    window.location.reload();
+    // Clear user data from localStorage
+    localStorage.removeItem('tgen_current_user');
+    
+    // If tgenApp logout exists, use it as well
+    if (window.tgenApp && typeof window.tgenApp.logout === 'function') {
+        window.tgenApp.logout();
+    } else {
+        // Reload the page
+        window.location.reload();
+    }
 }
 
 // Login function (called from login page)
 function login(email, password) {
-    // In a real application, this would make an API call
-    // For demo purposes, we'll use the sample user data
-    
-    // Find user with matching credentials
-    const user = window.robotsData.users.find(u => 
-        u.email === email && u.password === password
-    );
-    
-    if (user) {
-        // Store user data in localStorage (excluding password)
-        const userData = { ...user };
-        delete userData.password;
-        
-        localStorage.setItem('tgenUser', JSON.stringify(userData));
-        
-        return { success: true, user: userData };
+    // If tgenApp login exists, use it
+    if (window.tgenApp && typeof window.tgenApp.login === 'function') {
+        return window.tgenApp.login(email, password);
     }
     
-    return { success: false, message: "Invalid email or password" };
-}
-
-// Register function (called from signup page)
-function register(userData) {
-    // In a real application, this would make an API call
-    // For demo purposes, we'll simulate user registration
+    // Otherwise, implement a simple login
+    console.log('Main.js: Logging in user', email);
     
-    // Check if email already exists
-    const emailExists = window.robotsData.users.some(u => u.email === userData.email);
-    
-    if (emailExists) {
-        return { success: false, message: "Email already in use" };
+    // Check credentials
+    if (email === 'admin@example.com' && password === 'password') {
+        const userData = {
+            id: 1,
+            email: 'admin@example.com',
+            firstName: 'Admin',
+            lastName: 'User',
+            role: 'admin'
+        };
+        
+        // Store in localStorage
+        localStorage.setItem('tgen_current_user', JSON.stringify(userData));
+        
+        // Update UI
+        updateUserUI(userData);
+        
+        // Dispatch event for auth state change
+        dispatchAuthEvent(userData);
+        
+        return { success: true, userData };
+    } else if (email === 'user@example.com' && password === 'password') {
+        const userData = {
+            id: 2,
+            email: 'user@example.com',
+            firstName: 'Regular',
+            lastName: 'User',
+            role: 'user'
+        };
+        
+        // Store in localStorage
+        localStorage.setItem('tgen_current_user', JSON.stringify(userData));
+        
+        // Update UI
+        updateUserUI(userData);
+        
+        // Dispatch event for auth state change
+        dispatchAuthEvent(userData);
+        
+        return { success: true, userData };
     }
     
-    // Create new user
-    const newUser = {
-        id: window.robotsData.users.length + 1,
-        email: userData.email,
-        password: userData.password,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        role: 'user',
-        profileImage: 'images/avatars/default.jpg',
-        preferences: {
-            theme: 'dark',
-            favoriteCategories: []
-        },
-        activity: {
-            favoriteRobots: [],
-            recentlyViewed: []
-        }
-    };
-    
-    // Add to users array
-    window.robotsData.users.push(newUser);
-    
-    // Store user data in localStorage (excluding password)
-    const userDataToStore = { ...newUser };
-    delete userDataToStore.password;
-    
-    localStorage.setItem('tgenUser', JSON.stringify(userDataToStore));
-    
-    return { success: true, user: userDataToStore };
+    return { success: false, message: 'Invalid email or password' };
 }
 
 // Get current user
 function getCurrentUser() {
-    const userData = localStorage.getItem('tgenUser');
-    
-    if (userData) {
-        return JSON.parse(userData);
+    // If tgenApp getCurrentUser exists, use it
+    if (window.tgenApp && typeof window.tgenApp.getCurrentUser === 'function') {
+        return window.tgenApp.getCurrentUser();
     }
     
-    return null;
-}
-
-// Add to user's recently viewed robots
-function addToRecentlyViewed(robotId) {
-    const user = getCurrentUser();
-    
-    if (!user) return;
-    
-    // Get numeric robot ID
-    robotId = parseInt(robotId);
-    
-    // Create new recently viewed entry
-    const newEntry = {
-        robotId,
-        timestamp: new Date().toISOString()
-    };
-    
-    // If user doesn't have activity or recentlyViewed, initialize them
-    if (!user.activity) user.activity = {};
-    if (!user.activity.recentlyViewed) user.activity.recentlyViewed = [];
-    
-    // Remove if already exists
-    user.activity.recentlyViewed = user.activity.recentlyViewed.filter(
-        item => item.robotId !== robotId
-    );
-    
-    // Add to beginning of array
-    user.activity.recentlyViewed.unshift(newEntry);
-    
-    // Keep only the 10 most recent
-    if (user.activity.recentlyViewed.length > 10) {
-        user.activity.recentlyViewed = user.activity.recentlyViewed.slice(0, 10);
-    }
-    
-    // Update localStorage
-    localStorage.setItem('tgenUser', JSON.stringify(user));
-}
-
-// Toggle robot favorite status
-function toggleFavorite(robotId) {
-    const user = getCurrentUser();
-    
-    if (!user) return { success: false, message: "You must be logged in to favorite robots" };
-    
-    // Get numeric robot ID
-    robotId = parseInt(robotId);
-    
-    // If user doesn't have activity or favoriteRobots, initialize them
-    if (!user.activity) user.activity = {};
-    if (!user.activity.favoriteRobots) user.activity.favoriteRobots = [];
-    
-    // Check if robot is already in favorites
-    const index = user.activity.favoriteRobots.indexOf(robotId);
-    
-    if (index === -1) {
-        // Add to favorites
-        user.activity.favoriteRobots.push(robotId);
-        
-        // Update localStorage
-        localStorage.setItem('tgenUser', JSON.stringify(user));
-        
-        return { success: true, added: true };
-    } else {
-        // Remove from favorites
-        user.activity.favoriteRobots.splice(index, 1);
-        
-        // Update localStorage
-        localStorage.setItem('tgenUser', JSON.stringify(user));
-        
-        return { success: true, added: false };
+    // Otherwise, get directly from localStorage
+    try {
+        const userData = localStorage.getItem('tgen_current_user');
+        return userData ? JSON.parse(userData) : null;
+    } catch (e) {
+        console.error('Main.js: Error getting current user:', e);
+        return null;
     }
 }
 
-// Check if a robot is in user's favorites
-function isRobotFavorited(robotId) {
+// Check if current user is admin
+function isAdmin() {
     const user = getCurrentUser();
-    
-    if (!user || !user.activity || !user.activity.favoriteRobots) {
-        return false;
-    }
-    
-    // Get numeric robot ID
-    robotId = parseInt(robotId);
-    
-    return user.activity.favoriteRobots.includes(robotId);
+    return user && user.role === 'admin';
+}
+
+// Dispatch auth state change event
+function dispatchAuthEvent(user) {
+    const event = new CustomEvent('authStateChanged', { detail: user });
+    window.dispatchEvent(event);
 }
 
 // Show a temporary message
@@ -392,15 +398,11 @@ function formatDate(dateString) {
 }
 
 // Make global functions available
-window.tgenApp = {
-    login,
-    register,
-    logout,
-    getCurrentUser,
-    addToRecentlyViewed,
-    toggleFavorite,
-    isRobotFavorited,
-    showMessage,
-    getUrlParams,
-    formatDate
-};
+window.tgenApp = window.tgenApp || {};
+window.tgenApp.login = login;
+window.tgenApp.logout = logout;
+window.tgenApp.getCurrentUser = getCurrentUser;
+window.tgenApp.isAdmin = isAdmin;
+window.tgenApp.showMessage = showMessage;
+window.tgenApp.getUrlParams = getUrlParams;
+window.tgenApp.formatDate = formatDate;
