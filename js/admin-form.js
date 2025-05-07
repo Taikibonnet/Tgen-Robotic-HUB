@@ -367,7 +367,7 @@ function setupVideoInput(videoInput) {
     function extractYouTubeId(url) {
         if (!url) return null;
         
-        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\.be\/)([^\"&?\/\s]{11})/i;
         const match = url.match(regex);
         
         return match ? match[1] : null;
@@ -551,7 +551,10 @@ function saveRobotData(robotData, robotId) {
     // Convert blob URLs to data URLs
     convertBlobUrlsToDataUrls(robotData)
         .then(processedData => {
-            // Save to localStorage
+            // Ensure images are in the robots folder
+            fixImagePaths(processedData);
+            
+            // Save to localStorage directly
             localStorage.setItem(`robot_${robotId}`, JSON.stringify(processedData));
             
             // If using the storage adapter
@@ -563,6 +566,9 @@ function saveRobotData(robotData, robotId) {
                 }
             }
             
+            // Alert success
+            alert('Robot saved successfully!');
+            
             // Redirect to robot detail page
             window.location.href = `robot-detail.html?slug=${processedData.slug}`;
         })
@@ -570,6 +576,44 @@ function saveRobotData(robotData, robotId) {
             console.error('Error saving robot data:', error);
             alert('An error occurred while saving the robot data. Please try again.');
         });
+}
+
+/**
+ * Fix image paths to ensure they use the robots folder
+ */
+function fixImagePaths(robotData) {
+    // Fix featured image path
+    if (robotData.media.featuredImage && robotData.media.featuredImage.url) {
+        // For data URLs, we'll keep as is since they'll be handled by the media handler
+        if (!robotData.media.featuredImage.url.startsWith('data:')) {
+            // If it's a regular URL and not already in the robots folder, fix it
+            if (!robotData.media.featuredImage.url.includes('images/robots/')) {
+                // Extract filename or use a default name based on the robot
+                let filename = robotData.slug + '-main.jpg';
+                if (robotData.media.featuredImage.url.includes('/')) {
+                    filename = robotData.media.featuredImage.url.split('/').pop();
+                }
+                robotData.media.featuredImage.url = 'images/robots/' + filename;
+            }
+        }
+    }
+    
+    // Fix gallery images paths
+    if (robotData.media.images && robotData.media.images.length > 0) {
+        robotData.media.images.forEach((image, index) => {
+            if (image.url && !image.url.startsWith('data:')) {
+                if (!image.url.includes('images/robots/')) {
+                    let filename = robotData.slug + '-' + (index + 1) + '.jpg';
+                    if (image.url.includes('/')) {
+                        filename = image.url.split('/').pop();
+                    }
+                    image.url = 'images/robots/' + filename;
+                }
+            }
+        });
+    }
+    
+    return robotData;
 }
 
 /**
@@ -626,9 +670,22 @@ function blobUrlToDataUrl(blobUrl) {
  */
 function loadRobotData(robotId) {
     // Try to get robot data
-    const robot = window.robotsData?.getRobotById ? 
-                  window.robotsData.getRobotById(robotId) : 
-                  getRobotDataFromLocalStorage(robotId);
+    let robot = null;
+    
+    // First try to get from localStorage directly
+    try {
+        const robotData = localStorage.getItem(`robot_${robotId}`);
+        if (robotData) {
+            robot = JSON.parse(robotData);
+        }
+    } catch (e) {
+        console.error('Error loading robot data from localStorage:', e);
+    }
+    
+    // If not found, try robotsData
+    if (!robot && window.robotsData && typeof window.robotsData.getRobotById === 'function') {
+        robot = window.robotsData.getRobotById(robotId);
+    }
     
     if (!robot) {
         alert('Robot not found');
@@ -767,19 +824,6 @@ function loadRobotData(robotId) {
 }
 
 /**
- * Get robot data from localStorage
- */
-function getRobotDataFromLocalStorage(robotId) {
-    try {
-        const data = localStorage.getItem(`robot_${robotId}`);
-        return data ? JSON.parse(data) : null;
-    } catch (e) {
-        console.error('Error getting robot data:', e);
-        return null;
-    }
-}
-
-/**
  * Generate YouTube preview HTML
  */
 function generateYouTubePreview(url) {
@@ -823,7 +867,7 @@ function generateMP4Preview(url) {
 function extractYouTubeId(url) {
     if (!url) return null;
     
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\.be\/)([^\"&?\/\s]{11})/i;
     const match = url.match(regex);
     
     return match ? match[1] : null;
