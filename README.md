@@ -1,148 +1,81 @@
-# Tgen Robotics Hub
+# Tgen Robotic HUB
 
-A comprehensive online encyclopedia for robotics enthusiasts, researchers, and industry professionals. The platform provides detailed information about various robots, news about the latest developments in robotics, and an interactive user experience enhanced by an AI assistant.
+A comprehensive online encyclopedia for robotics enthusiasts, researchers, and professionals. This platform provides detailed information about various robots, their specifications, applications, and media content.
 
-## Features
+## Website Structure
 
-- **Detailed Robot Database**: Comprehensive information about various robots with specifications, images, and applications
-- **User Accounts**: Personalized experience with favorites and recently viewed history
-- **Admin Dashboard**: Powerful content management system for adding and editing robot entries
-- **News Section**: Latest updates and articles from the robotics world
-- **Interactive AI Assistant**: Context-aware robot guide for better user experience
-- **Responsive Design**: Modern UI that works across all devices
+The platform consists of several key components:
 
-## Tech Stack
+- **Encyclopedia**: Browse robots with filtering and search capabilities
+- **Robot Details**: In-depth information about each robot with media galleries
+- **User Authentication**: Secure login system with admin controls
+- **Responsive Design**: Mobile-friendly interface for all device types
 
-### Backend
-- Node.js with Express
-- MongoDB with Mongoose
-- JWT Authentication
-- AWS S3 for media storage
+## Recent Updates
 
-### Frontend
-- HTML/CSS/JavaScript
-- Modern responsive design
-- Admin dashboard with robot management
+### Media Display Enhancement (May 7, 2025)
 
-## Getting Started
+We've addressed issues with image and video display for non-admin users by:
 
-### Prerequisites
+1. **Creating a dedicated robots directory** in the images folder to store robot images consistently
+2. **Implementing a robust media handler** that properly resolves image and video paths for both admin and non-admin users
+3. **Adding fallback placeholder images** to ensure robots without images still display properly
+4. **Fixing video path handling** for embedded videos and external video links
 
-- Node.js (v14+)
-- MongoDB (local or Atlas)
-- AWS Account (for S3 media storage)
-- npm or yarn
+### Image Path Resolution
 
-### Installation
+The updated system now handles various image path formats:
 
-1. Clone the repository
-   ```
-   git clone https://github.com/Taikibonnet/Tgen-Robotic-HUB.git
-   cd Tgen-Robotic-HUB
-   ```
+- Absolute URLs (starting with `http://` or `https://`)
+- Relative paths within the robots folder (`images/robots/image.jpg`)
+- Partial paths that are automatically corrected (`image.jpg` → `images/robots/image.jpg`)
 
-2. Install dependencies
-   ```
-   npm install
-   ```
+### Error Handling
 
-3. Create .env file
-   ```
-   cp .env.example .env
-   ```
-   Then edit the .env file with your configuration details:
-   - Set your MongoDB connection URI
-   - Configure a JWT secret
-   - Add AWS credentials if using S3 for media storage
+We've added robust error handling to catch and resolve:
 
-4. Start the server
-   ```
-   npm run server
-   ```
+- Missing images (automatically replaced with placeholder)
+- Incorrect image paths (automatically corrected to the robots folder)
+- Invalid video URLs (providing links instead of embeds for unsupported formats)
 
-5. Access the application
-   - Main site: http://localhost:5000
-   - Admin dashboard: http://localhost:5000/admin
-   - Default admin login:
-     - Email: tgen.robotics@gmail.com
-     - Password: Admin123!
+## Technical Details
 
-### Development Mode
+### File Structure
 
-To run the server with hot reloading:
+- **images/robots/** - Central storage location for all robot images
+- **robot-media-handler.js** - Core functionality for handling media across the application
+- **js/media-display.js** - Handles media display on detail pages with galleries and videos
+- **js/encyclopedia.js** - Manages the encyclopedia page and robot card generation
+- **js/data.js** - Contains sample robot data for demonstration
 
-```
-npm run dev
-```
+### Key Functions
 
-## Admin Dashboard
+The `robotMedia` object provides several important functions:
 
-The admin dashboard can be accessed at `/admin` and provides the following functionality:
+- `getImageUrl(robot)` - Retrieves the appropriate image URL for a robot
+- `handleImageError(img)` - Handles image loading errors and uses fallbacks
+- `getVideoUrl(robot)` - Creates properly formatted video URLs for embedding
+- `fixImagePath(path)` - Corrects image paths to ensure compatibility
+- `renderGallery(robot, container)` - Renders a complete media gallery
 
-- Add, edit, and delete robot entries
-- Manage categories and tags
-- Publish news articles
-- Upload and manage media files
-- View site statistics
-- Manage user accounts
+## Usage for Developers
 
-## API Endpoints
+When adding new robots to the system:
 
-### Authentication
-- `POST /api/auth/login` - Login
-- `POST /api/auth/register` - Register a new user
-- `GET /api/auth/me` - Get current user data
+1. Always upload images to the `images/robots/` directory
+2. Use the `robotMedia` helper functions to handle image and video URLs
+3. For videos, YouTube links are automatically converted to embed formats
+4. Ensure robots have fallback images in case the main image fails to load
 
-### Robots
-- `GET /api/robots` - Get all robots
-- `GET /api/robots/:id` - Get robot by ID or slug
-- `POST /api/robots` - Create a new robot (admin only)
-- `PUT /api/robots/:id` - Update a robot (admin only)
-- `DELETE /api/robots/:id` - Delete a robot (admin only)
-- `GET /api/robots/categories` - Get robot categories
-- `GET /api/robots/popular` - Get popular robots
-- `GET /api/robots/:id/related` - Get related robots
+## Next Steps
 
-### Users
-- `GET /api/users` - Get all users (admin only)
-- `GET /api/users/:id` - Get user by ID
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user (admin only)
-- `GET /api/users/favorites` - Get user's favorite robots
-- `POST /api/users/favorites/:robotId` - Add robot to favorites
-- `DELETE /api/users/favorites/:robotId` - Remove robot from favorites
+Future enhancements may include:
 
-## Project Structure
+- Improved image lazy-loading for better performance
+- Support for additional video providers beyond YouTube
+- Enhanced gallery view with better lightbox functionality
+- User image uploads with automatic optimization
 
-```
-tgen-robotics-hub/
-├── controllers/        # API controllers
-├── middleware/         # Express middleware
-├── models/             # Mongoose models
-├── routes/             # API routes
-├── public/             # Static frontend files
-├── utils/              # Utility functions
-└── uploads/            # Temporary file uploads
-```
+## Contact
 
-## Future Enhancements
-
-1. **Mobile Application**: Develop dedicated iOS and Android apps
-2. **Interactive 3D Models**: Add WebGL-based 3D robot viewers
-3. **Community Features**: Implement forums or discussion boards
-4. **Educational Content**: Add tutorials and courses
-5. **AR/VR Experiences**: Create immersive robot experiences
-6. **Marketplace Integration**: Connect users with robot manufacturers
-7. **Multilingual Support**: Translate content for global audiences
-
-## License
-
-This project is licensed under the MIT License.
-
-## Contributors
-
-- Taiki Bonnet - Project Lead & Developer
-
----
-
-For more information, visit the [Project Wiki](https://github.com/Taikibonnet/Tgen-Robotic-HUB/wiki) (coming soon).
+For any questions or issues related to the Tgen Robotic HUB, please reach out to our development team at contact@tgenrobotics.com.
