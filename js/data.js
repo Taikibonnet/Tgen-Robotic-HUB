@@ -4,9 +4,9 @@
  * The actual data will be loaded from the GitHub repository
  */
 
-// Initialize robotsData global object
+// Initialize robotsData global object with empty robots array
 window.robotsData = {
-    robots: [],
+    robots: [], // Empty array - no default robots
     
     categories: [
         "Humanoid",
@@ -51,5 +51,5 @@ window.robotsData = {
     }
 };
 
-// Log that the data has been loaded
-console.log("Robot data initialized. Data will be loaded from GitHub.");
+// Log that the data has been initialized with an empty robot array
+console.log("Robot data initialized with empty robots array. Data will be loaded from GitHub.");
