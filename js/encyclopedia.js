@@ -85,8 +85,8 @@ function loadRobots() {
     // Clear loading spinner
     robotGrid.innerHTML = '';
     
-    // Get robots from various sources
-    let robots = getAllRobots();
+    // Get robots from localStorage only (not from the default example data)
+    let robots = getRobotsFromStorage();
     console.log('Encyclopedia.js: Loaded', robots.length, 'robots');
     
     // No robots available
@@ -106,20 +106,14 @@ function loadRobots() {
 }
 
 /**
- * Get all robots from all available sources
+ * Get robots from localStorage only, ignoring the default example robots
  */
-function getAllRobots() {
+function getRobotsFromStorage() {
     let robots = [];
     
-    // Get robots from the data.js file if available
-    if (window.robotsData && window.robotsData.robots) {
-        console.log('Encyclopedia.js: Found', window.robotsData.robots.length, 'robots in robotsData');
-        robots = [...window.robotsData.robots];
-    }
-    
-    // Get robots directly from localStorage as a fallback
+    // Get robots directly from localStorage
     try {
-        // First try the main storage key
+        // Look in the main storage key
         const mainStorage = localStorage.getItem('tgen_robotics_data');
         if (mainStorage) {
             try {
@@ -127,17 +121,8 @@ function getAllRobots() {
                 if (data.robots && Array.isArray(data.robots)) {
                     console.log('Encyclopedia.js: Found', data.robots.length, 'robots in localStorage main storage');
                     
-                    // Add robots not already in the array
-                    data.robots.forEach(robotData => {
-                        // Check if this robot is already in the array (avoid duplicates)
-                        const exists = robots.some(robot => 
-                            robot.id === robotData.id || robot.slug === robotData.slug
-                        );
-                        
-                        if (!exists) {
-                            robots.push(robotData);
-                        }
-                    });
+                    // Use only robots from localStorage, skipping default examples
+                    robots = [...data.robots];
                 }
             } catch (e) {
                 console.error('Encyclopedia.js: Error parsing main storage:', e);
