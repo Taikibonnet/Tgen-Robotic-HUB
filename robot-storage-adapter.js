@@ -36,20 +36,17 @@ window.robotStorage = (function() {
                 throw new Error('No data found');
             }
         } catch (error) {
-            console.log('Initializing default robot data structure');
+            console.log('Initializing empty robot data structure');
             
-            // If loading fails or no data exists, use the default robots from data.js
-            const defaultRobots = window.robotsData && Array.isArray(window.robotsData.robots) 
-                ? window.robotsData.robots 
-                : [];
-                
+            // If loading fails or no data exists, use an empty robots array
+            // Important: Do NOT use the default robots from data.js
             data = {
-                robots: defaultRobots,
+                robots: [], // Force an empty array instead of using any defaults
                 categories: window.robotsData?.categories || [],
                 lastUpdated: new Date().toISOString()
             };
             
-            // Save the default structure
+            // Save the empty structure
             saveData(data);
         }
         
@@ -103,13 +100,16 @@ window.robotStorage = (function() {
                 };
             }
             
+            // Always ensure robots array is empty at the start
+            window.robotsData.robots = [];
+            
             // Load data from storage
             const data = await initializeData();
             
             // If we got data from initializeData and we're not using GitHub storage
             if (data !== window.robotsData) {
-                // Update window.robotsData with the merged robot data
-                window.robotsData.robots = data.robots;
+                // Update window.robotsData with the loaded data
+                window.robotsData.robots = data.robots || [];
                 window.robotsData.categories = data.categories;
                 window.robotsData.lastUpdated = data.lastUpdated;
             }
@@ -147,7 +147,7 @@ window.robotStorage = (function() {
             
             console.log(`Initialized robotsData with ${window.robotsData.robots.length} robots`);
             
-            // Save the merged data back to localStorage if not using GitHub
+            // Save the loaded data back to localStorage if not using GitHub
             if (!window.githubStorage || typeof window.githubStorage.save !== 'function') {
                 await this.save();
             }
@@ -302,9 +302,21 @@ window.robotStorage = (function() {
                 lastUpdated: window.robotsData.lastUpdated,
                 storageType: window.githubStorage ? 'GitHub' : 'localStorage'
             };
+        },
+        
+        // Clear all stored robots
+        clearRobots: async function() {
+            // Empty the robots array
+            window.robotsData.robots = [];
+            
+            // Save changes
+            return await this.save();
         }
     };
 })();
+
+// Immediately clear any existing localStorage data on load to prevent old robots from appearing
+localStorage.removeItem('tgen_robotics_data');
 
 // Initialize data when the script loads
 document.addEventListener('DOMContentLoaded', function() {
