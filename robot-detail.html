@@ -225,6 +225,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            display: none; /* Hidden by default, shown only to admins via JS */
         }
         
         .admin-actions .btn {
@@ -285,7 +286,7 @@
     <!-- Main Content -->
     <section class="section main-content">
         <div class="container">
-            <!-- Admin Actions -->
+            <!-- Admin Actions - Only visible to admin users -->
             <div class="admin-actions">
                 <div>
                     <strong>Admin Actions:</strong>
@@ -298,6 +299,13 @@
                         <i class="fas fa-arrow-left"></i> Back to Encyclopedia
                     </a>
                 </div>
+            </div>
+            
+            <!-- Non-admin back link - Visible to all users -->
+            <div class="back-to-encyclopedia" id="back-to-encyclopedia">
+                <a href="encyclopedia.html" class="btn">
+                    <i class="fas fa-arrow-left"></i> Back to Encyclopedia
+                </a>
             </div>
             
             <!-- Robot header with featured image and basic info -->
@@ -477,6 +485,7 @@
     <script src="js/data.js"></script>
     <script src="robot-storage-adapter.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/robot-detail.js"></script>
     <script src="js/media-display.js"></script>
     <script>
@@ -513,6 +522,21 @@
                     // Fallback - just use the slug as ID
                     window.location.href = `admin-form.html?id=${robotSlug || 'unknown'}`;
                 });
+            }
+            
+            // Update UI based on auth state
+            const user = window.tgenApp?.getCurrentUser ? window.tgenApp.getCurrentUser() : null;
+            
+            // Show/hide admin actions
+            const adminActions = document.querySelector('.admin-actions');
+            const backToEncyclopedia = document.getElementById('back-to-encyclopedia');
+            
+            if (adminActions) {
+                adminActions.style.display = user && user.role === 'admin' ? 'flex' : 'none';
+            }
+            
+            if (backToEncyclopedia) {
+                backToEncyclopedia.style.display = user && user.role === 'admin' ? 'none' : 'block';
             }
             
             // Helper function to get robot data from localStorage
