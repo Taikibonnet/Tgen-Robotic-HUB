@@ -1,7 +1,7 @@
 /**
  * Robot Storage Adapter
  * This file contains functions for storing and retrieving robot data
- * It ensures compatibility between localStorage and the default data in data.js
+ * It ensures compatibility between localStorage and GitHub storage
  */
 
 // Initialize the window.robotStorage object
@@ -9,12 +9,20 @@ window.robotStorage = (function() {
     // Private storage key
     const STORAGE_KEY = 'tgen_robotics_data';
     
-    // Initialize or load data from localStorage
-    function initializeData() {
+    // Initialize or load data from storage
+    async function initializeData() {
         let data;
         
         try {
-            // Try to load data from localStorage
+            // Try using GitHub storage first if available
+            if (window.githubStorage && typeof window.githubStorage.init === 'function') {
+                console.log('Using GitHub storage for robot data');
+                await window.githubStorage.init();
+                return window.robotsData;
+            }
+            
+            // Otherwise try localStorage
+            console.log('Using localStorage for robot data');
             const storedData = localStorage.getItem(STORAGE_KEY);
             
             if (storedData) {
@@ -48,12 +56,30 @@ window.robotStorage = (function() {
         return data;
     }
     
-    // Save data to localStorage
-    function saveData(data) {
+    // Save data to storage
+    async function saveData(data) {
         // Update last updated timestamp
         data.lastUpdated = new Date().toISOString();
         
-        // Save to localStorage
+        // Try GitHub storage first
+        if (window.githubStorage && typeof window.githubStorage.save === 'function') {
+            // Make sure robotsData is updated first
+            window.robotsData.robots = data.robots;
+            window.robotsData.categories = data.categories;
+            window.robotsData.lastUpdated = data.lastUpdated;
+            
+            // Save using GitHub storage
+            const success = await window.githubStorage.save();
+            
+            if (success) {
+                console.log('Saved data to GitHub');
+                return true;
+            } else {
+                console.warn('Failed to save to GitHub, falling back to localStorage');
+            }
+        }
+        
+        // Save to localStorage as fallback
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             return true;
@@ -66,7 +92,7 @@ window.robotStorage = (function() {
     // Public API
     return {
         // Initialize data and make it available to the window.robotsData object
-        init: function() {
+        init: async function() {
             // Make sure window.robotsData exists
             if (!window.robotsData) {
                 console.warn('Robot Storage Adapter: robotsData is not defined, creating default');
@@ -77,28 +103,16 @@ window.robotStorage = (function() {
                 };
             }
             
-            // Load data from localStorage or use defaults
-            const data = initializeData();
+            // Load data from storage
+            const data = await initializeData();
             
-            // Important: Always preserve default robots that exist in data.js
-            // Get the default robots from data.js if it exists
-            const defaultRobots = window.robotsData.robots || [];
-            
-            // Merge stored robots with default robots, ensuring no duplicates
-            const robotsToUse = [...defaultRobots];
-            
-            // Add any non-default robots from localStorage
-            data.robots.forEach(storedRobot => {
-                // Skip if this robot already exists in the default array (by ID)
-                if (!defaultRobots.some(dr => dr.id === storedRobot.id)) {
-                    robotsToUse.push(storedRobot);
-                }
-            });
-            
-            // Update window.robotsData with the merged robot data
-            window.robotsData.robots = robotsToUse;
-            window.robotsData.categories = [...new Set([...data.categories, ...(window.robotsData.categories || [])])];
-            window.robotsData.lastUpdated = data.lastUpdated;
+            // If we got data from initializeData and we're not using GitHub storage
+            if (data !== window.robotsData) {
+                // Update window.robotsData with the merged robot data
+                window.robotsData.robots = data.robots;
+                window.robotsData.categories = data.categories;
+                window.robotsData.lastUpdated = data.lastUpdated;
+            }
             
             // Add helper methods to window.robotsData if they don't exist
             if (!window.robotsData.getRobotById) {
@@ -133,25 +147,33 @@ window.robotStorage = (function() {
             
             console.log(`Initialized robotsData with ${window.robotsData.robots.length} robots`);
             
-            // Save the merged data back to localStorage
-            this.save();
+            // Save the merged data back to localStorage if not using GitHub
+            if (!window.githubStorage || typeof window.githubStorage.save !== 'function') {
+                await this.save();
+            }
             
             return window.robotsData;
         },
         
         // Save the current state of window.robotsData
-        save: function() {
+        save: async function() {
             const data = {
                 robots: window.robotsData.robots,
                 categories: window.robotsData.categories,
                 lastUpdated: new Date().toISOString()
             };
             
-            return saveData(data);
+            return await saveData(data);
         },
         
         // Add a new robot and save
-        addRobotAndSave: function(robot) {
+        addRobotAndSave: async function(robot) {
+            // Use GitHub storage if available
+            if (window.githubStorage && typeof window.githubStorage.addRobotAndSave === 'function') {
+                return await window.githubStorage.addRobotAndSave(robot);
+            }
+            
+            // Otherwise use the legacy approach
             // Check if robot already exists
             const existingIndex = window.robotsData.robots.findIndex(r => 
                 r.id === robot.id || r.slug === robot.slug
@@ -175,11 +197,16 @@ window.robotStorage = (function() {
             }
             
             // Save to storage
-            return this.save();
+            return await this.save();
         },
         
         // Update an existing robot and save
-        updateRobotAndSave: function(robotId, updatedData) {
+        updateRobotAndSave: async function(robotId, updatedData) {
+            // Use GitHub storage if available
+            if (window.githubStorage && typeof window.githubStorage.updateRobotAndSave === 'function') {
+                return await window.githubStorage.updateRobotAndSave(robotId, updatedData);
+            }
+            
             // Find the robot
             const index = window.robotsData.robots.findIndex(r => 
                 r.id === parseInt(robotId) || r.id === robotId || r.slug === robotId
@@ -206,11 +233,16 @@ window.robotStorage = (function() {
             }
             
             // Save to storage
-            return this.save();
+            return await this.save();
         },
         
         // Delete a robot and save
-        deleteRobotAndSave: function(robotId) {
+        deleteRobotAndSave: async function(robotId) {
+            // Use GitHub storage if available
+            if (window.githubStorage && typeof window.githubStorage.deleteRobotAndSave === 'function') {
+                return await window.githubStorage.deleteRobotAndSave(robotId);
+            }
+            
             // Find the robot
             const index = window.robotsData.robots.findIndex(r => 
                 r.id === parseInt(robotId) || r.id === robotId || r.slug === robotId
@@ -221,25 +253,15 @@ window.robotStorage = (function() {
                 return false;
             }
             
-            // Get the default robots from data.js
-            const defaultRobots = window.robotsData ? window.robotsData.robots || [] : [];
-            const isDefaultRobot = defaultRobots.some(dr => dr.id === window.robotsData.robots[index].id);
-            
-            // Don't delete default robots
-            if (isDefaultRobot) {
-                console.warn('Cannot delete default robot:', robotId);
-                return false;
-            }
-            
             // Remove the robot
             window.robotsData.robots.splice(index, 1);
             
             // Save to storage
-            return this.save();
+            return await this.save();
         },
         
         // Import data from a JSON file
-        importFromJSON: function(jsonData) {
+        importFromJSON: async function(jsonData) {
             try {
                 const data = JSON.parse(jsonData);
                 
@@ -248,27 +270,13 @@ window.robotStorage = (function() {
                     throw new Error('Invalid data structure');
                 }
                 
-                // Get default robots
-                const defaultRobots = window.robotsData ? window.robotsData.robots || [] : [];
-                
-                // Keep default robots and add imported robots
-                const combinedRobots = [...defaultRobots];
-                
-                // Add imported robots that aren't default
-                data.robots.forEach(importedRobot => {
-                    if (!defaultRobots.some(dr => dr.id === importedRobot.id)) {
-                        combinedRobots.push(importedRobot);
-                    }
-                });
-                
                 // Update window.robotsData
-                window.robotsData.robots = combinedRobots;
-                
-                // Update categories
-                window.robotsData.categories = [...new Set([...window.robotsData.categories, ...(data.categories || [])])];
+                window.robotsData.robots = data.robots;
+                window.robotsData.categories = data.categories || [];
+                window.robotsData.lastUpdated = new Date().toISOString();
                 
                 // Save to storage
-                return this.save();
+                return await this.save();
             } catch (error) {
                 console.error('Error importing data:', error);
                 return false;
@@ -291,7 +299,8 @@ window.robotStorage = (function() {
             return {
                 robotCount: window.robotsData.robots.length,
                 categoryCount: window.robotsData.categories.length,
-                lastUpdated: window.robotsData.lastUpdated
+                lastUpdated: window.robotsData.lastUpdated,
+                storageType: window.githubStorage ? 'GitHub' : 'localStorage'
             };
         }
     };
