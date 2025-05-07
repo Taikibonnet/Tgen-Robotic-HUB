@@ -3,118 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot Detail - Tgen Robotics Hub</title>
+    <title>Robot Details - Tgen Robotics Hub</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/media-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Robot Detail Specific Styles */
-        .robot-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 40px;
-            margin-bottom: 40px;
+        .robot-detail-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
-        .robot-header-content {
-            flex: 1;
-        }
-        
-        .robot-name {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .robot-manufacturer {
+        .breadcrumb {
             display: flex;
             align-items: center;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
-        
-        .robot-manufacturer a {
-            color: var(--primary);
-            margin-left: 5px;
-        }
-        
-        .robot-summary {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .robot-stats {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .robot-stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 30px;
             color: var(--gray);
             font-size: 0.9rem;
         }
         
-        .robot-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
         }
         
-        .robot-actions button {
+        .breadcrumb i {
+            font-size: 0.8rem;
+        }
+        
+        .robot-detail-header {
+            margin-bottom: 40px;
+        }
+        
+        .robot-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .robot-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .meta-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 15px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--light);
+            color: var(--gray);
         }
         
-        .robot-actions button.favorite {
-            background-color: rgba(32, 227, 178, 0.1);
+        .meta-item i {
             color: var(--primary);
         }
         
-        .robot-actions button:hover {
-            transform: translateY(-2px);
-            background-color: rgba(255, 255, 255, 0.15);
-        }
-        
-        .robot-actions button.favorite:hover {
-            background-color: rgba(32, 227, 178, 0.2);
-        }
-        
-        /* Tabs */
-        .robot-tabs {
-            display: flex;
+        .robot-summary {
+            font-size: 1.2rem;
+            line-height: 1.6;
             margin-bottom: 30px;
+            font-style: italic;
+            color: var(--light);
+            opacity: 0.9;
+        }
+        
+        .robot-main-image {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        
+        .robot-main-image img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+        }
+        
+        .content-tabs {
+            display: flex;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
         }
         
-        .robot-tab {
+        .content-tab {
             padding: 15px 25px;
-            font-size: 1.1rem;
             cursor: pointer;
+            font-size: 1rem;
+            opacity: 0.7;
             transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
+            position: relative;
         }
         
-        .robot-tab.active {
-            border-bottom: 2px solid var(--primary);
-            color: var(--primary);
+        .content-tab.active {
+            opacity: 1;
         }
         
-        .robot-tab:hover {
-            color: var(--primary);
+        .content-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .content-tab.active::after {
+            transform: scaleX(1);
         }
         
         .tab-content {
@@ -125,138 +125,258 @@
             display: block;
         }
         
-        /* Description Tab */
-        .robot-description {
-            font-size: 1.1rem;
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--light);
+        }
+        
+        .description {
             line-height: 1.8;
             margin-bottom: 30px;
         }
         
-        .robot-description p {
-            margin-bottom: 20px;
-        }
-        
-        /* Specifications Tab */
-        .spec-section {
-            margin-bottom: 40px;
-        }
-        
-        .spec-section-title {
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .spec-grid {
+        .specs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
+            margin-bottom: 30px;
         }
         
-        .spec-card {
-            background-color: rgba(18, 18, 18, 0.5);
+        .spec-item {
+            background-color: rgba(18, 18, 18, 0.7);
             border-radius: 8px;
             padding: 20px;
-            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        .spec-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            background-color: rgba(18, 18, 18, 0.8);
-        }
-        
-        .spec-title {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: var(--light);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .spec-title i {
-            color: var(--primary);
-            font-size: 1.2rem;
+        .spec-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 8px;
         }
         
         .spec-value {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 500;
         }
         
-        .spec-unit {
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 200px;
+            cursor: pointer;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: var(--light);
             font-size: 0.9rem;
-            color: var(--gray);
+            transform: translateY(100%);
+            transition: all 0.3s ease;
         }
         
-        .spec-description {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: var(--gray);
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
         }
         
-        /* Related Robots */
-        .related-robots-section {
+        .video-section {
+            margin-bottom: 40px;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            margin-bottom: 15px;
+        }
+        
+        .video-container iframe,
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+        
+        .video-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .video-description {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        
+        .related-robots {
             margin-top: 60px;
             padding-top: 40px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .related-robots-title {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-        }
-        
-        .related-robots-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        
-        /* Admin Actions */
-        .admin-actions {
-            margin-bottom: 30px;
-            padding: 15px;
-            background-color: rgba(32, 227, 178, 0.1);
-            border-radius: 8px;
+        .loading-spinner {
             display: flex;
+            justify-content: center;
             align-items: center;
-            justify-content: space-between;
-            display: none; /* Hidden by default, shown only to admins via JS */
+            min-height: 200px;
         }
         
-        .admin-actions .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(32, 227, 178, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
         }
         
-        /* Mobile Responsive */
-        @media (max-width: 992px) {
-            .robot-header {
-                flex-direction: column;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .admin-actions {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: none; /* Hidden by default, shown only to admins */
+        }
+        
+        .edit-btn, .delete-btn {
+            margin-right: 10px;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        
+        .modal-image img {
+            width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .modal-caption {
+            margin-top: 10px;
+            color: var(--light);
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--light);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .modal-close:hover {
+            color: var(--primary);
+        }
+        
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--light);
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-prev {
+            left: 20px;
+        }
+        
+        .modal-next {
+            right: 20px;
+        }
+        
+        .modal-nav:hover {
+            background-color: rgba(32, 227, 178, 0.2);
+            color: var(--primary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .robot-title {
+                font-size: 2rem;
             }
             
-            .robot-featured-image {
-                max-width: 100%;
+            .content-tab {
+                padding: 12px 15px;
+                font-size: 0.9rem;
             }
             
-            .robot-tab {
-                padding: 10px 15px;
-                font-size: 1rem;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .spec-grid, .related-robots-grid {
+            .specs-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .robot-tabs {
-                flex-wrap: wrap;
             }
         }
     </style>
@@ -269,7 +389,7 @@
                 <img src="images/logo.svg" alt="Tgen Robotics Hub Logo" class="logo">
             </a>
             <nav class="nav-links">
-                <a href="encyclopedia.html" class="active">Encyclopedia</a>
+                <a href="encyclopedia.html">Encyclopedia</a>
                 <a href="about.html">About</a>
                 <a href="contact.html">Contact</a>
             </nav>
@@ -284,160 +404,56 @@
     </header>
 
     <!-- Main Content -->
-    <section class="section main-content">
-        <div class="container">
-            <!-- Admin Actions - Only visible to admin users -->
-            <div class="admin-actions">
-                <div>
-                    <strong>Admin Actions:</strong>
-                </div>
-                <div>
-                    <a href="#" class="btn btn-primary edit-robot-btn" id="edit-robot-btn">
-                        <i class="fas fa-edit"></i> Edit Robot
-                    </a>
-                    <a href="encyclopedia.html" class="btn">
-                        <i class="fas fa-arrow-left"></i> Back to Encyclopedia
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Non-admin back link - Visible to all users -->
-            <div class="back-to-encyclopedia" id="back-to-encyclopedia">
-                <a href="encyclopedia.html" class="btn">
-                    <i class="fas fa-arrow-left"></i> Back to Encyclopedia
-                </a>
-            </div>
-            
-            <!-- Robot header with featured image and basic info -->
-            <div class="robot-header">
-                <div class="main-image-placeholder" id="main-image-placeholder">
-                    <!-- Main image will be inserted here by JavaScript -->
-                </div>
-                
-                <div class="robot-header-content">
-                    <h1 class="robot-name" id="robot-name"></h1>
-                    
-                    <div class="robot-manufacturer">
-                        By <span id="manufacturer-name"></span>
-                        <a href="#" id="manufacturer-website" target="_blank"><i class="fas fa-external-link-alt"></i></a>
-                    </div>
-                    
-                    <div class="robot-summary" id="robot-summary"></div>
-                    
-                    <div class="robot-stats">
-                        <div class="robot-stat">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Released: <span id="year-introduced"></span></span>
-                        </div>
-                        <div class="robot-stat">
-                            <i class="fas fa-eye"></i>
-                            <span>Views: <span id="view-count"></span></span>
-                        </div>
-                        <div class="robot-stat">
-                            <i class="fas fa-heart"></i>
-                            <span>Favorites: <span id="favorite-count"></span></span>
-                        </div>
-                    </div>
-                    
-                    <div class="robot-actions">
-                        <button class="favorite" id="favorite-btn">
-                            <i class="far fa-heart"></i>
-                            <span>Add to Favorites</span>
-                        </button>
-                        <button id="share-btn">
-                            <i class="fas fa-share-alt"></i>
-                            <span>Share</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tabs -->
-            <div class="robot-tabs">
-                <div class="robot-tab active" data-tab="description">Description</div>
-                <div class="robot-tab" data-tab="specifications">Specifications</div>
-                <div class="robot-tab" data-tab="gallery">Gallery</div>
-                <div class="robot-tab" data-tab="videos">Videos</div>
-            </div>
-            
-            <!-- Tab Content -->
-            <div class="tab-content active" id="tab-description">
-                <div class="robot-description" id="robot-description"></div>
-            </div>
-            
-            <div class="tab-content" id="tab-specifications">
-                <!-- Physical Specifications -->
-                <div class="spec-section">
-                    <h2 class="spec-section-title">Physical Specifications</h2>
-                    <div class="spec-grid" id="physical-specs">
-                        <!-- Specs will be populated by JavaScript -->
-                    </div>
-                </div>
-                
-                <!-- Performance Specifications -->
-                <div class="spec-section">
-                    <h2 class="spec-section-title">Performance</h2>
-                    <div class="spec-grid" id="performance-specs">
-                        <!-- Specs will be populated by JavaScript -->
-                    </div>
-                </div>
-                
-                <!-- Hardware & Components -->
-                <div class="spec-section">
-                    <h2 class="spec-section-title">Hardware & Components</h2>
-                    <div class="spec-grid" id="hardware-specs">
-                        <!-- Specs will be populated by JavaScript -->
-                    </div>
-                </div>
-                
-                <!-- Custom Specifications -->
-                <div class="spec-section" id="custom-specs-section" style="display: none;">
-                    <h2 class="spec-section-title">Additional Specifications</h2>
-                    <div class="spec-grid" id="custom-specs">
-                        <!-- Custom specs will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tab-content" id="tab-gallery">
-                <div class="gallery-container" id="gallery-container">
-                    <!-- Gallery images will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <div class="tab-content" id="tab-videos">
-                <div class="video-container" id="video-container">
-                    <!-- Videos will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Related Robots -->
-            <div class="related-robots-section">
-                <h2 class="related-robots-title">Related Robots</h2>
-                <div class="related-robots-grid" id="related-robots-grid">
-                    <!-- Related robots will be populated by JavaScript -->
-                </div>
+    <div class="robot-detail-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="encyclopedia.html">Encyclopedia</a>
+            <i class="fas fa-chevron-right"></i>
+            <span id="robot-name-breadcrumb">Robot Details</span>
+        </div>
+        
+        <!-- Robot Details -->
+        <div id="robot-detail-content">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
             </div>
         </div>
-    </section>
-
-    <!-- Media Lightbox (for gallery images) -->
-    <div class="media-lightbox">
-        <div class="lightbox-content">
-            <button class="lightbox-close">&times;</button>
-            <img class="lightbox-image" src="" alt="">
-            <div class="lightbox-caption"></div>
-            <div class="lightbox-nav">
-                <button class="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
-                <button class="lightbox-next"><i class="fas fa-chevron-right"></i></button>
+        
+        <!-- Admin Actions (only visible to admins) -->
+        <div class="admin-actions" id="admin-actions">
+            <button class="btn btn-primary edit-btn" id="edit-robot-btn">
+                <i class="fas fa-edit"></i> Edit Robot
+            </button>
+            <button class="btn btn-danger delete-btn" id="delete-robot-btn">
+                <i class="fas fa-trash"></i> Delete Robot
+            </button>
+        </div>
+        
+        <!-- Related Robots -->
+        <div class="related-robots">
+            <h2 class="section-title">Related Robots</h2>
+            <div class="robot-grid" id="related-robots">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- AI Assistant Button -->
-    <div class="ai-assistant">
-        <div class="ai-button" id="ai-button">
-            <div class="ai-icon">🤖</div>
+    
+    <!-- Image Gallery Modal -->
+    <div class="modal-overlay" id="gallery-modal">
+        <button class="modal-close" id="modal-close">&times;</button>
+        <div class="modal-nav modal-prev" id="modal-prev">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="modal-content">
+            <div class="modal-image" id="modal-image"></div>
+            <div class="modal-caption" id="modal-caption"></div>
+        </div>
+        <div class="modal-nav modal-next" id="modal-next">
+            <i class="fas fa-chevron-right"></i>
         </div>
     </div>
 
@@ -481,95 +497,628 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Scripts -->
     <script src="js/data.js"></script>
+    <script src="js/github-storage.js"></script>
     <script src="robot-storage-adapter.js"></script>
-    <script src="js/main.js"></script>
+    <script src="robot-media-handler.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/robot-detail.js"></script>
+    <script src="js/main.js"></script>
     <script src="js/media-display.js"></script>
     <script>
-        // Setup edit robot button
+        // Get the robot slug from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const robotSlug = urlParams.get('slug');
+        let currentRobot = null;
+        let galleryImages = [];
+        let currentImageIndex = 0;
+        
+        // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            const editBtn = document.getElementById('edit-robot-btn');
-            if (editBtn) {
-                editBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
+            // Initialize storage
+            if (window.robotStorage && typeof window.robotStorage.init === 'function') {
+                window.robotStorage.init().then(() => {
+                    loadRobotDetails();
+                });
+            } else {
+                loadRobotDetails();
+            }
+            
+            // Set up event listeners for the gallery modal
+            setupGalleryModal();
+            
+            // Check if user is an admin
+            checkAdminStatus();
+        });
+        
+        // Load robot details
+        function loadRobotDetails() {
+            if (!robotSlug) {
+                showError('Robot not found');
+                return;
+            }
+            
+            // Get the robot from the data
+            currentRobot = window.robotsData.getRobotBySlug(robotSlug);
+            
+            if (!currentRobot) {
+                showError('Robot not found');
+                return;
+            }
+            
+            // Update document title
+            document.title = `${currentRobot.name} - Tgen Robotics Hub`;
+            
+            // Update breadcrumb
+            document.getElementById('robot-name-breadcrumb').textContent = currentRobot.name;
+            
+            // Display the robot details
+            displayRobotDetails();
+            
+            // Load related robots
+            loadRelatedRobots();
+            
+            // Update view count
+            updateViewCount();
+        }
+        
+        // Display robot details
+        function displayRobotDetails() {
+            const detailsContainer = document.getElementById('robot-detail-content');
+            
+            // Clear the container
+            detailsContainer.innerHTML = '';
+            
+            // Create the detail content
+            const detailContent = document.createElement('div');
+            
+            // Header section
+            detailContent.innerHTML = `
+                <div class="robot-detail-header">
+                    <h1 class="robot-title">${currentRobot.name}</h1>
                     
-                    // Get robot ID or slug from URL
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const robotSlug = urlParams.get('slug');
-                    const robotId = urlParams.get('id');
-                    
-                    // Redirect to edit form
-                    if (robotSlug) {
-                        // Try to get robot data
-                        const robot = window.robotsData?.getRobotBySlug ? 
-                                    window.robotsData.getRobotBySlug(robotSlug) : 
-                                    getRobotDataFromLocalStorage(robotSlug);
+                    <div class="robot-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-industry"></i>
+                            <span>${currentRobot.manufacturer?.name || 'Unknown Manufacturer'}</span>
+                        </div>
                         
-                        if (robot && robot.id) {
-                            window.location.href = `admin-form.html?id=${robot.id}`;
-                            return;
+                        ${currentRobot.manufacturer?.country ? `
+                            <div class="meta-item">
+                                <i class="fas fa-globe"></i>
+                                <span>${currentRobot.manufacturer.country}</span>
+                            </div>
+                        ` : ''}
+                        
+                        ${currentRobot.yearIntroduced ? `
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Introduced: ${currentRobot.yearIntroduced}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <p class="robot-summary">${currentRobot.summary}</p>
+                </div>
+            `;
+            
+            // Main image
+            let mainImageUrl = 'images/robot-placeholder.jpg';
+            if (currentRobot.media) {
+                if (currentRobot.media.featuredImage && currentRobot.media.featuredImage.url) {
+                    mainImageUrl = currentRobot.media.featuredImage.url;
+                } else if (currentRobot.media.mainImage && currentRobot.media.mainImage.url) {
+                    mainImageUrl = currentRobot.media.mainImage.url;
+                } else if (currentRobot.media.images && currentRobot.media.images.length > 0) {
+                    mainImageUrl = currentRobot.media.images[0].url;
+                }
+            }
+            
+            detailContent.innerHTML += `
+                <div class="robot-main-image">
+                    <img src="${mainImageUrl}" alt="${currentRobot.name}" onerror="this.src='images/robot-placeholder.jpg'">
+                </div>
+            `;
+            
+            // Content tabs
+            detailContent.innerHTML += `
+                <div class="content-tabs">
+                    <div class="content-tab active" data-tab="details">Details</div>
+                    <div class="content-tab" data-tab="specs">Specifications</div>
+                    <div class="content-tab" data-tab="media">Media Gallery</div>
+                </div>
+            `;
+            
+            // Tab content - Details
+            detailContent.innerHTML += `
+                <div class="tab-content active" id="tab-details">
+                    <h2 class="section-title">Description</h2>
+                    <div class="description">${currentRobot.description || 'No detailed description available.'}</div>
+                    
+                    ${currentRobot.manufacturer?.website ? `
+                        <div class="manufacturer-info">
+                            <h2 class="section-title">Manufacturer Information</h2>
+                            <p><a href="${currentRobot.manufacturer.website}" target="_blank">${currentRobot.manufacturer.name} Website</a></p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // Tab content - Specifications
+            let specsContent = `
+                <div class="tab-content" id="tab-specs">
+                    <h2 class="section-title">Technical Specifications</h2>
+            `;
+            
+            // Check if we have specifications
+            if (currentRobot.specifications) {
+                specsContent += '<div class="specs-grid">';
+                
+                // Physical specs
+                if (currentRobot.specifications.physical) {
+                    if (currentRobot.specifications.physical.height && currentRobot.specifications.physical.height.value) {
+                        specsContent += `
+                            <div class="spec-item">
+                                <div class="spec-label">Height</div>
+                                <div class="spec-value">${currentRobot.specifications.physical.height.value} ${currentRobot.specifications.physical.height.unit || ''}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (currentRobot.specifications.physical.weight && currentRobot.specifications.physical.weight.value) {
+                        specsContent += `
+                            <div class="spec-item">
+                                <div class="spec-label">Weight</div>
+                                <div class="spec-value">${currentRobot.specifications.physical.weight.value} ${currentRobot.specifications.physical.weight.unit || ''}</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // Performance specs
+                if (currentRobot.specifications.performance) {
+                    if (currentRobot.specifications.performance.speed && currentRobot.specifications.performance.speed.value) {
+                        specsContent += `
+                            <div class="spec-item">
+                                <div class="spec-label">Max Speed</div>
+                                <div class="spec-value">${currentRobot.specifications.performance.speed.value} ${currentRobot.specifications.performance.speed.unit || ''}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (currentRobot.specifications.performance.battery && currentRobot.specifications.performance.battery.runtime) {
+                        specsContent += `
+                            <div class="spec-item">
+                                <div class="spec-label">Battery Runtime</div>
+                                <div class="spec-value">${currentRobot.specifications.performance.battery.runtime} minutes</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                specsContent += '</div>';
+            } else {
+                specsContent += '<p>No detailed specifications available.</p>';
+            }
+            
+            specsContent += '</div>';
+            detailContent.innerHTML += specsContent;
+            
+            // Tab content - Media Gallery
+            let mediaContent = `
+                <div class="tab-content" id="tab-media">
+            `;
+            
+            // Image gallery
+            if (currentRobot.media && currentRobot.media.images && currentRobot.media.images.length > 0) {
+                mediaContent += `
+                    <h2 class="section-title">Image Gallery</h2>
+                    <div class="gallery" id="image-gallery">
+                `;
+                
+                // Store gallery images for the modal
+                galleryImages = currentRobot.media.images;
+                
+                currentRobot.media.images.forEach((image, index) => {
+                    mediaContent += `
+                        <div class="gallery-item" data-index="${index}">
+                            <img src="${image.url}" alt="${image.alt || currentRobot.name}" onerror="this.src='images/robot-placeholder.jpg'">
+                            ${image.caption ? `<div class="gallery-caption">${image.caption}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                mediaContent += '</div>';
+            }
+            
+            // Videos
+            if (currentRobot.media && currentRobot.media.videos && currentRobot.media.videos.length > 0) {
+                mediaContent += `
+                    <h2 class="section-title">Videos</h2>
+                `;
+                
+                currentRobot.media.videos.forEach(video => {
+                    mediaContent += `<div class="video-section">`;
+                    
+                    // Different handling based on video type
+                    if (video.type === 'youtube') {
+                        const youtubeId = extractYouTubeId(video.url);
+                        if (youtubeId) {
+                            mediaContent += `
+                                <div class="video-container">
+                                    <iframe 
+                                        src="https://www.youtube.com/embed/${youtubeId}" 
+                                        title="${video.title || 'YouTube video'}"
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen>
+                                    </iframe>
+                                </div>
+                            `;
                         }
+                    } else if (video.type === 'mp4') {
+                        mediaContent += `
+                            <div class="video-container">
+                                <video controls>
+                                    <source src="${video.url}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        `;
+                    } else if (video.type === 'external' || video.type === 'url') {
+                        mediaContent += `
+                            <div class="video-link">
+                                <a href="${video.url}" target="_blank" class="btn">
+                                    <i class="fas fa-external-link-alt"></i> 
+                                    ${video.title || 'Watch Video'}
+                                </a>
+                            </div>
+                        `;
                     }
                     
-                    if (robotId) {
-                        window.location.href = `admin-form.html?id=${robotId}`;
-                        return;
+                    // Video title and description
+                    if (video.title) {
+                        mediaContent += `<h3 class="video-title">${video.title}</h3>`;
                     }
                     
-                    // Fallback - just use the slug as ID
-                    window.location.href = `admin-form.html?id=${robotSlug || 'unknown'}`;
+                    if (video.description) {
+                        mediaContent += `<p class="video-description">${video.description}</p>`;
+                    }
+                    
+                    mediaContent += `</div>`;
                 });
             }
             
-            // Update UI based on auth state
-            const user = window.tgenApp?.getCurrentUser ? window.tgenApp.getCurrentUser() : null;
+            mediaContent += '</div>';
+            detailContent.innerHTML += mediaContent;
             
-            // Show/hide admin actions
-            const adminActions = document.querySelector('.admin-actions');
-            const backToEncyclopedia = document.getElementById('back-to-encyclopedia');
+            // Add the detail content to the container
+            detailsContainer.appendChild(detailContent);
             
-            if (adminActions) {
-                adminActions.style.display = user && user.role === 'admin' ? 'flex' : 'none';
-            }
+            // Set up tab switching
+            setupTabs();
             
-            if (backToEncyclopedia) {
-                backToEncyclopedia.style.display = user && user.role === 'admin' ? 'none' : 'block';
-            }
+            // Setup gallery click handlers
+            setupGalleryClicks();
+        }
+        
+        // Setup content tabs
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.content-tab');
             
-            // Helper function to get robot data from localStorage
-            function getRobotDataFromLocalStorage(idOrSlug) {
-                try {
-                    // Try direct ID first
-                    let data = localStorage.getItem(`robot_${idOrSlug}`);
-                    if (data) {
-                        return JSON.parse(data);
-                    }
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Get the tab ID
+                    const tabId = this.getAttribute('data-tab');
                     
-                    // If not found, check all items for matching slug
-                    for (let i = 0; i < localStorage.length; i++) {
-                        const key = localStorage.key(i);
-                        if (key.startsWith('robot_')) {
-                            try {
-                                const robotData = JSON.parse(localStorage.getItem(key));
-                                if (robotData.slug === idOrSlug) {
-                                    return robotData;
-                                }
-                            } catch (e) {
-                                // Ignore parse errors
-                            }
+                    // Remove active class from all tabs and tab contents
+                    document.querySelectorAll('.content-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and its content
+                    this.classList.add('active');
+                    document.getElementById('tab-' + tabId).classList.add('active');
+                });
+            });
+        }
+        
+        // Setup gallery image clicks
+        function setupGalleryClicks() {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            galleryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Get the image index
+                    const index = parseInt(this.getAttribute('data-index'));
+                    
+                    // Open the modal with this image
+                    openGalleryModal(index);
+                });
+            });
+        }
+        
+        // Setup gallery modal
+        function setupGalleryModal() {
+            const modal = document.getElementById('gallery-modal');
+            const closeBtn = document.getElementById('modal-close');
+            const prevBtn = document.getElementById('modal-prev');
+            const nextBtn = document.getElementById('modal-next');
+            
+            // Close modal on close button click
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    modal.classList.remove('active');
+                });
+            }
+            
+            // Close modal on outside click
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Previous image button
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showGalleryImage(currentImageIndex - 1);
+                });
+            }
+            
+            // Next image button
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showGalleryImage(currentImageIndex + 1);
+                });
+            }
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (!modal.classList.contains('active')) return;
+                
+                if (e.key === 'Escape') {
+                    modal.classList.remove('active');
+                } else if (e.key === 'ArrowLeft') {
+                    showGalleryImage(currentImageIndex - 1);
+                } else if (e.key === 'ArrowRight') {
+                    showGalleryImage(currentImageIndex + 1);
+                }
+            });
+        }
+        
+        // Open gallery modal
+        function openGalleryModal(index) {
+            const modal = document.getElementById('gallery-modal');
+            
+            if (!modal || !galleryImages || galleryImages.length === 0) return;
+            
+            // Show the image
+            showGalleryImage(index);
+            
+            // Show the modal
+            modal.classList.add('active');
+        }
+        
+        // Show gallery image
+        function showGalleryImage(index) {
+            if (!galleryImages || galleryImages.length === 0) return;
+            
+            // Handle index bounds
+            if (index < 0) {
+                index = galleryImages.length - 1;
+            } else if (index >= galleryImages.length) {
+                index = 0;
+            }
+            
+            // Set current index
+            currentImageIndex = index;
+            
+            // Update modal content
+            const modalImage = document.getElementById('modal-image');
+            const modalCaption = document.getElementById('modal-caption');
+            
+            if (modalImage && modalCaption) {
+                // Set the image
+                modalImage.innerHTML = `<img src="${galleryImages[index].url}" alt="${galleryImages[index].alt || currentRobot.name}" onerror="this.src='images/robot-placeholder.jpg'">`;
+                
+                // Set the caption
+                modalCaption.textContent = galleryImages[index].caption || '';
+            }
+        }
+        
+        // Load related robots
+        function loadRelatedRobots() {
+            // Get related robots
+            const relatedRobots = window.robotsData.getRelatedRobots(robotSlug, 3);
+            
+            // Get the container
+            const relatedRobotsContainer = document.getElementById('related-robots');
+            if (!relatedRobotsContainer) return;
+            
+            // Clear the container
+            relatedRobotsContainer.innerHTML = '';
+            
+            // If no related robots, hide the section
+            if (!relatedRobots || relatedRobots.length === 0) {
+                const relatedSection = relatedRobotsContainer.closest('.related-robots');
+                if (relatedSection) {
+                    relatedSection.style.display = 'none';
+                }
+                return;
+            }
+            
+            // Add robots to the grid
+            if (window.robotMediaHandler && typeof window.robotMediaHandler.createRobotCard === 'function') {
+                // Use the media handler to create cards
+                relatedRobots.forEach(robot => {
+                    const robotCard = window.robotMediaHandler.createRobotCard(robot);
+                    relatedRobotsContainer.appendChild(robotCard);
+                });
+            } else {
+                // Fallback to basic card creation
+                relatedRobots.forEach(robot => {
+                    const card = document.createElement('div');
+                    card.className = 'robot-card';
+                    card.dataset.slug = robot.slug;
+                    
+                    // Use a placeholder image if no featured image is available
+                    let imageUrl = 'images/robot-placeholder.jpg';
+                    if (robot.media) {
+                        if (robot.media.featuredImage && robot.media.featuredImage.url) {
+                            imageUrl = robot.media.featuredImage.url;
+                        } else if (robot.media.mainImage && robot.media.mainImage.url) {
+                            imageUrl = robot.media.mainImage.url;
+                        } else if (robot.media.images && robot.media.images.length > 0) {
+                            imageUrl = robot.media.images[0].url;
                         }
                     }
                     
-                    return null;
-                } catch (e) {
-                    console.error('Error getting robot data:', e);
-                    return null;
+                    card.innerHTML = `
+                        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="this.src='images/robot-placeholder.jpg'">
+                        <div class="robot-content">
+                            <h3 class="robot-title">${robot.name || 'Unnamed Robot'}</h3>
+                            <p class="robot-desc">${robot.summary || 'No description available.'}</p>
+                            <div class="robot-meta">
+                                <span>${robot.manufacturer?.name || 'Unknown Manufacturer'}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add click event
+                    card.addEventListener('click', () => {
+                        window.location.href = `robot-detail.html?slug=${robot.slug}`;
+                    });
+                    
+                    relatedRobotsContainer.appendChild(card);
+                });
+            }
+        }
+        
+        // Update view count
+        function updateViewCount() {
+            if (!currentRobot) return;
+            
+            // Initialize stats if not exists
+            if (!currentRobot.stats) {
+                currentRobot.stats = { views: 0, favorites: 0 };
+            }
+            
+            // Increment view count
+            currentRobot.stats.views = (currentRobot.stats.views || 0) + 1;
+            
+            // Save changes
+            if (window.robotStorage && typeof window.robotStorage.updateRobotAndSave === 'function') {
+                window.robotStorage.updateRobotAndSave(currentRobot.id, currentRobot);
+            }
+        }
+        
+        // Show error message
+        function showError(message) {
+            const detailsContainer = document.getElementById('robot-detail-content');
+            
+            // Clear the container
+            if (detailsContainer) {
+                detailsContainer.innerHTML = `
+                    <div class="error-message" style="text-align: center; padding: 50px 20px;">
+                        <div style="font-size: 4rem; color: var(--gray); margin-bottom: 20px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h2 style="font-size: 1.8rem; margin-bottom: 10px;">Error</h2>
+                        <p style="color: var(--gray); max-width: 500px; margin: 0 auto 20px;">${message}</p>
+                        <a href="encyclopedia.html" class="btn btn-primary">Back to Encyclopedia</a>
+                    </div>
+                `;
+            }
+            
+            // Hide related robots
+            const relatedSection = document.querySelector('.related-robots');
+            if (relatedSection) {
+                relatedSection.style.display = 'none';
+            }
+            
+            // Hide admin actions
+            const adminActions = document.getElementById('admin-actions');
+            if (adminActions) {
+                adminActions.style.display = 'none';
+            }
+        }
+        
+        // Check if user is an admin
+        function checkAdminStatus() {
+            // Get admin actions container
+            const adminActions = document.getElementById('admin-actions');
+            if (!adminActions) return;
+            
+            // Check if user is logged in and is an admin
+            const user = window.tgenApp?.getCurrentUser ? window.tgenApp.getCurrentUser() : null;
+            const isAdmin = user && user.role === 'admin';
+            
+            // Show admin controls only to admin users
+            adminActions.style.display = isAdmin ? 'block' : 'none';
+            
+            // Set up admin action buttons
+            if (isAdmin) {
+                // Edit button
+                const editBtn = document.getElementById('edit-robot-btn');
+                if (editBtn) {
+                    editBtn.addEventListener('click', function() {
+                        window.location.href = `admin-form.html?id=${currentRobot.id}`;
+                    });
+                }
+                
+                // Delete button
+                const deleteBtn = document.getElementById('delete-robot-btn');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', function() {
+                        if (confirm(`Are you sure you want to delete ${currentRobot.name}? This action cannot be undone.`)) {
+                            deleteRobot();
+                        }
+                    });
                 }
             }
-        });
+        }
+        
+        // Delete the current robot
+        function deleteRobot() {
+            // Check if robot exists
+            if (!currentRobot || !currentRobot.id) {
+                alert('Error: Robot not found.');
+                return;
+            }
+            
+            // Delete the robot
+            if (window.robotStorage && typeof window.robotStorage.deleteRobotAndSave === 'function') {
+                window.robotStorage.deleteRobotAndSave(currentRobot.id)
+                    .then(success => {
+                        if (success) {
+                            alert(`${currentRobot.name} has been deleted.`);
+                            window.location.href = 'encyclopedia.html';
+                        } else {
+                            alert('Error: Failed to delete robot. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting robot:', error);
+                        alert('Error: Failed to delete robot. Please try again.');
+                    });
+            } else {
+                alert('Error: Storage adapter not available.');
+            }
+        }
+        
+        // Extract YouTube video ID
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^\"&?\/\s]{11})/i;
+            const match = url.match(regex);
+            
+            return match ? match[1] : null;
+        }
     </script>
 </body>
 </html>
