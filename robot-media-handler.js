@@ -14,58 +14,36 @@ window.robotMedia = {
             // Check featuredImage first
             if (robot.media.featuredImage && robot.media.featuredImage.url) {
                 // For uploaded images that store the full URL
-                if (robot.media.featuredImage.url.startsWith('http')) {
-                    imageUrl = robot.media.featuredImage.url;
-                }
-                // For relative paths
-                else {
-                    // Make sure the path is correct, prepend "images/robots/" if needed
-                    if (!robot.media.featuredImage.url.startsWith('images/')) {
-                        imageUrl = 'images/robots/' + robot.media.featuredImage.url.replace(/^\//, '');
-                    } else {
-                        imageUrl = robot.media.featuredImage.url;
-                    }
-                }
+                imageUrl = robot.media.featuredImage.url;
             }
             // If no featuredImage, try mainImage
             else if (robot.media.mainImage && robot.media.mainImage.url) {
-                if (robot.media.mainImage.url.startsWith('http')) {
-                    imageUrl = robot.media.mainImage.url;
-                } 
-                else {
-                    if (!robot.media.mainImage.url.startsWith('images/')) {
-                        imageUrl = 'images/robots/' + robot.media.mainImage.url.replace(/^\//, '');
-                    } else {
-                        imageUrl = robot.media.mainImage.url;
-                    }
-                }
+                imageUrl = robot.media.mainImage.url;
             }
             // If no mainImage, try first image in images array
             else if (robot.media.images && robot.media.images.length > 0 && robot.media.images[0].url) {
-                if (robot.media.images[0].url.startsWith('http')) {
-                    imageUrl = robot.media.images[0].url;
-                }
-                else {
-                    if (!robot.media.images[0].url.startsWith('images/')) {
-                        imageUrl = 'images/robots/' + robot.media.images[0].url.replace(/^\//, '');
-                    } else {
-                        imageUrl = robot.media.images[0].url;
-                    }
-                }
+                imageUrl = robot.media.images[0].url;
             }
         }
         
-        // Ensure path is accessible for both admin and non-admin users
-        if (!imageUrl.startsWith('http') && !imageUrl.startsWith('images/robots/')) {
-            if (imageUrl.startsWith('images/')) {
-                // Make sure it's using the robots subfolder
-                const parts = imageUrl.split('/');
-                if (parts.length >= 2 && parts[1] !== 'robots') {
-                    imageUrl = 'images/robots/' + parts[parts.length - 1];
+        // Make sure path is accessible for everyone
+        if (imageUrl && !imageUrl.startsWith('http')) {
+            // Create directory if needed
+            this.ensureRobotsDirectory();
+            
+            // If not already in robots directory, move it there
+            if (!imageUrl.includes('images/robots/')) {
+                const fileName = imageUrl.split('/').pop();
+                const newPath = 'images/robots/' + fileName;
+                
+                // Use existing file or default to placeholder
+                try {
+                    // Just return the proper path - we'll handle file existence elsewhere
+                    imageUrl = newPath;
+                } catch (e) {
+                    console.error('Error with image path:', e);
+                    imageUrl = 'images/robots/robot-placeholder.jpg';
                 }
-            } else {
-                // Set to default placeholder if path is invalid
-                imageUrl = 'images/robots/robot-placeholder.jpg';
             }
         }
         
@@ -112,24 +90,38 @@ window.robotMedia = {
         return videoUrl;
     },
     
-    // Function to ensure image paths are correct for non-admin users
+    // Function to ensure image paths are correct for all users
     fixImagePath: function(path) {
-        // If path is already a URL or absolute path, return it unchanged
-        if (!path || path.startsWith('http') || path.startsWith('images/robots/')) {
+        // If path is already a URL or null, return it unchanged
+        if (!path || path.startsWith('http')) {
             return path;
         }
         
-        // Fix relative paths
+        // Make sure robots directory exists
+        this.ensureRobotsDirectory();
+        
+        // Fix relative paths to use the robots directory
         if (path.startsWith('/')) {
-            return 'images/robots/' + path.substring(1);
+            // Absolute path, convert to robots directory
+            return 'images/robots/' + path.substring(1).split('/').pop();
         } else if (path.includes('/')) {
-            // Extract filename from path
-            const parts = path.split('/');
-            return 'images/robots/' + parts[parts.length - 1];
+            // Relative path with directories, extract filename
+            return 'images/robots/' + path.split('/').pop();
         } else {
             // Just a filename
             return 'images/robots/' + path;
         }
+    },
+    
+    // Function to ensure the robots directory exists
+    ensureRobotsDirectory: function() {
+        // This is handled server-side in practice
+        // Just make sure we have a placeholder image
+        const testImg = new Image();
+        testImg.onerror = () => {
+            console.warn('Robot placeholder image may be missing. Please ensure images/robots/robot-placeholder.jpg exists.');
+        };
+        testImg.src = 'images/robots/robot-placeholder.jpg';
     },
     
     // Function to render media gallery
@@ -166,17 +158,8 @@ window.robotMedia = {
                 const thumbnail = document.createElement('img');
                 thumbnail.className = 'robot-thumbnail';
                 
-                // Fix image path for non-admin users
-                let imgSrc = '';
-                if (image.url.startsWith('http')) {
-                    imgSrc = image.url;
-                } else if (image.url.startsWith('images/robots/')) {
-                    imgSrc = image.url;
-                } else {
-                    imgSrc = this.fixImagePath(image.url);
-                }
-                
-                thumbnail.src = imgSrc;
+                // Fix image path for all users
+                thumbnail.src = this.fixImagePath(image.url);
                 thumbnail.alt = image.alt || `${robot.name} image ${index + 1}`;
                 thumbnail.onerror = () => this.handleImageError(thumbnail);
                 
@@ -225,8 +208,9 @@ window.robotMedia = {
     // Initialize media handlers
     init: function() {
         console.log('Robot Media Handler: Initializing');
-        // Ensure placeholder image is set correctly
-        this.ensurePlaceholderImage();
+        
+        // Make sure robots directory exists and we have a placeholder
+        this.ensureRobotsDirectory();
         
         // Fix any existing robot images in the DOM
         this.fixExistingImages();
@@ -234,27 +218,18 @@ window.robotMedia = {
     
     // Fix any existing robot images in the DOM
     fixExistingImages: function() {
-        const robotImages = document.querySelectorAll('.robot-image');
+        const robotImages = document.querySelectorAll('img.robot-image, img.robot-thumbnail, img.robot-main-image');
+        
         robotImages.forEach(img => {
             // Set error handler
             img.onerror = () => this.handleImageError(img);
             
             // Fix path if needed
             const currentSrc = img.getAttribute('src');
-            if (currentSrc && !currentSrc.startsWith('http') && !currentSrc.startsWith('images/robots/')) {
+            if (currentSrc && !currentSrc.startsWith('http') && !currentSrc.includes('images/robots/')) {
                 img.src = this.fixImagePath(currentSrc);
             }
         });
-    },
-    
-    // Make sure we have a placeholder image
-    ensurePlaceholderImage: function() {
-        // Create an image element to check if the placeholder exists
-        const testImg = new Image();
-        testImg.onerror = () => {
-            console.warn('Robot placeholder image not found. Please ensure images/robots/robot-placeholder.jpg exists.');
-        };
-        testImg.src = 'images/robots/robot-placeholder.jpg';
     }
 };
 
