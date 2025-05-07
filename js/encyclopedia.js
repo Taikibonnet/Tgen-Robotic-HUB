@@ -114,33 +114,15 @@ function loadRobots() {
 function getAllRobots() {
     let robots = [];
     
-    // Always prioritize robots from window.robotsData (which includes default robots)
-    if (window.robotsData && window.robotsData.robots) {
-        console.log('Encyclopedia.js: Found', window.robotsData.robots.length, 'robots in robotsData');
-        robots = [...window.robotsData.robots];
-    }
-    
-    // Try to get any additional robots from localStorage as a fallback
+    // Try to get robots from localStorage
     try {
-        // Check the main storage key
         const mainStorage = localStorage.getItem('tgen_robotics_data');
         if (mainStorage) {
             try {
                 const data = JSON.parse(mainStorage);
                 if (data.robots && Array.isArray(data.robots)) {
                     console.log('Encyclopedia.js: Found', data.robots.length, 'robots in localStorage main storage');
-                    
-                    // Add robots not already in the array
-                    data.robots.forEach(robotData => {
-                        // Check if this robot is already in the array (avoid duplicates)
-                        const exists = robots.some(robot => 
-                            robot.id === robotData.id || robot.slug === robotData.slug
-                        );
-                        
-                        if (!exists) {
-                            robots.push(robotData);
-                        }
-                    });
+                    robots = [...data.robots];
                 }
             } catch (e) {
                 console.error('Encyclopedia.js: Error parsing main storage:', e);
@@ -148,6 +130,12 @@ function getAllRobots() {
         }
     } catch (e) {
         console.error('Encyclopedia.js: Error accessing localStorage:', e);
+    }
+    
+    // If no robots were found in localStorage, try window.robotsData
+    if (robots.length === 0 && window.robotsData && window.robotsData.robots) {
+        console.log('Encyclopedia.js: No robots in localStorage, using robotsData');
+        robots = [...window.robotsData.robots];
     }
     
     return robots;
@@ -164,23 +152,22 @@ function createRobotCard(robot) {
     
     // Use robotMedia handler to get the appropriate image URL if available
     let imageUrl = 'images/robots/robot-placeholder.jpg';
+    
     if (window.robotMedia && typeof window.robotMedia.getImageUrl === 'function') {
         imageUrl = window.robotMedia.getImageUrl(robot);
-    } else {
+    } else if (robot.media) {
         // Fallback if robotMedia is not available
-        if (robot.media) {
-            if (robot.media.featuredImage && robot.media.featuredImage.url) {
-                imageUrl = robot.media.featuredImage.url;
-            } else if (robot.media.mainImage && robot.media.mainImage.url) {
-                imageUrl = robot.media.mainImage.url;
-            } else if (robot.media.images && robot.media.images.length > 0) {
-                imageUrl = robot.media.images[0].url;
-            }
+        if (robot.media.featuredImage && robot.media.featuredImage.url) {
+            imageUrl = robot.media.featuredImage.url;
+        } else if (robot.media.mainImage && robot.media.mainImage.url) {
+            imageUrl = robot.media.mainImage.url;
+        } else if (robot.media.images && robot.media.images.length > 0) {
+            imageUrl = robot.media.images[0].url;
         }
     }
     
     card.innerHTML = `
-        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="window.robotMedia ? window.robotMedia.handleImageError(this) : this.src='images/robots/robot-placeholder.jpg'">
+        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="if(window.robotMedia){window.robotMedia.handleImageError(this);}else{this.src='images/robots/robot-placeholder.jpg';}">
         <div class="robot-content">
             <h3 class="robot-title">${robot.name || 'Unnamed Robot'}</h3>
             <p class="robot-desc">${robot.summary || 'No description available.'}</p>
