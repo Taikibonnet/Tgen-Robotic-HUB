@@ -3,8 +3,99 @@
  * This file contains the initial robot data to populate the encyclopedia
  */
 
+// Default example robot that will always be displayed for all users
+const defaultRobots = [
+    {
+        id: 1001,
+        name: "Optimus",
+        slug: "optimus-robot",
+        manufacturer: {
+            name: "Gen Technologies",
+            country: "France",
+            website: "https://www.gen-tech.fr/"
+        },
+        yearIntroduced: 2025,
+        summary: "Versatile humanoid robot designed for general-purpose applications in human environments.",
+        description: "<p>Optimus is a cutting-edge humanoid robot developed by Gen Technologies. With its advanced AI capabilities and precision engineering, it represents the next generation of robotics designed to work alongside humans in everyday environments.</p><p>Featuring advanced mobility systems and human-like dexterity, Optimus can navigate complex environments, manipulate objects with precision, and interact naturally with humans through advanced speech recognition and response systems.</p><p>Its modular design allows for customization based on specific application needs, making it suitable for a wide range of industries from healthcare and hospitality to manufacturing and education.</p>",
+        specifications: {
+            physical: {
+                height: {
+                    value: 1.75,
+                    unit: "m"
+                },
+                weight: {
+                    value: 75,
+                    unit: "kg"
+                },
+                payload: {
+                    value: 20,
+                    unit: "kg"
+                }
+            },
+            performance: {
+                battery: {
+                    runtime: 180
+                },
+                speed: {
+                    value: 1.8,
+                    unit: "m/s"
+                },
+                degreesOfFreedom: 32
+            },
+            sensors: [
+                { type: "Vision" },
+                { type: "LiDAR" },
+                { type: "Pressure & Touch" },
+                { type: "IMU" }
+            ],
+            connectivity: ["Wi-Fi", "5G", "Bluetooth 5.2"]
+        },
+        media: {
+            featuredImage: {
+                url: "images/robots/optimus.jpg",
+                alt: "Optimus humanoid robot"
+            },
+            images: [
+                {
+                    url: "images/robots/optimus.jpg",
+                    alt: "Optimus humanoid robot",
+                    caption: "Optimus can navigate complex environments and perform a wide range of tasks."
+                }
+            ],
+            videos: [
+                {
+                    type: "url",
+                    url: "https://www.youtube.com/watch?v=example",
+                    title: "Optimus in Action",
+                    description: "See how Optimus navigates and interacts in various environments."
+                }
+            ]
+        },
+        applications: [
+            {
+                title: "Healthcare Assistance",
+                description: "Optimus provides support in healthcare settings, assisting with patient care and logistics.",
+                image: "images/applications/healthcare.jpg"
+            },
+            {
+                title: "Manufacturing",
+                description: "In manufacturing environments, Optimus handles complex assembly tasks and collaborates with human workers.",
+                image: "images/applications/manufacturing.jpg"
+            }
+        ],
+        stats: {
+            views: 3500,
+            favorites: 120
+        },
+        categories: ["Humanoid", "Service", "Industrial"],
+        status: "published",
+        createdAt: "2025-04-15T10:30:00Z",
+        updatedAt: "2025-05-01T14:45:00Z"
+    }
+];
+
 window.robotsData = {
-    robots: [], // Empty array - we want all robots to come from localStorage only
+    robots: defaultRobots,
     categories: [
         "Humanoid", 
         "Quadruped", 
@@ -86,8 +177,21 @@ window.initRobotsData = function() {
             
             // Validate data structure
             if (parsedData.robots && Array.isArray(parsedData.robots)) {
-                // Use robots from localStorage
-                window.robotsData.robots = parsedData.robots;
+                // Check if user-added robots exist in localStorage
+                if (parsedData.robots.length > defaultRobots.length) {
+                    // Add user-defined robots to default robots, ensuring no duplicates
+                    parsedData.robots.forEach(storedRobot => {
+                        // Skip default robots (based on ID)
+                        if (defaultRobots.some(dr => dr.id === storedRobot.id)) {
+                            return;
+                        }
+                        
+                        // Add user robot if not already in the array
+                        if (!window.robotsData.robots.some(r => r.id === storedRobot.id)) {
+                            window.robotsData.robots.push(storedRobot);
+                        }
+                    });
+                }
                 
                 // Update categories if present
                 if (parsedData.categories && Array.isArray(parsedData.categories)) {
