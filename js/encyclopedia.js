@@ -162,26 +162,25 @@ function createRobotCard(robot) {
     card.dataset.slug = robot.slug;
     card.dataset.id = robot.id;
     
-    // Use appropriate image url from different possible sources
+    // Use robotMedia handler to get the appropriate image URL if available
     let imageUrl = 'images/robots/robot-placeholder.jpg';
-    if (robot.media) {
-        if (robot.media.featuredImage && robot.media.featuredImage.url) {
-            // Fix path if it points to a relative path
-            if (!robot.media.featuredImage.url.startsWith('http')) {
+    if (window.robotMedia && typeof window.robotMedia.getImageUrl === 'function') {
+        imageUrl = window.robotMedia.getImageUrl(robot);
+    } else {
+        // Fallback if robotMedia is not available
+        if (robot.media) {
+            if (robot.media.featuredImage && robot.media.featuredImage.url) {
                 imageUrl = robot.media.featuredImage.url;
-            } else {
-                // For external URLs, keep as is
-                imageUrl = robot.media.featuredImage.url;
+            } else if (robot.media.mainImage && robot.media.mainImage.url) {
+                imageUrl = robot.media.mainImage.url;
+            } else if (robot.media.images && robot.media.images.length > 0) {
+                imageUrl = robot.media.images[0].url;
             }
-        } else if (robot.media.mainImage && robot.media.mainImage.url) {
-            imageUrl = robot.media.mainImage.url;
-        } else if (robot.media.images && robot.media.images.length > 0) {
-            imageUrl = robot.media.images[0].url;
         }
     }
     
     card.innerHTML = `
-        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="this.src='images/robots/robot-placeholder.jpg'">
+        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="window.robotMedia ? window.robotMedia.handleImageError(this) : this.src='images/robots/robot-placeholder.jpg'">
         <div class="robot-content">
             <h3 class="robot-title">${robot.name || 'Unnamed Robot'}</h3>
             <p class="robot-desc">${robot.summary || 'No description available.'}</p>
