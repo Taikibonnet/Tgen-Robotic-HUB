@@ -414,6 +414,7 @@
 
     <!-- Scripts -->
     <script src="js/data.js"></script>
+    <script src="js/github-storage.js"></script>
     <script src="robot-storage-adapter.js"></script>
     <script src="robot-media-handler.js"></script>
     <script src="js/main.js"></script>
@@ -432,7 +433,92 @@
             if (adminControls) {
                 adminControls.style.display = isAdmin ? 'block' : 'none';
             }
+            
+            // Load robots using our new GitHub storage and media handler
+            if (window.robotMediaHandler && typeof window.robotMediaHandler.createRobotCard === 'function') {
+                // Initialize storage
+                window.robotStorage.init().then(() => {
+                    // Get the robot grid container
+                    const robotGrid = document.getElementById('robot-grid');
+                    if (!robotGrid) return;
+                    
+                    // Clear loading spinner
+                    robotGrid.innerHTML = '';
+                    
+                    // Check if we have robots
+                    if (!window.robotsData || !window.robotsData.robots || !Array.isArray(window.robotsData.robots) || window.robotsData.robots.length === 0) {
+                        // Show empty state
+                        document.getElementById('empty-state').style.display = 'block';
+                        return;
+                    }
+                    
+                    // Add robots to the grid
+                    window.robotsData.robots.forEach(robot => {
+                        const robotCard = window.robotMediaHandler.createRobotCard(robot);
+                        robotGrid.appendChild(robotCard);
+                    });
+                    
+                    // Initialize search functionality
+                    initSearch();
+                });
+            } else {
+                console.error('Robot media handler not found');
+            }
         });
+        
+        // Initialize search functionality
+        function initSearch() {
+            const searchInput = document.getElementById('robot-search');
+            if (!searchInput) return;
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim().toLowerCase();
+                
+                // Get robot grid and robot cards
+                const robotGrid = document.getElementById('robot-grid');
+                const robotCards = robotGrid.querySelectorAll('.robot-card');
+                
+                // Filter cards based on search query
+                let hasVisibleRobots = false;
+                
+                robotCards.forEach(card => {
+                    const robot = window.robotsData.getRobotBySlug(card.dataset.slug);
+                    if (!robot) {
+                        card.style.display = 'none';
+                        return;
+                    }
+                    
+                    const robotName = robot.name.toLowerCase();
+                    const robotSummary = robot.summary?.toLowerCase() || '';
+                    const manufacturerName = robot.manufacturer?.name?.toLowerCase() || '';
+                    
+                    if (query === '' || 
+                        robotName.includes(query) || 
+                        robotSummary.includes(query) || 
+                        manufacturerName.includes(query)) {
+                        card.style.display = 'block';
+                        hasVisibleRobots = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Show empty state if no robots match
+                const emptyState = document.getElementById('empty-state');
+                if (emptyState) {
+                    emptyState.style.display = hasVisibleRobots ? 'none' : 'block';
+                }
+            });
+            
+            // Reset filters button
+            const resetFiltersBtn = document.getElementById('reset-filters');
+            if (resetFiltersBtn) {
+                resetFiltersBtn.addEventListener('click', function() {
+                    searchInput.value = '';
+                    searchInput.dispatchEvent(new Event('input'));
+                });
+            }
+        }
     </script>
 </body>
 </html>
