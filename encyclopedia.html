@@ -228,12 +228,6 @@
             line-height: 1.8;
         }
         
-        @media (max-width: 768px) {
-            .robot-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-
         /* User dropdown styles */
         .user-dropdown {
             position: relative;
@@ -296,6 +290,12 @@
             margin-right: 8px;
             width: 18px;
             text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .robot-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
         }
     </style>
 </head>
@@ -415,45 +415,22 @@
     <!-- Scripts -->
     <script src="js/data.js"></script>
     <script src="robot-storage-adapter.js"></script>
+    <script src="robot-media-handler.js"></script>
     <script src="js/main.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/encyclopedia.js"></script>
     <script src="js/media-display.js"></script>
     <script>
-        // Load user state and show admin controls immediately on page load
+        // Show admin controls only to admin users
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize auth (this will update the auth UI)
-            if (typeof initAuth === 'function') {
-                initAuth();
-            }
-
-            // Get currently logged-in user
-            let user = null;
-            
-            // Try to get user from tgenApp if it exists
-            if (window.tgenApp && typeof window.tgenApp.getCurrentUser === 'function') {
-                user = window.tgenApp.getCurrentUser();
-            } 
-            // Alternatively, try to get directly from localStorage
-            else {
-                try {
-                    const userJson = localStorage.getItem('tgen_current_user');
-                    if (userJson) {
-                        user = JSON.parse(userJson);
-                    }
-                } catch (e) {
-                    console.error('Error retrieving user:', e);
-                }
-            }
-            
-            // Check if user is admin
+            // Check if user is logged in and is an admin
+            const user = window.tgenApp?.getCurrentUser ? window.tgenApp.getCurrentUser() : null;
             const isAdmin = user && user.role === 'admin';
             
-            // Show admin controls if user is admin
+            // Show admin controls only to admin users
             const adminControls = document.getElementById('admin-controls');
             if (adminControls) {
                 adminControls.style.display = isAdmin ? 'block' : 'none';
-                console.log('Admin status:', isAdmin ? 'Admin user detected' : 'Not an admin user');
             }
         });
     </script>
