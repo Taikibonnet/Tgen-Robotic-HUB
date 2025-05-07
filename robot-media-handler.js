@@ -55,6 +55,20 @@ window.robotMedia = {
             }
         }
         
+        // Ensure path is accessible for both admin and non-admin users
+        if (!imageUrl.startsWith('http') && !imageUrl.startsWith('images/robots/')) {
+            if (imageUrl.startsWith('images/')) {
+                // Make sure it's using the robots subfolder
+                const parts = imageUrl.split('/');
+                if (parts.length >= 2 && parts[1] !== 'robots') {
+                    imageUrl = 'images/robots/' + parts[parts.length - 1];
+                }
+            } else {
+                // Set to default placeholder if path is invalid
+                imageUrl = 'images/robots/robot-placeholder.jpg';
+            }
+        }
+        
         return imageUrl;
     },
     
@@ -62,6 +76,7 @@ window.robotMedia = {
     handleImageError: function(img) {
         img.onerror = null; // Prevent infinite loop
         img.src = 'images/robots/robot-placeholder.jpg';
+        console.log('Image failed to load, using placeholder:', img.src);
     },
     
     // Function to get the appropriate video URL for a robot
@@ -97,6 +112,26 @@ window.robotMedia = {
         return videoUrl;
     },
     
+    // Function to ensure image paths are correct for non-admin users
+    fixImagePath: function(path) {
+        // If path is already a URL or absolute path, return it unchanged
+        if (!path || path.startsWith('http') || path.startsWith('images/robots/')) {
+            return path;
+        }
+        
+        // Fix relative paths
+        if (path.startsWith('/')) {
+            return 'images/robots/' + path.substring(1);
+        } else if (path.includes('/')) {
+            // Extract filename from path
+            const parts = path.split('/');
+            return 'images/robots/' + parts[parts.length - 1];
+        } else {
+            // Just a filename
+            return 'images/robots/' + path;
+        }
+    },
+    
     // Function to render media gallery
     renderGallery: function(robot, container) {
         if (!robot || !container) return;
@@ -130,9 +165,18 @@ window.robotMedia = {
                 // Create thumbnail
                 const thumbnail = document.createElement('img');
                 thumbnail.className = 'robot-thumbnail';
-                thumbnail.src = image.url.startsWith('http') ? image.url : 
-                                image.url.startsWith('images/') ? image.url : 
-                                'images/robots/' + image.url.replace(/^\//, '');
+                
+                // Fix image path for non-admin users
+                let imgSrc = '';
+                if (image.url.startsWith('http')) {
+                    imgSrc = image.url;
+                } else if (image.url.startsWith('images/robots/')) {
+                    imgSrc = image.url;
+                } else {
+                    imgSrc = this.fixImagePath(image.url);
+                }
+                
+                thumbnail.src = imgSrc;
                 thumbnail.alt = image.alt || `${robot.name} image ${index + 1}`;
                 thumbnail.onerror = () => this.handleImageError(thumbnail);
                 
@@ -181,14 +225,36 @@ window.robotMedia = {
     // Initialize media handlers
     init: function() {
         console.log('Robot Media Handler: Initializing');
-        // Add placeholder robot image
+        // Ensure placeholder image is set correctly
         this.ensurePlaceholderImage();
+        
+        // Fix any existing robot images in the DOM
+        this.fixExistingImages();
+    },
+    
+    // Fix any existing robot images in the DOM
+    fixExistingImages: function() {
+        const robotImages = document.querySelectorAll('.robot-image');
+        robotImages.forEach(img => {
+            // Set error handler
+            img.onerror = () => this.handleImageError(img);
+            
+            // Fix path if needed
+            const currentSrc = img.getAttribute('src');
+            if (currentSrc && !currentSrc.startsWith('http') && !currentSrc.startsWith('images/robots/')) {
+                img.src = this.fixImagePath(currentSrc);
+            }
+        });
     },
     
     // Make sure we have a placeholder image
     ensurePlaceholderImage: function() {
-        // No need to actually implement this in JavaScript,
-        // we just need to make sure the placeholder image exists on the server
+        // Create an image element to check if the placeholder exists
+        const testImg = new Image();
+        testImg.onerror = () => {
+            console.warn('Robot placeholder image not found. Please ensure images/robots/robot-placeholder.jpg exists.');
+        };
+        testImg.src = 'images/robots/robot-placeholder.jpg';
     }
 };
 
