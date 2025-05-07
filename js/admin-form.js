@@ -367,7 +367,7 @@ function setupVideoInput(videoInput) {
     function extractYouTubeId(url) {
         if (!url) return null;
         
-        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\.be\/)([^\"&?\/\s]{11})/i;
+        const regex = /(?:youtube\.com\/(?:[^\\/]+\/.+\\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\.be\\/)([^\\\"&?\\/\\s]{11})/i;
         const match = url.match(regex);
         
         return match ? match[1] : null;
@@ -385,27 +385,65 @@ function setupFormSubmission() {
     robotForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Show loading state
+        const submitBtn = robotForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+        
         // Get robot data from form
-        const robotData = collectFormData();
-        
-        // Validate robot data
-        if (!validateRobotData(robotData)) {
-            return;
-        }
-        
-        // Get robot ID from URL (if any)
-        const urlParams = new URLSearchParams(window.location.search);
-        const robotId = urlParams.get('id');
-        
-        // Save robot data
-        saveRobotData(robotData, robotId);
+        collectFormData()
+            .then(robotData => {
+                // Validate robot data
+                if (!validateRobotData(robotData)) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalBtnText;
+                    return;
+                }
+                
+                // Get robot ID from URL (if any)
+                const urlParams = new URLSearchParams(window.location.search);
+                const robotId = urlParams.get('id');
+                
+                // Save robot data
+                saveRobotData(robotData, robotId)
+                    .then(success => {
+                        if (success) {
+                            // Reset form state
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalBtnText;
+                            
+                            // Show success message
+                            alert('Robot saved successfully!');
+                            
+                            // Redirect to robot detail page
+                            window.location.href = `robot-detail.html?slug=${robotData.slug}`;
+                        } else {
+                            alert('Failed to save robot data. Please try again.');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalBtnText;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error saving robot:', error);
+                        alert('An error occurred while saving the robot. Please try again.');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalBtnText;
+                    });
+            })
+            .catch(error => {
+                console.error('Error collecting form data:', error);
+                alert('An error occurred while processing the form data. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+            });
     });
 }
 
 /**
  * Collect form data
  */
-function collectFormData() {
+async function collectFormData() {
     const formData = {
         name: document.getElementById('robot-name').value.trim(),
         slug: document.getElementById('robot-slug').value.trim(),
@@ -445,6 +483,8 @@ function collectFormData() {
             images: [],
             videos: []
         },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         stats: {
             views: 0,
             favorites: 0
@@ -454,12 +494,12 @@ function collectFormData() {
     // Generate slug if not provided
     if (!formData.slug) {
         formData.slug = formData.name.toLowerCase()
-            .replace(/[^\w\s-]/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
             .replace(/\s+/g, '-');
     }
     
     // Process media data
-    processMediaData(formData);
+    await processMediaData(formData);
     
     return formData;
 }
@@ -467,28 +507,34 @@ function collectFormData() {
 /**
  * Process media data and add to form data
  */
-function processMediaData(formData) {
+async function processMediaData(formData) {
     // Process main image
     if (mediaFiles.mainImage) {
+        // Convert to data URL
+        const mainImageDataUrl = await readFileAsDataURL(mediaFiles.mainImage);
+        
         formData.media.featuredImage = {
-            url: URL.createObjectURL(mediaFiles.mainImage),
+            url: mainImageDataUrl,
             alt: formData.name
         };
     }
     
     // Process gallery images
-    mediaFiles.galleryImages.forEach(file => {
+    for (const file of mediaFiles.galleryImages) {
+        // Convert to data URL
+        const galleryImageDataUrl = await readFileAsDataURL(file);
+        
         formData.media.images.push({
-            url: URL.createObjectURL(file),
+            url: galleryImageDataUrl,
             alt: formData.name,
             caption: ''
         });
-    });
+    }
     
     // Process videos
     const videoInputs = document.querySelectorAll('.video-input');
     
-    videoInputs.forEach(videoInput => {
+    for (const videoInput of videoInputs) {
         const videoType = videoInput.querySelector('.video-type').value;
         const videoUrl = videoInput.querySelector('.video-url').value.trim();
         const videoFile = videoInput.querySelector('.video-file').files[0];
@@ -503,13 +549,33 @@ function processMediaData(formData) {
             };
             
             if (videoType === 'mp4' && videoFile) {
-                video.url = URL.createObjectURL(videoFile);
+                // Convert to data URL
+                video.url = await readFileAsDataURL(videoFile);
             } else {
                 video.url = videoUrl;
             }
             
             formData.media.videos.push(video);
         }
+    }
+}
+
+/**
+ * Read a file as a data URL
+ */
+function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            resolve(e.target.result);
+        };
+        
+        reader.onerror = function(e) {
+            reject(e);
+        };
+        
+        reader.readAsDataURL(file);
     });
 }
 
@@ -539,152 +605,69 @@ function validateRobotData(robotData) {
 /**
  * Save robot data
  */
-function saveRobotData(robotData, robotId) {
-    // Create a new ID if this is a new robot
-    if (!robotId) {
-        robotId = Date.now().toString();
-        robotData.id = robotId;
-    } else {
-        robotData.id = robotId;
-    }
-    
-    // Convert blob URLs to data URLs
-    convertBlobUrlsToDataUrls(robotData)
-        .then(processedData => {
-            // Ensure images are in the robots folder
-            fixImagePaths(processedData);
+async function saveRobotData(robotData, robotId) {
+    try {
+        // Use robot media handler to process media files if available
+        if (window.robotMediaHandler && typeof window.robotMediaHandler.processMediaData === 'function') {
+            const mediaData = await window.robotMediaHandler.processMediaData({
+                slug: robotData.slug,
+                name: robotData.name,
+                mainImage: robotData.media.featuredImage,
+                galleryImages: robotData.media.images,
+                videos: robotData.media.videos
+            });
             
-            // Save to localStorage directly
-            localStorage.setItem(`robot_${robotId}`, JSON.stringify(processedData));
-            
-            // If using the storage adapter
-            if (window.robotStorage) {
-                if (robotId && window.robotStorage.updateRobotAndSave) {
-                    window.robotStorage.updateRobotAndSave(robotId, processedData);
-                } else if (window.robotStorage.addRobotAndSave) {
-                    window.robotStorage.addRobotAndSave(processedData);
-                }
+            robotData.media = mediaData;
+        }
+        
+        // If we have a robot ID, update the existing robot
+        if (robotId) {
+            // Use the storage adapter to update the robot
+            if (window.robotStorage && typeof window.robotStorage.updateRobotAndSave === 'function') {
+                return await window.robotStorage.updateRobotAndSave(robotId, robotData);
             }
+        } else {
+            // Create a new ID
+            robotId = Date.now().toString();
+            robotData.id = robotId;
             
-            // Alert success
-            alert('Robot saved successfully!');
-            
-            // Redirect to robot detail page
-            window.location.href = `robot-detail.html?slug=${processedData.slug}`;
-        })
-        .catch(error => {
-            console.error('Error saving robot data:', error);
-            alert('An error occurred while saving the robot data. Please try again.');
-        });
-}
-
-/**
- * Fix image paths to ensure they use the robots folder
- */
-function fixImagePaths(robotData) {
-    // Fix featured image path
-    if (robotData.media.featuredImage && robotData.media.featuredImage.url) {
-        // For data URLs, we'll keep as is since they'll be handled by the media handler
-        if (!robotData.media.featuredImage.url.startsWith('data:')) {
-            // If it's a regular URL and not already in the robots folder, fix it
-            if (!robotData.media.featuredImage.url.includes('images/robots/')) {
-                // Extract filename or use a default name based on the robot
-                let filename = robotData.slug + '-main.jpg';
-                if (robotData.media.featuredImage.url.includes('/')) {
-                    filename = robotData.media.featuredImage.url.split('/').pop();
-                }
-                robotData.media.featuredImage.url = 'images/robots/' + filename;
+            // Use the storage adapter to add the robot
+            if (window.robotStorage && typeof window.robotStorage.addRobotAndSave === 'function') {
+                return await window.robotStorage.addRobotAndSave(robotData);
             }
         }
+        
+        // If we don't have a storage adapter, just save to localStorage
+        localStorage.setItem(`robot_${robotId}`, JSON.stringify(robotData));
+        return true;
+    } catch (error) {
+        console.error('Error saving robot data:', error);
+        return false;
     }
-    
-    // Fix gallery images paths
-    if (robotData.media.images && robotData.media.images.length > 0) {
-        robotData.media.images.forEach((image, index) => {
-            if (image.url && !image.url.startsWith('data:')) {
-                if (!image.url.includes('images/robots/')) {
-                    let filename = robotData.slug + '-' + (index + 1) + '.jpg';
-                    if (image.url.includes('/')) {
-                        filename = image.url.split('/').pop();
-                    }
-                    image.url = 'images/robots/' + filename;
-                }
-            }
-        });
-    }
-    
-    return robotData;
-}
-
-/**
- * Convert Blob URLs to Data URLs
- */
-async function convertBlobUrlsToDataUrls(robotData) {
-    const clonedData = JSON.parse(JSON.stringify(robotData));
-    
-    // Convert featuredImage URL if it's a Blob URL
-    if (clonedData.media.featuredImage && clonedData.media.featuredImage.url.startsWith('blob:')) {
-        clonedData.media.featuredImage.url = await blobUrlToDataUrl(clonedData.media.featuredImage.url);
-    }
-    
-    // Convert gallery image URLs
-    for (let i = 0; i < clonedData.media.images.length; i++) {
-        if (clonedData.media.images[i].url.startsWith('blob:')) {
-            clonedData.media.images[i].url = await blobUrlToDataUrl(clonedData.media.images[i].url);
-        }
-    }
-    
-    // Convert video URLs
-    for (let i = 0; i < clonedData.media.videos.length; i++) {
-        if (clonedData.media.videos[i].url.startsWith('blob:')) {
-            clonedData.media.videos[i].url = await blobUrlToDataUrl(clonedData.media.videos[i].url);
-        }
-    }
-    
-    return clonedData;
-}
-
-/**
- * Convert a Blob URL to a Data URL
- */
-function blobUrlToDataUrl(blobUrl) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.responseType = 'blob';
-        xhr.onload = function() {
-            const reader = new FileReader();
-            reader.onloadend = function() {
-                resolve(reader.result);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(xhr.response);
-        };
-        xhr.onerror = reject;
-        xhr.open('GET', blobUrl);
-        xhr.send();
-    });
 }
 
 /**
  * Load robot data for editing
  */
-function loadRobotData(robotId) {
+async function loadRobotData(robotId) {
     // Try to get robot data
     let robot = null;
     
-    // First try to get from localStorage directly
-    try {
-        const robotData = localStorage.getItem(`robot_${robotId}`);
-        if (robotData) {
-            robot = JSON.parse(robotData);
-        }
-    } catch (e) {
-        console.error('Error loading robot data from localStorage:', e);
+    // First try to get from robotsData
+    if (window.robotsData && typeof window.robotsData.getRobotById === 'function') {
+        robot = window.robotsData.getRobotById(robotId);
     }
     
-    // If not found, try robotsData
-    if (!robot && window.robotsData && typeof window.robotsData.getRobotById === 'function') {
-        robot = window.robotsData.getRobotById(robotId);
+    // If not found, try to get from localStorage directly
+    if (!robot) {
+        try {
+            const robotData = localStorage.getItem(`robot_${robotId}`);
+            if (robotData) {
+                robot = JSON.parse(robotData);
+            }
+        } catch (e) {
+            console.error('Error loading robot data from localStorage:', e);
+        }
     }
     
     if (!robot) {
@@ -867,7 +850,7 @@ function generateMP4Preview(url) {
 function extractYouTubeId(url) {
     if (!url) return null;
     
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\.be\/)([^\"&?\/\s]{11})/i;
+    const regex = /(?:youtube\.com\/(?:[^\\/]+\/.+\\/|(?:v|e(?:mbed)?)\\\\/|.*[?&]v=)|youtu\.be\\/)([^\\\"&?\\/\\s]{11})/i;
     const match = url.match(regex);
     
     return match ? match[1] : null;
