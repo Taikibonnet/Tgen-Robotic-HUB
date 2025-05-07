@@ -193,6 +193,16 @@
             }
         }
     </style>
+    <!-- Immediate script to clear any example robots -->
+    <script>
+    // Clear localStorage data to remove any previously stored robots
+    localStorage.removeItem('tgen_robotics_data');
+    
+    // Clear any example robots in memory if robotsData exists
+    if (window.robotsData) {
+        window.robotsData.robots = [];
+    }
+    </script>
 </head>
 <body>
     <!-- Header -->
@@ -309,11 +319,20 @@
     <script src="js/main.js"></script>
     <script src="js/media-display.js"></script>
     <script>
+        // Force clear any example robots
+        if (window.robotsData) {
+            window.robotsData.robots = [];
+        }
+        
         // Homepage specific JavaScript
-
         // Function to initialize the homepage
         function initHomepage() {
             console.log('Initializing homepage');
+            
+            // Force clear example robots again
+            if (window.robotsData) {
+                window.robotsData.robots = [];
+            }
             
             // Initialize robot storage
             if (window.robotStorage && typeof window.robotStorage.init === 'function') {
