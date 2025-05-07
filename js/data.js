@@ -1,211 +1,149 @@
 /**
- * Default robot data for Tgen Robotics Hub
- * This file contains the initial robot data to populate the encyclopedia
+ * Example robot data for Tgen Robotics Hub
+ * This file contains sample robot entries that will be displayed in the encyclopedia
  */
 
-// Default example robot that will always be displayed for all users
-const defaultRobots = [
-    {
-        id: 1001,
-        name: "Optimus",
-        slug: "optimus-robot",
-        manufacturer: {
-            name: "Gen Technologies",
-            country: "France",
-            website: "https://www.gen-tech.fr/"
-        },
-        yearIntroduced: 2025,
-        summary: "Versatile humanoid robot designed for general-purpose applications in human environments.",
-        description: "<p>Optimus is a cutting-edge humanoid robot developed by Gen Technologies. With its advanced AI capabilities and precision engineering, it represents the next generation of robotics designed to work alongside humans in everyday environments.</p><p>Featuring advanced mobility systems and human-like dexterity, Optimus can navigate complex environments, manipulate objects with precision, and interact naturally with humans through advanced speech recognition and response systems.</p><p>Its modular design allows for customization based on specific application needs, making it suitable for a wide range of industries from healthcare and hospitality to manufacturing and education.</p>",
-        specifications: {
-            physical: {
-                height: {
-                    value: 1.75,
-                    unit: "m"
-                },
-                weight: {
-                    value: 75,
-                    unit: "kg"
-                },
-                payload: {
-                    value: 20,
-                    unit: "kg"
-                }
-            },
-            performance: {
-                battery: {
-                    runtime: 180
-                },
-                speed: {
-                    value: 1.8,
-                    unit: "m/s"
-                },
-                degreesOfFreedom: 32
-            },
-            sensors: [
-                { type: "Vision" },
-                { type: "LiDAR" },
-                { type: "Pressure & Touch" },
-                { type: "IMU" }
-            ],
-            connectivity: ["Wi-Fi", "5G", "Bluetooth 5.2"]
-        },
-        media: {
-            featuredImage: {
-                url: "images/robots/optimus.jpg",
-                alt: "Optimus humanoid robot"
-            },
-            images: [
-                {
-                    url: "images/robots/optimus.jpg",
-                    alt: "Optimus humanoid robot",
-                    caption: "Optimus can navigate complex environments and perform a wide range of tasks."
-                }
-            ],
-            videos: [
-                {
-                    type: "url",
-                    url: "https://www.youtube.com/watch?v=example",
-                    title: "Optimus in Action",
-                    description: "See how Optimus navigates and interacts in various environments."
-                }
-            ]
-        },
-        applications: [
-            {
-                title: "Healthcare Assistance",
-                description: "Optimus provides support in healthcare settings, assisting with patient care and logistics.",
-                image: "images/applications/healthcare.jpg"
-            },
-            {
-                title: "Manufacturing",
-                description: "In manufacturing environments, Optimus handles complex assembly tasks and collaborates with human workers.",
-                image: "images/applications/manufacturing.jpg"
-            }
-        ],
-        stats: {
-            views: 3500,
-            favorites: 120
-        },
-        categories: ["Humanoid", "Service", "Industrial"],
-        status: "published",
-        createdAt: "2025-04-15T10:30:00Z",
-        updatedAt: "2025-05-01T14:45:00Z"
-    }
-];
-
+// Initialize robotsData global object
 window.robotsData = {
-    robots: defaultRobots,
-    categories: [
-        "Humanoid", 
-        "Quadruped", 
-        "Industrial", 
-        "Service", 
-        "Research", 
-        "Medical", 
-        "Agricultural", 
-        "Military"
+    robots: [
+        {
+            id: 1,
+            name: "Atlas",
+            slug: "atlas",
+            summary: "A dynamic humanoid robot designed for mobility, dexterity, and agile navigation in challenging environments.",
+            description: "Atlas is a humanoid robot designed to navigate rough terrain and perform a wide range of physical tasks. With advanced mobility, dexterity, and perception, Atlas can tackle complex environments that would be challenging even for humans. It represents cutting-edge research in robotics and artificial intelligence.",
+            manufacturer: {
+                name: "Boston Dynamics",
+                country: "United States",
+                website: "https://www.bostondynamics.com"
+            },
+            specifications: {
+                height: 1.5,
+                weight: 80,
+                powerSource: "Electric battery",
+                sensors: ["3D vision sensors", "IMU", "LIDAR", "Pressure sensors"],
+                actuators: ["Hydraulic actuators", "Electric motors"]
+            },
+            media: {
+                featuredImage: {
+                    url: "images/robots/robot-example.jpg",
+                    alt: "Atlas humanoid robot standing upright"
+                },
+                images: [
+                    {
+                        url: "images/robots/robot-example.jpg",
+                        alt: "Atlas humanoid robot standing upright",
+                        caption: "Atlas in standing position"
+                    },
+                    {
+                        url: "images/robots/featured-robot.jpg",
+                        alt: "Atlas robot performing a complex movement",
+                        caption: "Atlas demonstrating agility"
+                    }
+                ],
+                videos: [
+                    {
+                        url: "https://www.youtube.com/watch?v=tF4DML7FIWk",
+                        type: "youtube",
+                        title: "Atlas: Partners in Parkour",
+                        description: "Watch Atlas robots perform parkour maneuvers with incredible agility and coordination."
+                    }
+                ]
+            },
+            applications: ["Research", "Disaster response", "Industrial tasks"],
+            features: ["Dynamic balancing", "Whole-body mobile manipulation", "Rough terrain navigation"]
+        },
+        {
+            id: 2,
+            name: "TGen Assistant",
+            slug: "tgen-assistant",
+            summary: "An advanced AI-powered robotic assistant designed to support daily tasks and provide information.",
+            description: "The TGen Assistant is our flagship robotic companion designed to integrate seamlessly into home and office environments. With advanced natural language processing, visual recognition, and problem-solving capabilities, this robot provides practical assistance while maintaining intuitive interaction. Its modular design allows for customization based on specific user needs.",
+            manufacturer: {
+                name: "TGen Robotics",
+                country: "Japan",
+                website: "https://www.tgenrobotics.com"
+            },
+            specifications: {
+                height: 1.2,
+                weight: 40,
+                powerSource: "Rechargeable lithium-ion battery",
+                sensors: ["360° cameras", "Microphone array", "Touch sensors", "Environmental sensors"],
+                actuators: ["Precision servo motors", "Articulated fingers"]
+            },
+            media: {
+                featuredImage: {
+                    url: "images/robots/featured-robot.jpg",
+                    alt: "TGen Assistant robot in home environment"
+                },
+                images: [
+                    {
+                        url: "images/robots/featured-robot.jpg",
+                        alt: "TGen Assistant in home environment",
+                        caption: "TGen Assistant helping in kitchen tasks"
+                    },
+                    {
+                        url: "images/robots/robot-example.jpg",
+                        alt: "TGen Assistant interacting with user",
+                        caption: "Natural interaction with users"
+                    }
+                ],
+                videos: [
+                    {
+                        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                        type: "youtube",
+                        title: "TGen Assistant Demo",
+                        description: "See the TGen Assistant in action performing various tasks around the home."
+                    }
+                ]
+            },
+            applications: ["Home automation", "Elderly care", "Office assistant", "Educational companion"],
+            features: ["Natural language interaction", "Object recognition", "Task learning", "Remote control via smartphone"]
+        }
     ],
-    lastUpdated: new Date().toISOString(),
     
-    // Helper functions
-    getRobotById: function(id) {
-        return this.robots.find(robot => robot.id === parseInt(id) || robot.id === id);
-    },
+    categories: [
+        "Humanoid",
+        "Industrial",
+        "Medical",
+        "Educational",
+        "Entertainment",
+        "Military",
+        "Agricultural",
+        "Household",
+        "Service",
+        "Research"
+    ],
     
+    lastUpdated: "2025-05-07T10:00:00Z",
+    
+    // Helper function to get robot by slug
     getRobotBySlug: function(slug) {
         return this.robots.find(robot => robot.slug === slug);
     },
     
+    // Helper function to get robot by ID
+    getRobotById: function(id) {
+        const numId = parseInt(id);
+        return this.robots.find(robot => 
+            robot.id === numId || robot.id === id || robot.slug === id
+        );
+    },
+    
+    // Helper function to get related robots
     getRelatedRobots: function(id, limit = 3) {
         const robot = this.getRobotById(id);
         if (!robot) return [];
         
-        // Get robots with the same manufacturer or category
         return this.robots
             .filter(r => r.id !== id && (
-                r.manufacturer.name === robot.manufacturer.name
+                r.manufacturer?.name === robot.manufacturer?.name ||
+                r.applications?.some(app => robot.applications?.includes(app))
             ))
-            .sort(() => Math.random() - 0.5) // Shuffle
+            .sort(() => Math.random() - 0.5)
             .slice(0, limit);
     }
 };
 
-// Expose a global function to add and save a new robot to the default data
-window.saveRobotToData = function(robotData) {
-    // Generate a new ID if not provided
-    if (!robotData.id) {
-        // Find the highest existing ID and increment by 1
-        const highestId = Math.max(...window.robotsData.robots.map(r => r.id), 0);
-        robotData.id = highestId + 1;
-    }
-    
-    // Check if we're updating an existing robot
-    const existingIndex = window.robotsData.robots.findIndex(r => r.id === robotData.id);
-    
-    if (existingIndex !== -1) {
-        // Update existing robot
-        window.robotsData.robots[existingIndex] = robotData;
-    } else {
-        // Add new robot
-        window.robotsData.robots.push(robotData);
-    }
-    
-    // Update lastUpdated timestamp
-    window.robotsData.lastUpdated = new Date().toISOString();
-    
-    // Save to localStorage for persistence
-    try {
-        localStorage.setItem('tgen_robotics_data', JSON.stringify({
-            robots: window.robotsData.robots,
-            categories: window.robotsData.categories,
-            lastUpdated: window.robotsData.lastUpdated
-        }));
-        return true;
-    } catch (e) {
-        console.error('Error saving robot data:', e);
-        return false;
-    }
-};
-
-// Function to initialize data from localStorage if available
-window.initRobotsData = function() {
-    try {
-        const storedData = localStorage.getItem('tgen_robotics_data');
-        if (storedData) {
-            const parsedData = JSON.parse(storedData);
-            
-            // Validate data structure
-            if (parsedData.robots && Array.isArray(parsedData.robots)) {
-                // Check if user-added robots exist in localStorage
-                if (parsedData.robots.length > defaultRobots.length) {
-                    // Add user-defined robots to default robots, ensuring no duplicates
-                    parsedData.robots.forEach(storedRobot => {
-                        // Skip default robots (based on ID)
-                        if (defaultRobots.some(dr => dr.id === storedRobot.id)) {
-                            return;
-                        }
-                        
-                        // Add user robot if not already in the array
-                        if (!window.robotsData.robots.some(r => r.id === storedRobot.id)) {
-                            window.robotsData.robots.push(storedRobot);
-                        }
-                    });
-                }
-                
-                // Update categories if present
-                if (parsedData.categories && Array.isArray(parsedData.categories)) {
-                    window.robotsData.categories = [...new Set([...window.robotsData.categories, ...parsedData.categories])];
-                }
-                
-                // Update lastUpdated
-                window.robotsData.lastUpdated = parsedData.lastUpdated || window.robotsData.lastUpdated;
-            }
-        }
-    } catch (e) {
-        console.error('Error initializing robots data:', e);
-    }
-};
-
-// Initialize data when the script loads
-window.initRobotsData();
+// Log that the data has been loaded
+console.log("Robot data loaded:", window.robotsData.robots.length, "robots");
