@@ -85,8 +85,8 @@ function loadRobots() {
     // Clear loading spinner
     robotGrid.innerHTML = '';
     
-    // Get robots from localStorage only (not from the default example data)
-    let robots = getRobotsFromStorage();
+    // Get robots from various sources
+    let robots = getAllRobots();
     console.log('Encyclopedia.js: Loaded', robots.length, 'robots');
     
     // No robots available
@@ -103,17 +103,26 @@ function loadRobots() {
         const robotCard = createRobotCard(robot);
         robotGrid.appendChild(robotCard);
     });
+    
+    // Hide empty state
+    document.getElementById('empty-state').style.display = 'none';
 }
 
 /**
- * Get robots from localStorage only, ignoring the default example robots
+ * Get all robots from all available sources
  */
-function getRobotsFromStorage() {
+function getAllRobots() {
     let robots = [];
     
-    // Get robots directly from localStorage
+    // Always prioritize robots from window.robotsData (which includes default robots)
+    if (window.robotsData && window.robotsData.robots) {
+        console.log('Encyclopedia.js: Found', window.robotsData.robots.length, 'robots in robotsData');
+        robots = [...window.robotsData.robots];
+    }
+    
+    // Try to get any additional robots from localStorage as a fallback
     try {
-        // Look in the main storage key
+        // Check the main storage key
         const mainStorage = localStorage.getItem('tgen_robotics_data');
         if (mainStorage) {
             try {
@@ -121,33 +130,20 @@ function getRobotsFromStorage() {
                 if (data.robots && Array.isArray(data.robots)) {
                     console.log('Encyclopedia.js: Found', data.robots.length, 'robots in localStorage main storage');
                     
-                    // Use only robots from localStorage, skipping default examples
-                    robots = [...data.robots];
+                    // Add robots not already in the array
+                    data.robots.forEach(robotData => {
+                        // Check if this robot is already in the array (avoid duplicates)
+                        const exists = robots.some(robot => 
+                            robot.id === robotData.id || robot.slug === robotData.slug
+                        );
+                        
+                        if (!exists) {
+                            robots.push(robotData);
+                        }
+                    });
                 }
             } catch (e) {
                 console.error('Encyclopedia.js: Error parsing main storage:', e);
-            }
-        }
-        
-        // Also check legacy individual robot entries
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith('robot_')) {
-                try {
-                    const robotData = JSON.parse(localStorage.getItem(key));
-                    
-                    // Check if this robot is already in the array (avoid duplicates)
-                    const exists = robots.some(robot => 
-                        robot.id === robotData.id || robot.slug === robotData.slug
-                    );
-                    
-                    if (!exists) {
-                        robots.push(robotData);
-                    }
-                } catch (e) {
-                    // Ignore parse errors
-                    console.error('Encyclopedia.js: Error parsing robot data:', e);
-                }
             }
         }
     } catch (e) {
@@ -167,10 +163,16 @@ function createRobotCard(robot) {
     card.dataset.id = robot.id;
     
     // Use appropriate image url from different possible sources
-    let imageUrl = 'images/robot-placeholder.jpg';
+    let imageUrl = 'images/robots/robot-placeholder.jpg';
     if (robot.media) {
         if (robot.media.featuredImage && robot.media.featuredImage.url) {
-            imageUrl = robot.media.featuredImage.url;
+            // Fix path if it points to a relative path
+            if (!robot.media.featuredImage.url.startsWith('http')) {
+                imageUrl = robot.media.featuredImage.url;
+            } else {
+                // For external URLs, keep as is
+                imageUrl = robot.media.featuredImage.url;
+            }
         } else if (robot.media.mainImage && robot.media.mainImage.url) {
             imageUrl = robot.media.mainImage.url;
         } else if (robot.media.images && robot.media.images.length > 0) {
@@ -179,7 +181,7 @@ function createRobotCard(robot) {
     }
     
     card.innerHTML = `
-        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="this.src='images/robot-placeholder.jpg'">
+        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="this.src='images/robots/robot-placeholder.jpg'">
         <div class="robot-content">
             <h3 class="robot-title">${robot.name || 'Unnamed Robot'}</h3>
             <p class="robot-desc">${robot.summary || 'No description available.'}</p>
