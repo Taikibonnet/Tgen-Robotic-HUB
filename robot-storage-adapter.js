@@ -1,7 +1,7 @@
 /**
  * Robot Storage Adapter
  * This file contains functions for storing and retrieving robot data
- * It uses localStorage for demo purposes, but could be replaced with a real API
+ * It ensures compatibility between localStorage and the default data in data.js
  */
 
 // Initialize the window.robotStorage object
@@ -28,10 +28,17 @@ window.robotStorage = (function() {
                 throw new Error('No data found');
             }
         } catch (error) {
+            console.log('Initializing default robot data structure');
+            
             // If loading fails or no data exists, create default structure
+            // Use default robots from data.js if available, otherwise empty array
+            const defaultRobots = window.robotsData && Array.isArray(window.robotsData.robots) 
+                ? window.robotsData.robots 
+                : [];
+            
             data = {
-                robots: [],
-                categories: [],
+                robots: defaultRobots,
+                categories: window.robotsData?.categories || [],
                 lastUpdated: new Date().toISOString()
             };
             
@@ -61,37 +68,54 @@ window.robotStorage = (function() {
     return {
         // Initialize data and make it available to the window.robotsData object
         init: function() {
+            // If robotsData doesn't exist yet, create it first (handles when data.js isn't loaded)
+            if (!window.robotsData) {
+                window.robotsData = {
+                    robots: [],
+                    categories: [],
+                    lastUpdated: new Date().toISOString()
+                };
+            }
+            
             const data = initializeData();
             
-            // Create or update window.robotsData
-            window.robotsData = window.robotsData || {};
+            // Update window.robotsData with the data from localStorage
             window.robotsData.robots = data.robots;
             window.robotsData.categories = data.categories;
             window.robotsData.lastUpdated = data.lastUpdated;
             
-            // Add helper methods to window.robotsData
-            window.robotsData.getRobotById = function(id) {
-                return this.robots.find(robot => robot.id === parseInt(id));
-            };
+            // Add helper methods to window.robotsData if they don't exist
+            if (!window.robotsData.getRobotById) {
+                window.robotsData.getRobotById = function(id) {
+                    const numId = parseInt(id);
+                    return this.robots.find(robot => 
+                        robot.id === numId || robot.id === id || robot.slug === id
+                    );
+                };
+            }
             
-            window.robotsData.getRobotBySlug = function(slug) {
-                return this.robots.find(robot => robot.slug === slug);
-            };
+            if (!window.robotsData.getRobotBySlug) {
+                window.robotsData.getRobotBySlug = function(slug) {
+                    return this.robots.find(robot => robot.slug === slug);
+                };
+            }
             
-            window.robotsData.getRelatedRobots = function(id, limit = 3) {
-                const robot = this.getRobotById(id);
-                if (!robot) return [];
-                
-                // Get robots with the same manufacturer or category
-                return this.robots
-                    .filter(r => r.id !== id && (
-                        r.manufacturer.name === robot.manufacturer.name ||
-                        r.categories.some(cat => robot.categories.includes(cat))
-                    ))
-                    .sort(() => Math.random() - 0.5) // Shuffle
-                    .slice(0, limit);
-            };
+            if (!window.robotsData.getRelatedRobots) {
+                window.robotsData.getRelatedRobots = function(id, limit = 3) {
+                    const robot = this.getRobotById(id);
+                    if (!robot) return [];
+                    
+                    // Get robots with the same manufacturer or category
+                    return this.robots
+                        .filter(r => r.id !== id && (
+                            r.manufacturer?.name === robot.manufacturer?.name
+                        ))
+                        .sort(() => Math.random() - 0.5) // Shuffle
+                        .slice(0, limit);
+                };
+            }
             
+            console.log(`Initialized robotsData with ${window.robotsData.robots.length} robots`);
             return data;
         },
         
@@ -108,8 +132,18 @@ window.robotStorage = (function() {
         
         // Add a new robot and save
         addRobotAndSave: function(robot) {
-            // Add the robot to the array
-            window.robotsData.robots.push(robot);
+            // Check if robot already exists
+            const existingIndex = window.robotsData.robots.findIndex(r => 
+                r.id === robot.id || r.slug === robot.slug
+            );
+            
+            if (existingIndex !== -1) {
+                // Update existing robot
+                window.robotsData.robots[existingIndex] = robot;
+            } else {
+                // Add the robot to the array
+                window.robotsData.robots.push(robot);
+            }
             
             // Add any new categories
             if (robot.categories) {
@@ -127,7 +161,9 @@ window.robotStorage = (function() {
         // Update an existing robot and save
         updateRobotAndSave: function(robotId, updatedData) {
             // Find the robot
-            const index = window.robotsData.robots.findIndex(r => r.id === parseInt(robotId));
+            const index = window.robotsData.robots.findIndex(r => 
+                r.id === parseInt(robotId) || r.id === robotId || r.slug === robotId
+            );
             
             if (index === -1) {
                 console.error('Robot not found with ID:', robotId);
@@ -156,7 +192,9 @@ window.robotStorage = (function() {
         // Delete a robot and save
         deleteRobotAndSave: function(robotId) {
             // Find the robot
-            const index = window.robotsData.robots.findIndex(r => r.id === parseInt(robotId));
+            const index = window.robotsData.robots.findIndex(r => 
+                r.id === parseInt(robotId) || r.id === robotId || r.slug === robotId
+            );
             
             if (index === -1) {
                 console.error('Robot not found with ID:', robotId);
@@ -215,3 +253,9 @@ window.robotStorage = (function() {
         }
     };
 })();
+
+// Initialize data when the script loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Robot Storage Adapter: Initializing data');
+    window.robotStorage.init();
+});
