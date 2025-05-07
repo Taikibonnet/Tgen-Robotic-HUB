@@ -5,6 +5,7 @@
 
 // Initialize the encyclopedia when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Encyclopedia.js: Initializing encyclopedia page');
     initEncyclopedia();
 });
 
@@ -15,6 +16,10 @@ function initEncyclopedia() {
     // Initialize the storage adapter
     if (window.robotStorage && typeof window.robotStorage.init === 'function') {
         window.robotStorage.init();
+    } else {
+        console.warn('Encyclopedia.js: Robot storage adapter not found or init function missing');
+        // If robotStorage is not available, make sure robotsData exists
+        ensureRobotsDataExists();
     }
     
     // Load robots
@@ -34,6 +39,43 @@ function initEncyclopedia() {
 }
 
 /**
+ * Ensure robotsData exists even if data.js is not loaded
+ */
+function ensureRobotsDataExists() {
+    if (!window.robotsData) {
+        console.log('Encyclopedia.js: Creating default robotsData object');
+        window.robotsData = {
+            robots: [],
+            categories: [],
+            lastUpdated: new Date().toISOString(),
+            
+            getRobotBySlug: function(slug) {
+                return this.robots.find(robot => robot.slug === slug);
+            },
+            
+            getRobotById: function(id) {
+                const numId = parseInt(id);
+                return this.robots.find(robot => 
+                    robot.id === numId || robot.id === id || robot.slug === id
+                );
+            },
+            
+            getRelatedRobots: function(id, limit = 3) {
+                const robot = this.getRobotById(id);
+                if (!robot) return [];
+                
+                return this.robots
+                    .filter(r => r.id !== id && (
+                        r.manufacturer?.name === robot.manufacturer?.name
+                    ))
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, limit);
+            }
+        };
+    }
+}
+
+/**
  * Load robots from storage and display them
  */
 function loadRobots() {
@@ -45,6 +87,7 @@ function loadRobots() {
     
     // Get robots from various sources
     let robots = getAllRobots();
+    console.log('Encyclopedia.js: Loaded', robots.length, 'robots');
     
     // No robots available
     if (robots.length === 0) {
@@ -70,11 +113,38 @@ function getAllRobots() {
     
     // Get robots from the data.js file if available
     if (window.robotsData && window.robotsData.robots) {
+        console.log('Encyclopedia.js: Found', window.robotsData.robots.length, 'robots in robotsData');
         robots = [...window.robotsData.robots];
     }
     
-    // Get robots directly from localStorage
+    // Get robots directly from localStorage as a fallback
     try {
+        // First try the main storage key
+        const mainStorage = localStorage.getItem('tgen_robotics_data');
+        if (mainStorage) {
+            try {
+                const data = JSON.parse(mainStorage);
+                if (data.robots && Array.isArray(data.robots)) {
+                    console.log('Encyclopedia.js: Found', data.robots.length, 'robots in localStorage main storage');
+                    
+                    // Add robots not already in the array
+                    data.robots.forEach(robotData => {
+                        // Check if this robot is already in the array (avoid duplicates)
+                        const exists = robots.some(robot => 
+                            robot.id === robotData.id || robot.slug === robotData.slug
+                        );
+                        
+                        if (!exists) {
+                            robots.push(robotData);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Encyclopedia.js: Error parsing main storage:', e);
+            }
+        }
+        
+        // Also check legacy individual robot entries
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (key.startsWith('robot_')) {
@@ -91,12 +161,12 @@ function getAllRobots() {
                     }
                 } catch (e) {
                     // Ignore parse errors
-                    console.error('Error parsing robot data:', e);
+                    console.error('Encyclopedia.js: Error parsing robot data:', e);
                 }
             }
         }
     } catch (e) {
-        console.error('Error accessing localStorage:', e);
+        console.error('Encyclopedia.js: Error accessing localStorage:', e);
     }
     
     return robots;
@@ -124,10 +194,10 @@ function createRobotCard(robot) {
     }
     
     card.innerHTML = `
-        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image">
+        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="this.src='images/robot-placeholder.jpg'">
         <div class="robot-content">
-            <h3 class="robot-title">${robot.name}</h3>
-            <p class="robot-desc">${robot.summary}</p>
+            <h3 class="robot-title">${robot.name || 'Unnamed Robot'}</h3>
+            <p class="robot-desc">${robot.summary || 'No description available.'}</p>
             <div class="robot-meta">
                 <span>${robot.manufacturer?.name || 'Unknown Manufacturer'}</span>
             </div>
