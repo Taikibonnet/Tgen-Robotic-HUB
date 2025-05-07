@@ -292,6 +292,70 @@
             text-shadow: 0 0 10px var(--primary);
         }
 
+        /* User dropdown styles */
+        .user-dropdown {
+            position: relative;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 16px;
+            background-color: rgba(32, 227, 178, 0.1);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .user-info:hover {
+            background-color: rgba(32, 227, 178, 0.2);
+        }
+        
+        .user-info span {
+            font-weight: 500;
+        }
+        
+        .user-info i {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            width: 200px;
+            background-color: rgba(25, 25, 25, 0.95);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+        }
+        
+        .dropdown-menu.active {
+            display: block;
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 16px;
+            color: var(--light);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .dropdown-menu a:hover {
+            background-color: rgba(32, 227, 178, 0.1);
+        }
+        
+        .dropdown-menu a i {
+            margin-right: 8px;
+            width: 18px;
+            text-align: center;
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 3rem;
@@ -349,6 +413,7 @@
                 <i class="fas fa-bars"></i>
             </button>
             <div class="auth-buttons">
+                <!-- Authentication buttons will be replaced dynamically by auth.js -->
                 <a href="login.html" class="btn btn-outline">Log In</a>
                 <a href="signup.html" class="btn btn-primary">Sign Up</a>
             </div>
@@ -532,6 +597,9 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="robot-storage-adapter.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>
