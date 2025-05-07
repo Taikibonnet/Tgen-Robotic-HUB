@@ -30,10 +30,13 @@ window.robotStorage = (function() {
         } catch (error) {
             console.log('Initializing default robot data structure');
             
-            // If loading fails or no data exists, create empty structure
-            // Do NOT use default robots from data.js - start with an empty array
+            // If loading fails or no data exists, use the default robots from data.js
+            const defaultRobots = window.robotsData && Array.isArray(window.robotsData.robots) 
+                ? window.robotsData.robots 
+                : [];
+                
             data = {
-                robots: [],
+                robots: defaultRobots,
                 categories: window.robotsData?.categories || [],
                 lastUpdated: new Date().toISOString()
             };
@@ -64,8 +67,9 @@ window.robotStorage = (function() {
     return {
         // Initialize data and make it available to the window.robotsData object
         init: function() {
-            // If robotsData doesn't exist yet, create it first (handles when data.js isn't loaded)
+            // Make sure window.robotsData exists
             if (!window.robotsData) {
+                console.warn('Robot Storage Adapter: robotsData is not defined, creating default');
                 window.robotsData = {
                     robots: [],
                     categories: [],
@@ -73,11 +77,27 @@ window.robotStorage = (function() {
                 };
             }
             
+            // Load data from localStorage or use defaults
             const data = initializeData();
             
-            // Update window.robotsData with the data from localStorage
-            window.robotsData.robots = data.robots;
-            window.robotsData.categories = data.categories;
+            // Important: Always preserve default robots that exist in data.js
+            // Get the default robots from data.js if it exists
+            const defaultRobots = window.robotsData.robots || [];
+            
+            // Merge stored robots with default robots, ensuring no duplicates
+            const robotsToUse = [...defaultRobots];
+            
+            // Add any non-default robots from localStorage
+            data.robots.forEach(storedRobot => {
+                // Skip if this robot already exists in the default array (by ID)
+                if (!defaultRobots.some(dr => dr.id === storedRobot.id)) {
+                    robotsToUse.push(storedRobot);
+                }
+            });
+            
+            // Update window.robotsData with the merged robot data
+            window.robotsData.robots = robotsToUse;
+            window.robotsData.categories = [...new Set([...data.categories, ...(window.robotsData.categories || [])])];
             window.robotsData.lastUpdated = data.lastUpdated;
             
             // Add helper methods to window.robotsData if they don't exist
@@ -112,7 +132,11 @@ window.robotStorage = (function() {
             }
             
             console.log(`Initialized robotsData with ${window.robotsData.robots.length} robots`);
-            return data;
+            
+            // Save the merged data back to localStorage
+            this.save();
+            
+            return window.robotsData;
         },
         
         // Save the current state of window.robotsData
@@ -197,6 +221,16 @@ window.robotStorage = (function() {
                 return false;
             }
             
+            // Get the default robots from data.js
+            const defaultRobots = window.robotsData ? window.robotsData.robots || [] : [];
+            const isDefaultRobot = defaultRobots.some(dr => dr.id === window.robotsData.robots[index].id);
+            
+            // Don't delete default robots
+            if (isDefaultRobot) {
+                console.warn('Cannot delete default robot:', robotId);
+                return false;
+            }
+            
             // Remove the robot
             window.robotsData.robots.splice(index, 1);
             
@@ -214,11 +248,24 @@ window.robotStorage = (function() {
                     throw new Error('Invalid data structure');
                 }
                 
+                // Get default robots
+                const defaultRobots = window.robotsData ? window.robotsData.robots || [] : [];
+                
+                // Keep default robots and add imported robots
+                const combinedRobots = [...defaultRobots];
+                
+                // Add imported robots that aren't default
+                data.robots.forEach(importedRobot => {
+                    if (!defaultRobots.some(dr => dr.id === importedRobot.id)) {
+                        combinedRobots.push(importedRobot);
+                    }
+                });
+                
                 // Update window.robotsData
-                window.robotsData.robots = data.robots;
+                window.robotsData.robots = combinedRobots;
                 
                 // Update categories
-                window.robotsData.categories = data.categories || [];
+                window.robotsData.categories = [...new Set([...window.robotsData.categories, ...(data.categories || [])])];
                 
                 // Save to storage
                 return this.save();
