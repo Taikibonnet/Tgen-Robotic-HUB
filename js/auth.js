@@ -1,596 +1,296 @@
 /**
- * Authentication module for Tgen Robotic HUB
- * Handles user registration, login, and session management
+ * Authentication functionality for Tgen Robotics Hub
+ * This script provides simple user authentication functionality
  */
 
-// User model structure
-class User {
-    constructor(fullName, email, password, interests = []) {
-        this.id = this.generateUserId();
-        this.fullName = fullName;
-        this.email = email;
-        this.password = this.hashPassword(password); // In a real app, this would be properly hashed
-        this.interests = interests;
-        this.created = new Date().toISOString();
-        this.lastLogin = null;
-        this.profilePicture = null;
-        this.bio = '';
-        this.role = 'user'; // Default role (user, editor, admin)
-        this.verified = false;
-    }
+// Initialize auth when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initAuth();
+});
 
-    // Simple ID generator - in a real app, you'd use a proper UUID generator
-    generateUserId() {
-        return 'user_' + Math.random().toString(36).substr(2, 9);
-    }
+// Object to store app state and methods
+window.tgenApp = window.tgenApp || {};
 
-    // Simulate password hashing - in a real app, use a proper hashing library
-    hashPassword(password) {
-        // This is NOT secure, just for demo purposes
-        // In a real application, use bcrypt or a similar library
-        return btoa(password + 'salt_value');
-    }
-
-    // Public profile data (remove sensitive info)
-    getPublicProfile() {
-        const { password, ...publicData } = this;
-        return publicData;
-    }
+/**
+ * Initialize authentication
+ */
+function initAuth() {
+    // Check if user is logged in
+    const user = getLoggedInUser();
+    
+    // Update UI based on auth state
+    updateAuthUI(user);
+    
+    // Setup login form
+    setupLoginForm();
+    
+    // Setup signup form
+    setupSignupForm();
+    
+    // Setup logout functionality
+    setupLogout();
 }
 
-// Authentication service
-class AuthService {
-    constructor() {
-        this.users = this.loadUsers();
-        this.currentUser = this.loadCurrentUser();
-    }
-
-    // Load users from localStorage
-    loadUsers() {
-        const usersJson = localStorage.getItem('tgen_users');
-        return usersJson ? JSON.parse(usersJson) : [];
-    }
-
-    // Save users to localStorage
-    saveUsers() {
-        localStorage.setItem('tgen_users', JSON.stringify(this.users));
-    }
-
-    // Load current user from sessionStorage
-    loadCurrentUser() {
-        const userJson = sessionStorage.getItem('tgen_current_user');
+/**
+ * Get the currently logged in user
+ */
+function getLoggedInUser() {
+    try {
+        const userJson = localStorage.getItem('tgen_current_user');
         return userJson ? JSON.parse(userJson) : null;
-    }
-
-    // Save current user to sessionStorage
-    saveCurrentUser(user) {
-        if (user) {
-            sessionStorage.setItem('tgen_current_user', JSON.stringify(user));
-        } else {
-            sessionStorage.removeItem('tgen_current_user');
-        }
-    }
-
-    // Register a new user
-    register(fullName, email, password, interests = []) {
-        // Check if email already exists
-        if (this.getUserByEmail(email)) {
-            throw new Error('Email already registered');
-        }
-
-        // Create new user
-        const newUser = new User(fullName, email, password, interests);
-        this.users.push(newUser);
-        this.saveUsers();
-
-        return newUser.getPublicProfile();
-    }
-
-    // Log in a user
-    login(email, password, rememberMe = false) {
-        const user = this.getUserByEmail(email);
-        
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        // Check password (this would be a secure comparison in a real app)
-        const hashedPassword = new User('', '', password).hashPassword(password);
-        
-        if (user.password !== hashedPassword) {
-            throw new Error('Invalid password');
-        }
-
-        // Update last login
-        user.lastLogin = new Date().toISOString();
-        this.saveUsers();
-
-        // Set current user
-        this.currentUser = user;
-        this.saveCurrentUser(user.getPublicProfile());
-
-        // If remember me is checked, store in localStorage
-        if (rememberMe) {
-            localStorage.setItem('tgen_remember_user', email);
-        }
-
-        return user.getPublicProfile();
-    }
-
-    // Log out the current user
-    logout() {
-        this.currentUser = null;
-        this.saveCurrentUser(null);
-        localStorage.removeItem('tgen_remember_user');
-    }
-
-    // Get a user by email
-    getUserByEmail(email) {
-        return this.users.find(user => user.email === email);
-    }
-
-    // Get a user by ID
-    getUserById(id) {
-        return this.users.find(user => user.id === id);
-    }
-
-    // Check if a user is logged in
-    isLoggedIn() {
-        return !!this.currentUser;
-    }
-
-    // Update user profile
-    updateProfile(userData) {
-        if (!this.currentUser) {
-            throw new Error('No user logged in');
-        }
-
-        const user = this.getUserById(this.currentUser.id);
-        
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        // Update allowed fields
-        const allowedFields = ['fullName', 'bio', 'interests', 'profilePicture'];
-        
-        allowedFields.forEach(field => {
-            if (userData[field] !== undefined) {
-                user[field] = userData[field];
-            }
-        });
-
-        this.saveUsers();
-        this.currentUser = user;
-        this.saveCurrentUser(user.getPublicProfile());
-
-        return user.getPublicProfile();
-    }
-
-    // Change password
-    changePassword(oldPassword, newPassword) {
-        if (!this.currentUser) {
-            throw new Error('No user logged in');
-        }
-
-        const user = this.getUserById(this.currentUser.id);
-        
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        // Verify old password
-        const hashedOldPassword = new User('', '', oldPassword).hashPassword(oldPassword);
-        
-        if (user.password !== hashedOldPassword) {
-            throw new Error('Current password is incorrect');
-        }
-
-        // Update password
-        user.password = new User('', '', newPassword).hashPassword(newPassword);
-        this.saveUsers();
-
-        return true;
-    }
-
-    // Request password reset (in a real app, this would send an email)
-    requestPasswordReset(email) {
-        const user = this.getUserByEmail(email);
-        
-        if (!user) {
-            // For security reasons, don't reveal if the email exists or not
-            return true;
-        }
-
-        // In a real app, generate a reset token and send an email
-        // For demo purposes, we'll just log it
-        console.log(`Password reset requested for ${email}`);
-        
-        return true;
-    }
-
-    // Check for remembered user
-    checkRememberedUser() {
-        const rememberedEmail = localStorage.getItem('tgen_remember_user');
-        
-        if (rememberedEmail) {
-            const user = this.getUserByEmail(rememberedEmail);
-            
-            if (user) {
-                // Auto login (in a real app, you'd use a secure token instead)
-                this.currentUser = user;
-                this.saveCurrentUser(user.getPublicProfile());
-                return user.getPublicProfile();
-            }
-        }
-        
+    } catch (e) {
+        console.error('Error retrieving user:', e);
         return null;
     }
 }
 
-// Password validation utility
-class PasswordValidator {
-    // Check password strength (returns 0-5)
-    static checkStrength(password) {
-        let strength = 0;
-        
-        if (password.length >= 8) strength += 1;
-        if (password.match(/[A-Z]/)) strength += 1;
-        if (password.match(/[a-z]/)) strength += 1;
-        if (password.match(/[0-9]/)) strength += 1;
-        if (password.match(/[^A-Za-z0-9]/)) strength += 1;
-        
-        return strength;
-    }
-
-    // Get text description of password strength
-    static getStrengthText(strength) {
-        const descriptions = [
-            'Very Weak',
-            'Weak',
-            'Medium',
-            'Strong',
-            'Very Strong',
-            'Excellent'
-        ];
-        
-        return descriptions[strength] || descriptions[0];
-    }
-
-    // Check if password meets minimum requirements
-    static meetsRequirements(password) {
-        // Require at least 3 out of 5 strength points
-        return this.checkStrength(password) >= 3;
+/**
+ * Set current user in localStorage
+ */
+function setCurrentUser(user) {
+    try {
+        if (user) {
+            localStorage.setItem('tgen_current_user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('tgen_current_user');
+        }
+        return true;
+    } catch (e) {
+        console.error('Error setting user:', e);
+        return false;
     }
 }
 
-// Initialize auth service
-const authService = new AuthService();
-
-// Check for remembered user on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const rememberedUser = authService.checkRememberedUser();
-    
-    if (rememberedUser) {
-        // User is auto-logged in
-        console.log(`Welcome back, ${rememberedUser.fullName}`);
-        
-        // Update UI to reflect logged-in state
-        updateAuthUI(true);
-    } else {
-        // No remembered user
-        updateAuthUI(false);
-    }
-});
-
-// Update UI based on authentication state
-function updateAuthUI(isLoggedIn) {
-    const authButtons = document.querySelector('.auth-buttons');
-    
-    if (!authButtons) return;
-    
-    if (isLoggedIn) {
-        // User is logged in - update UI
-        const user = authService.currentUser;
-        
-        // Replace login/signup buttons with user menu
-        authButtons.innerHTML = `
-            <div class="user-menu">
-                <div class="user-avatar">
-                    <img src="${user.profilePicture || 'images/default-avatar.png'}" alt="${user.fullName}">
-                </div>
+/**
+ * Update UI based on authentication state
+ */
+function updateAuthUI(user) {
+    // If user is logged in
+    if (user) {
+        // Hide login/signup buttons, show user info
+        const authButtonsContainer = document.querySelector('.auth-buttons');
+        if (authButtonsContainer) {
+            // Replace login/signup buttons with user dropdown
+            authButtonsContainer.innerHTML = `
                 <div class="user-dropdown">
-                    <ul>
-                        <li><a href="profile.html">My Profile</a></li>
-                        <li><a href="dashboard.html">Dashboard</a></li>
-                        <li><a href="#" id="logoutButton">Log Out</a></li>
-                    </ul>
+                    <div class="user-info">
+                        <span>${user.firstName}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+                        ${user.role === 'admin' ? '<a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>' : ''}
+                        <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+            
+            // Add event listeners for dropdown and logout
+            const userInfo = document.querySelector('.user-info');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            if (userInfo && dropdownMenu) {
+                // Toggle dropdown on click
+                userInfo.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('active');
+                    const icon = userInfo.querySelector('i');
+                    if (icon) {
+                        icon.style.transform = dropdownMenu.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+                    }
+                });
+                
+                // Hide dropdown when clicking elsewhere
+                document.addEventListener('click', function() {
+                    dropdownMenu.classList.remove('active');
+                    const icon = userInfo.querySelector('i');
+                    if (icon) {
+                        icon.style.transform = 'rotate(0)';
+                    }
+                });
+            }
+            
+            if (logoutBtn) {
+                // Logout handler
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+        }
         
-        // Add logout handler
-        document.getElementById('logoutButton').addEventListener('click', function(e) {
-            e.preventDefault();
-            authService.logout();
-            window.location.href = 'index.html';
+        // Show/hide admin sections based on user role
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(el => {
+            el.style.display = user.role === 'admin' ? 'block' : 'none';
+        });
+        
+        // Show admin actions
+        const adminActions = document.querySelectorAll('.admin-actions');
+        adminActions.forEach(el => {
+            el.style.display = user.role === 'admin' ? 'flex' : 'none';
         });
     } else {
-        // User is not logged in - ensure default buttons
-        authButtons.innerHTML = `
-            <a href="login.html" class="btn btn-outline">Log In</a>
-            <a href="signup.html" class="btn btn-primary">Sign Up</a>
-        `;
+        // Show login/signup buttons if user is not logged in
+        const authButtonsContainer = document.querySelector('.auth-buttons');
+        if (authButtonsContainer) {
+            authButtonsContainer.innerHTML = `
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            `;
+        }
+        
+        // Hide admin sections
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        // Hide admin actions
+        const adminActions = document.querySelectorAll('.admin-actions');
+        adminActions.forEach(el => {
+            el.style.display = 'none';
+        });
     }
 }
 
-// Form handling for signup page
-if (document.getElementById('signupForm')) {
-    const signupForm = document.getElementById('signupForm');
-    const passwordInput = document.getElementById('password');
-    const passwordStrength = document.getElementById('passwordStrength');
-    const strengthText = document.getElementById('strengthText');
+/**
+ * Setup login form
+ */
+function setupLoginForm() {
+    const loginForm = document.getElementById('login-form');
     
-    // Password strength meter
-    passwordInput.addEventListener('input', function() {
-        const password = passwordInput.value;
-        const strength = PasswordValidator.checkStrength(password);
-        const strengthDescription = PasswordValidator.getStrengthText(strength);
-        
-        // Update strength meter
-        passwordStrength.className = 'strength-meter';
-        
-        if (strength > 0) {
-            if (strength <= 2) passwordStrength.classList.add('weak');
-            else if (strength <= 3) passwordStrength.classList.add('medium');
-            else if (strength <= 4) passwordStrength.classList.add('strong');
-            else passwordStrength.classList.add('very-strong');
-            
-            strengthText.textContent = strengthDescription;
-        } else {
-            strengthText.textContent = '';
-        }
-    });
-    
-    // Form submission
-    signupForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        try {
-            // Get form values
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            // Get selected interests
-            const interestsSelect = document.getElementById('interests');
-            const selectedInterests = Array.from(interestsSelect.selectedOptions).map(option => option.value);
-            
-            // Validate password match
-            if (password !== confirmPassword) {
-                throw new Error('Passwords do not match');
-            }
-            
-            // Validate password strength
-            if (!PasswordValidator.meetsRequirements(password)) {
-                throw new Error('Password does not meet security requirements');
-            }
-            
-            // Terms agreement
-            const termsAgreement = document.getElementById('termsAgreement');
-            if (!termsAgreement.checked) {
-                throw new Error('You must agree to the terms to continue');
-            }
-            
-            // Register user
-            const newUser = authService.register(fullName, email, password, selectedInterests);
-            
-            // Auto login
-            authService.login(email, password);
-            
-            // Show success message
-            alert('Account created successfully! Welcome to TGen Robotic HUB!');
-            
-            // Redirect to dashboard
-            window.location.href = 'index.html';
-            
-        } catch (error) {
-            // Show error message
-            alert(`Registration failed: ${error.message}`);
-        }
-    });
-}
-
-// Form handling for login page
-if (document.getElementById('loginForm')) {
-    const loginForm = document.getElementById('loginForm');
+    if (!loginForm) return;
     
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        try {
-            // Get form values
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe')?.checked || false;
-            
-            // Login user
-            authService.login(email, password, rememberMe);
-            
-            // Show success message
-            alert('Login successful! Welcome back to TGen Robotic HUB!');
-            
-            // Redirect to dashboard
-            window.location.href = 'index.html';
-            
-        } catch (error) {
-            // Show error message
-            alert(`Login failed: ${error.message}`);
-        }
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        // Simple login validation (in a real app, this would validate against a server)
+        login(email, password);
     });
 }
 
-// Form handling for password reset page
-if (document.getElementById('resetPasswordForm')) {
-    const resetForm = document.getElementById('resetPasswordForm');
+/**
+ * Login a user
+ */
+function login(email, password) {
+    // In a real app, this would validate credentials against a server
+    // For demo purposes, we'll use a simple validation
     
-    resetForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+    // Check for admin account
+    if (email === 'admin@example.com' && password === 'password') {
+        const user = {
+            id: 1,
+            email: 'admin@example.com',
+            firstName: 'Admin',
+            lastName: 'User',
+            role: 'admin'
+        };
         
-        try {
-            // Get email
-            const email = document.getElementById('email').value;
-            
-            // Request password reset
-            authService.requestPasswordReset(email);
-            
-            // Show success message (always show success for security reasons)
-            alert('If an account with this email exists, password reset instructions have been sent. Please check your inbox.');
-            
-            // Redirect to login
-            window.location.href = 'login.html';
-            
-        } catch (error) {
-            // Show generic error message for security
-            alert('Unable to process your request. Please try again later.');
-        }
-    });
-}
-
-// Profile page functions
-if (document.getElementById('profileForm')) {
-    const profileForm = document.getElementById('profileForm');
-    const currentUser = authService.currentUser;
-    
-    // Populate form with current user data
-    if (currentUser) {
-        document.getElementById('fullName').value = currentUser.fullName || '';
-        document.getElementById('email').value = currentUser.email || '';
-        document.getElementById('bio').value = currentUser.bio || '';
+        setCurrentUser(user);
         
-        // Set selected interests
-        if (currentUser.interests && Array.isArray(currentUser.interests)) {
-            const interestsSelect = document.getElementById('interests');
-            
-            for (let option of interestsSelect.options) {
-                if (currentUser.interests.includes(option.value)) {
-                    option.selected = true;
-                }
-            }
-        }
-        
-        // Show profile picture if available
-        const profilePicture = document.getElementById('profilePicture');
-        if (profilePicture && currentUser.profilePicture) {
-            document.getElementById('currentProfilePicture').src = currentUser.profilePicture;
-        }
+        // Redirect after successful login
+        window.location.href = 'admin-dashboard.html';
+        return true;
     }
     
-    // Form submission
-    profileForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+    // Check for regular user account
+    if (email === 'user@example.com' && password === 'password') {
+        const user = {
+            id: 2,
+            email: 'user@example.com',
+            firstName: 'Regular',
+            lastName: 'User',
+            role: 'user'
+        };
         
-        try {
-            // Get form values
-            const fullName = document.getElementById('fullName').value;
-            const bio = document.getElementById('bio').value;
-            
-            // Get selected interests
-            const interestsSelect = document.getElementById('interests');
-            const selectedInterests = Array.from(interestsSelect.selectedOptions).map(option => option.value);
-            
-            // Get profile picture
-            const profilePicture = document.getElementById('profilePicture');
-            let pictureUrl = currentUser.profilePicture || null;
-            
-            if (profilePicture.files && profilePicture.files[0]) {
-                // In a real app, you would upload this to a server
-                // For demo purposes, we'll use a FileReader to get a data URL
-                const reader = new FileReader();
-                
-                reader.onloadend = function() {
-                    pictureUrl = reader.result;
-                    
-                    // Update profile
-                    const updatedUser = authService.updateProfile({
-                        fullName,
-                        bio,
-                        interests: selectedInterests,
-                        profilePicture: pictureUrl
-                    });
-                    
-                    // Show success message
-                    alert('Profile updated successfully!');
-                    
-                    // Refresh page
-                    window.location.reload();
-                };
-                
-                reader.readAsDataURL(profilePicture.files[0]);
-            } else {
-                // Update profile without changing picture
-                const updatedUser = authService.updateProfile({
-                    fullName,
-                    bio,
-                    interests: selectedInterests,
-                    profilePicture: pictureUrl
-                });
-                
-                // Show success message
-                alert('Profile updated successfully!');
-                
-                // Refresh page
-                window.location.reload();
-            }
-            
-        } catch (error) {
-            // Show error message
-            alert(`Profile update failed: ${error.message}`);
-        }
-    });
-}
-
-// Change password form
-if (document.getElementById('changePasswordForm')) {
-    const passwordForm = document.getElementById('changePasswordForm');
+        setCurrentUser(user);
+        
+        // Redirect after successful login
+        window.location.href = 'encyclopedia.html';
+        return true;
+    }
     
-    passwordForm.addEventListener('submit', function(e) {
+    // If we get here, login failed
+    alert('Invalid email or password. Try admin@example.com / password or user@example.com / password');
+    return false;
+}
+
+/**
+ * Setup signup form
+ */
+function setupSignupForm() {
+    const signupForm = document.getElementById('signup-form');
+    
+    if (!signupForm) return;
+    
+    signupForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        try {
-            // Get form values
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            // Validate password match
-            if (newPassword !== confirmPassword) {
-                throw new Error('New passwords do not match');
-            }
-            
-            // Validate password strength
-            if (!PasswordValidator.meetsRequirements(newPassword)) {
-                throw new Error('New password does not meet security requirements');
-            }
-            
-            // Change password
-            authService.changePassword(currentPassword, newPassword);
-            
-            // Show success message
-            alert('Password changed successfully!');
-            
-            // Clear form
-            passwordForm.reset();
-            
-        } catch (error) {
-            // Show error message
-            alert(`Password change failed: ${error.message}`);
-        }
+        const firstName = document.getElementById('signup-first-name').value;
+        const lastName = document.getElementById('signup-last-name').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        
+        // Simple signup (in a real app, this would register with a server)
+        signup(firstName, lastName, email, password);
     });
 }
 
-// Add more handlers for other auth-related forms as needed
+/**
+ * Register a new user
+ */
+function signup(firstName, lastName, email, password) {
+    // In a real app, this would register the user with a server
+    // For demo purposes, we'll simulate a successful registration
+    
+    const user = {
+        id: Math.floor(Math.random() * 1000) + 3, // Random ID (3+)
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        role: 'user' // New users are always regular users
+    };
+    
+    setCurrentUser(user);
+    
+    // Redirect after successful signup
+    window.location.href = 'encyclopedia.html';
+    return true;
+}
 
-// Export auth service for use in other modules
-window.authService = authService;
+/**
+ * Logout the current user
+ */
+function logout() {
+    setCurrentUser(null);
+    window.location.reload();
+}
+
+/**
+ * Setup logout functionality
+ */
+function setupLogout() {
+    const logoutLinks = document.querySelectorAll('.logout-link');
+    
+    logoutLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+    });
+}
+
+// Add methods to the global app object for external access
+window.tgenApp.getCurrentUser = getLoggedInUser;
+window.tgenApp.login = login;
+window.tgenApp.logout = logout;
+window.tgenApp.signup = signup;
+window.tgenApp.isAdmin = function() {
+    const user = getLoggedInUser();
+    return user && user.role === 'admin';
+};
