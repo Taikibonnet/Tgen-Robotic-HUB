@@ -30,14 +30,10 @@ window.robotStorage = (function() {
         } catch (error) {
             console.log('Initializing default robot data structure');
             
-            // If loading fails or no data exists, create default structure
-            // Use default robots from data.js if available, otherwise empty array
-            const defaultRobots = window.robotsData && Array.isArray(window.robotsData.robots) 
-                ? window.robotsData.robots 
-                : [];
-            
+            // If loading fails or no data exists, create empty structure
+            // Do NOT use default robots from data.js - start with an empty array
             data = {
-                robots: defaultRobots,
+                robots: [],
                 categories: window.robotsData?.categories || [],
                 lastUpdated: new Date().toISOString()
             };
