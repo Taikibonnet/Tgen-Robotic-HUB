@@ -57,8 +57,29 @@ function displayMainImage(robot) {
     const mainImagePlaceholder = document.querySelector('.main-image-placeholder');
     if (!mainImagePlaceholder) return;
     
-    // Check if robot has media data with a featured or main image
-    if (robot.media) {
+    // Use robotMedia to get image URL if available
+    if (window.robotMedia && typeof window.robotMedia.getImageUrl === 'function') {
+        const imageUrl = window.robotMedia.getImageUrl(robot);
+        
+        if (imageUrl) {
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = robot.name;
+            img.onerror = function() {
+                if (window.robotMedia && typeof window.robotMedia.handleImageError === 'function') {
+                    window.robotMedia.handleImageError(img);
+                } else {
+                    img.src = 'images/robots/robot-placeholder.jpg';
+                }
+            };
+            
+            mainImagePlaceholder.innerHTML = '';
+            mainImagePlaceholder.appendChild(img);
+            return;
+        }
+    }
+    // Fallback implementation if robotMedia not available
+    else if (robot.media) {
         let mainImageUrl = '';
         
         // Check different possible image sources based on data structure
@@ -70,11 +91,29 @@ function displayMainImage(robot) {
             mainImageUrl = robot.media.images[0].url;
         }
         
+        // Fix path for non-admin users
+        if (mainImageUrl && !mainImageUrl.startsWith('http') && !mainImageUrl.startsWith('images/robots/')) {
+            if (mainImageUrl.startsWith('images/')) {
+                const parts = mainImageUrl.split('/');
+                if (parts.length >= 2 && parts[1] !== 'robots') {
+                    mainImageUrl = 'images/robots/' + parts[parts.length - 1];
+                }
+            } else if (mainImageUrl.startsWith('/')) {
+                mainImageUrl = 'images/robots/' + mainImageUrl.substring(1);
+            } else {
+                mainImageUrl = 'images/robots/' + mainImageUrl;
+            }
+        }
+        
         // If we found an image, display it
         if (mainImageUrl) {
             const img = document.createElement('img');
             img.src = mainImageUrl;
             img.alt = robot.name;
+            img.onerror = function() {
+                this.src = 'images/robots/robot-placeholder.jpg';
+            };
+            
             mainImagePlaceholder.innerHTML = '';
             mainImagePlaceholder.appendChild(img);
             return;
@@ -83,7 +122,7 @@ function displayMainImage(robot) {
     
     // If no image was found or displayed, use placeholder
     mainImagePlaceholder.innerHTML = `
-        <img src="images/robot-placeholder.jpg" alt="${robot.name || 'Robot'}" />
+        <img src="images/robots/robot-placeholder.jpg" alt="${robot.name || 'Robot'}" />
     `;
 }
 
@@ -106,14 +145,47 @@ function displayGallery(robot) {
         for (let i = startIndex; i < robot.media.images.length; i++) {
             const image = robot.media.images[i];
             
+            // Fix image path for non-admin users
+            let imageUrl = image.url;
+            
+            if (window.robotMedia && typeof window.robotMedia.fixImagePath === 'function') {
+                imageUrl = window.robotMedia.fixImagePath(image.url);
+            } else if (!imageUrl.startsWith('http') && !imageUrl.startsWith('images/robots/')) {
+                if (imageUrl.startsWith('images/')) {
+                    const parts = imageUrl.split('/');
+                    if (parts.length >= 2 && parts[1] !== 'robots') {
+                        imageUrl = 'images/robots/' + parts[parts.length - 1];
+                    }
+                } else if (imageUrl.startsWith('/')) {
+                    imageUrl = 'images/robots/' + imageUrl.substring(1);
+                } else {
+                    imageUrl = 'images/robots/' + imageUrl;
+                }
+            }
+            
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item';
             galleryItem.dataset.index = i;
             
-            galleryItem.innerHTML = `
-                <img src="${image.url}" alt="${image.alt || robot.name}" />
-                ${image.caption ? `<div class="gallery-caption">${image.caption}</div>` : ''}
-            `;
+            const imgElement = document.createElement('img');
+            imgElement.src = imageUrl;
+            imgElement.alt = image.alt || robot.name;
+            imgElement.onerror = function() {
+                if (window.robotMedia && typeof window.robotMedia.handleImageError === 'function') {
+                    window.robotMedia.handleImageError(this);
+                } else {
+                    this.src = 'images/robots/robot-placeholder.jpg';
+                }
+            };
+            
+            galleryItem.appendChild(imgElement);
+            
+            if (image.caption) {
+                const captionDiv = document.createElement('div');
+                captionDiv.className = 'gallery-caption';
+                captionDiv.textContent = image.caption;
+                galleryItem.appendChild(captionDiv);
+            }
             
             galleryContainer.appendChild(galleryItem);
         }
@@ -146,57 +218,65 @@ function displayVideos(robot) {
             videoItem.className = 'video-item';
             
             let videoContent = '';
+            let videoUrl = '';
             
-            // Handle different video types
-            if (video.type === 'youtube' && video.url) {
-                // Extract YouTube video ID
-                const videoId = getYouTubeVideoId(video.url);
-                if (videoId) {
+            // Use robotMedia helper if available
+            if (window.robotMedia && typeof window.robotMedia.getVideoUrl === 'function' && video.url) {
+                videoUrl = window.robotMedia.getVideoUrl({ media: { videos: [video] } });
+            } 
+            // Fallback if robotMedia not available
+            else {
+                // Handle different video types
+                if (video.type === 'youtube' && video.url) {
+                    // Extract YouTube video ID
+                    const videoId = getYouTubeVideoId(video.url);
+                    if (videoId) {
+                        videoUrl = `https://www.youtube.com/embed/${videoId}`;
+                    }
+                } else if (video.type === 'mp4' && video.url) {
+                    videoUrl = video.url;
+                } else if (video.type === 'vimeo' && video.url) {
+                    // Extract Vimeo video ID
+                    const videoId = getVimeoVideoId(video.url);
+                    if (videoId) {
+                        videoUrl = `https://player.vimeo.com/video/${videoId}`;
+                    }
+                } else if (video.type === 'external' && video.url) {
+                    videoUrl = video.url;
+                }
+            }
+            
+            // Create appropriate video element based on URL
+            if (videoUrl) {
+                if (videoUrl.includes('youtube.com/embed/') || videoUrl.includes('player.vimeo.com/')) {
                     videoContent = `
                         <div class="video-wrapper">
                             <iframe 
-                                src="https://www.youtube.com/embed/${videoId}" 
+                                src="${videoUrl}" 
                                 frameborder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                 allowfullscreen
                             ></iframe>
                         </div>
                     `;
-                }
-            } else if (video.type === 'mp4' && video.url) {
-                videoContent = `
-                    <div class="video-wrapper">
-                        <video controls>
-                            <source src="${video.url}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                `;
-            } else if (video.type === 'vimeo' && video.url) {
-                // Extract Vimeo video ID
-                const videoId = getVimeoVideoId(video.url);
-                if (videoId) {
+                } else if (video.type === 'mp4') {
                     videoContent = `
                         <div class="video-wrapper">
-                            <iframe 
-                                src="https://player.vimeo.com/video/${videoId}" 
-                                frameborder="0" 
-                                allow="autoplay; fullscreen; picture-in-picture" 
-                                allowfullscreen
-                            ></iframe>
+                            <video controls>
+                                <source src="${videoUrl}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    `;
+                } else {
+                    videoContent = `
+                        <div class="video-wrapper">
+                            <a href="${videoUrl}" target="_blank" class="video-link">
+                                <i class="fas fa-video"></i> Watch Video
+                            </a>
                         </div>
                     `;
                 }
-            } else if (video.type === 'external' && video.url) {
-                videoContent = `
-                    <div class="video-wrapper">
-                        <iframe 
-                            src="${video.url}" 
-                            frameborder="0" 
-                            allowfullscreen
-                        ></iframe>
-                    </div>
-                `;
             }
             
             // Add video info
@@ -365,7 +445,7 @@ function getYouTubeVideoId(url) {
     if (!url) return null;
     
     // Try to match YouTube URL patterns
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\.be\/)([^\"&?\\/\\s]{11})/i;
     const match = url.match(regex);
     
     return match ? match[1] : null;
