@@ -1,16 +1,177 @@
 {
-  "robots": [],
-  "categories": [
-    "Humanoid",
-    "Industrial",
-    "Medical",
-    "Educational",
-    "Entertainment",
-    "Military",
-    "Agricultural",
-    "Household",
-    "Service",
-    "Research"
+  "robots": [
+    {
+      "id": 1,
+      "name": "Spot",
+      "slug": "spot",
+      "manufacturer": {
+        "name": "Boston Dynamics",
+        "country": "USA",
+        "website": "https://www.bostondynamics.com"
+      },
+      "yearIntroduced": 2019,
+      "categories": ["Quadruped", "Mobile Robot"],
+      "summary": "Nimble robot dog that can navigate terrain that wheeled robots cannot.",
+      "description": "Spot is a four-legged robot designed for industrial inspection and data collection. It's battery-powered and can operate for about 90 minutes on a charge. Spot can climb stairs, traverse rough terrain, and carry payloads up to 14 kg. It's equipped with cameras and sensors that allow it to perceive and navigate its environment autonomously.",
+      "specifications": {
+        "physical": {
+          "height": {
+            "value": 0.84,
+            "unit": "m"
+          },
+          "weight": {
+            "value": 32.5,
+            "unit": "kg"
+          }
+        },
+        "performance": {
+          "batteryRuntime": 90,
+          "speed": {
+            "value": 1.6,
+            "unit": "m/s"
+          }
+        }
+      },
+      "media": {
+        "featuredImage": {
+          "url": "images/robots/spot.jpg",
+          "alt": "Boston Dynamics Spot robot"
+        },
+        "images": [
+          {
+            "url": "images/robots/spot-side.jpg",
+            "alt": "Side view of Spot robot",
+            "caption": "Spot can traverse various terrains"
+          }
+        ],
+        "videos": [
+          {
+            "type": "url",
+            "url": "https://www.youtube.com/watch?v=wlkCQXHEgjA",
+            "title": "Spot in Action",
+            "description": "See how Spot moves and operates"
+          }
+        ]
+      },
+      "status": "published",
+      "createdAt": "2025-05-01T00:00:00.000Z",
+      "updatedAt": "2025-05-01T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Atlas",
+      "slug": "atlas",
+      "manufacturer": {
+        "name": "Boston Dynamics",
+        "country": "USA",
+        "website": "https://www.bostondynamics.com"
+      },
+      "yearIntroduced": 2013,
+      "categories": ["Humanoid", "Bipedal"],
+      "summary": "Advanced humanoid robot designed to perform dynamic movements and tasks.",
+      "description": "Atlas is a humanoid robot developed by Boston Dynamics. It stands at about 1.5 meters tall and weighs around 80 kg. Atlas is known for its impressive mobility and agility, capable of performing backflips, parkour, and various dance routines. It uses hydraulic actuation and has 28 degrees of freedom. Atlas is designed to push the limits of whole-body mobility.",
+      "specifications": {
+        "physical": {
+          "height": {
+            "value": 1.5,
+            "unit": "m"
+          },
+          "weight": {
+            "value": 80,
+            "unit": "kg"
+          }
+        },
+        "performance": {
+          "batteryRuntime": 60,
+          "speed": {
+            "value": 1.5,
+            "unit": "m/s"
+          }
+        }
+      },
+      "media": {
+        "featuredImage": {
+          "url": "images/robots/atlas.jpg",
+          "alt": "Boston Dynamics Atlas robot"
+        },
+        "images": [
+          {
+            "url": "images/robots/atlas-jump.jpg",
+            "alt": "Atlas performing a jump",
+            "caption": "Atlas can perform dynamic movements like jumps and flips"
+          }
+        ],
+        "videos": [
+          {
+            "type": "url",
+            "url": "https://www.youtube.com/watch?v=tF4DML7FIWk",
+            "title": "Atlas Dance",
+            "description": "Atlas performing a choreographed dance routine"
+          }
+        ]
+      },
+      "status": "published",
+      "createdAt": "2025-05-01T00:00:00.000Z",
+      "updatedAt": "2025-05-01T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "name": "ANYmal",
+      "slug": "anymal",
+      "manufacturer": {
+        "name": "ANYbotics",
+        "country": "Switzerland",
+        "website": "https://www.anybotics.com"
+      },
+      "yearIntroduced": 2016,
+      "categories": ["Quadruped", "Industrial"],
+      "summary": "Autonomous legged robot designed for industrial inspection tasks.",
+      "description": "ANYmal is a quadrupedal robot designed for autonomous operation in challenging environments. It can navigate stairs, steps, and gaps, making it ideal for inspection in industrial facilities. ANYmal is equipped with various sensors, including LiDAR and cameras, enabling it to create maps of its environment and operate autonomously. The robot is designed for industrial applications such as routine inspections in oil and gas plants or power stations.",
+      "specifications": {
+        "physical": {
+          "height": {
+            "value": 0.7,
+            "unit": "m"
+          },
+          "weight": {
+            "value": 50,
+            "unit": "kg"
+          }
+        },
+        "performance": {
+          "batteryRuntime": 120,
+          "speed": {
+            "value": 1.0,
+            "unit": "m/s"
+          }
+        }
+      },
+      "media": {
+        "featuredImage": {
+          "url": "images/robots/anymal.jpg",
+          "alt": "ANYbotics ANYmal robot"
+        },
+        "images": [
+          {
+            "url": "images/robots/anymal-inspection.jpg",
+            "alt": "ANYmal performing an inspection",
+            "caption": "ANYmal is designed for industrial inspection tasks"
+          }
+        ],
+        "videos": [
+          {
+            "type": "url",
+            "url": "https://www.youtube.com/watch?v=bnKOeMoibLU",
+            "title": "ANYmal in Action",
+            "description": "See ANYmal navigate challenging industrial environments"
+          }
+        ]
+      },
+      "status": "published",
+      "createdAt": "2025-05-01T00:00:00.000Z",
+      "updatedAt": "2025-05-01T00:00:00.000Z"
+    }
   ],
-  "lastUpdated": "2025-05-07T15:42:00Z"
+  "categories": ["Quadruped", "Mobile Robot", "Humanoid", "Bipedal", "Industrial"],
+  "lastUpdated": "2025-05-01T00:00:00.000Z"
 }
