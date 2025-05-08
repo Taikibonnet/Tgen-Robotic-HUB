@@ -48,8 +48,18 @@ window.robotsData = {
             ))
             .sort(() => Math.random() - 0.5)
             .slice(0, limit);
+    },
+    
+    // Clear all robots (for debugging)
+    clearRobots: function() {
+        this.robots = [];
+        console.log("Cleared all robots from memory");
+        return true;
     }
 };
+
+// Force clear robots array on initial load
+window.robotsData.robots = [];
 
 // Log that the data has been initialized with an empty robot array
 console.log("Robot data initialized with empty robots array. Data will be loaded from GitHub.");
