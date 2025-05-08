@@ -4,6 +4,9 @@
  * It ensures compatibility between localStorage and GitHub storage
  */
 
+// Immediately clear any existing localStorage data on load to prevent old robots from appearing
+localStorage.removeItem('tgen_robotics_data');
+
 // Initialize the window.robotStorage object
 window.robotStorage = (function() {
     // Private storage key
@@ -114,6 +117,11 @@ window.robotStorage = (function() {
                 window.robotsData.lastUpdated = data.lastUpdated;
             }
             
+            // Ensure robots array is an array (not null or undefined)
+            if (!Array.isArray(window.robotsData.robots)) {
+                window.robotsData.robots = [];
+            }
+            
             // Add helper methods to window.robotsData if they don't exist
             if (!window.robotsData.getRobotById) {
                 window.robotsData.getRobotById = function(id) {
@@ -142,6 +150,14 @@ window.robotStorage = (function() {
                         ))
                         .sort(() => Math.random() - 0.5) // Shuffle
                         .slice(0, limit);
+                };
+            }
+            
+            if (!window.robotsData.clearRobots) {
+                window.robotsData.clearRobots = function() {
+                    this.robots = [];
+                    console.log("Cleared all robots from memory");
+                    return true;
                 };
             }
             
@@ -314,9 +330,6 @@ window.robotStorage = (function() {
         }
     };
 })();
-
-// Immediately clear any existing localStorage data on load to prevent old robots from appearing
-localStorage.removeItem('tgen_robotics_data');
 
 // Initialize data when the script loads
 document.addEventListener('DOMContentLoaded', function() {
