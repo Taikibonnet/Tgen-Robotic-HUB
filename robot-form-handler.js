@@ -446,7 +446,7 @@ function getThumbnailForVideoUrl(url) {
     if (!url) return '';
     
     // YouTube
-    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const youtubeMatch = url.match(youtubeRegex);
     
     if (youtubeMatch && youtubeMatch[1]) {
@@ -735,19 +735,21 @@ function createRobotDataObject(formData) {
     const robotId = robotForm?.getAttribute('data-robot-id') || 
                    Math.floor(Math.random() * 10000) + 100; // Simple ID generation
     
-    // Process featured image - now using base64 directly
-    let featuredImageData = null;
-    if (formData.media.featuredImage) {
-        featuredImageData = formData.media.featuredImage;
-    } else {
-        featuredImageData = 'images/robot-placeholder.jpg';
-    }
+    // Process the media
+    let featuredImageData = {
+        url: formData.media.featuredImage || 'images/robot-placeholder.jpg',
+        alt: formData.basic.name
+    };
     
-    // Process additional images - now using base64 directly
-    const additionalImagesData = formData.media.additionalImages;
-    
-    // Process videos - now persisting properly
-    const videosData = formData.media.videos;
+    // Process additional images
+    const additionalImages = [];
+    formData.media.additionalImages.forEach((imageUrl, index) => {
+        additionalImages.push({
+            url: imageUrl,
+            alt: `${formData.basic.name} image ${index + 1}`,
+            caption: ''
+        });
+    });
     
     // Construct the complete robot data object
     const robotData = {
@@ -771,8 +773,8 @@ function createRobotDataObject(formData) {
         },
         media: {
             featuredImage: featuredImageData,
-            images: additionalImagesData,
-            videos: videosData
+            images: additionalImages,
+            videos: formData.media.videos
         },
         createdAt: dateStr,
         updatedAt: dateStr
@@ -784,44 +786,55 @@ function createRobotDataObject(formData) {
 /**
  * Save robot data to storage
  */
-function saveRobot() {
-    // Collect form data
-    const formData = collectFormData();
-    
-    // Validate required fields
-    if (!formData.basic.name || !formData.basic.manufacturerName || !formData.basic.summary) {
-        alert('Please fill in all required fields (Name, Manufacturer, and Summary)');
-        return;
-    }
-    
-    // Get the robot ID if editing an existing robot
-    const robotForm = document.getElementById('robot-form');
-    const robotId = robotForm?.getAttribute('data-robot-id');
-    
-    // Create robot data object
-    const robotData = createRobotDataObject(formData);
-    
-    let success = false;
-    
-    // Save to storage
-    if (robotId) {
-        // Updating existing robot
-        success = window.robotStorage.updateRobotAndSave(robotId, robotData);
-    } else {
-        // Adding new robot
-        success = window.robotStorage.addRobotAndSave(robotData);
-    }
-    
-    if (success) {
-        alert(robotId ? 'Robot updated successfully!' : 'Robot added successfully!');
-        // Close the modal
-        closeModal();
-        // Reload robots to update the UI
-        if (typeof loadRobots === 'function') {
-            loadRobots();
+async function saveRobot() {
+    try {
+        // Collect form data
+        const formData = collectFormData();
+        
+        // Validate required fields
+        if (!formData.basic.name || !formData.basic.manufacturerName || !formData.basic.summary) {
+            alert('Please fill in all required fields (Name, Manufacturer, and Summary)');
+            return;
         }
-    } else {
-        alert('Error ' + (robotId ? 'updating' : 'adding') + ' robot. Please try again.');
+        
+        // Get the robot ID if editing an existing robot
+        const robotForm = document.getElementById('robot-form');
+        const robotId = robotForm?.getAttribute('data-robot-id');
+        
+        // Create robot data object
+        const robotData = createRobotDataObject(formData);
+        
+        // Save to storage
+        let success = false;
+        
+        if (robotId) {
+            // Updating existing robot
+            success = await window.robotStorage.updateRobotAndSave(robotId, robotData);
+            console.log('Updated robot:', robotData);
+        } else {
+            // Adding new robot
+            success = await window.robotStorage.addRobotAndSave(robotData);
+            console.log('Added new robot:', robotData);
+        }
+        
+        if (success) {
+            alert(robotId ? 'Robot updated successfully!' : 'Robot added successfully!');
+            // Close the modal
+            closeModal();
+            // Reload robots to update the UI
+            if (typeof loadRobots === 'function') {
+                loadRobots();
+            } else {
+                console.warn('loadRobots function not available, reload page to see changes');
+                // Force page reload to see changes
+                window.location.reload();
+            }
+        } else {
+            alert('Error ' + (robotId ? 'updating' : 'adding') + ' robot. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error saving robot:', error);
+        alert('An error occurred while saving the robot. Please try again.');
     }
 }
 
@@ -874,7 +887,6 @@ function closeModal() {
     if (additionalImagesPreview) {
         additionalImagesPreview.innerHTML = '';
     }
-    
     const videoPreview = document.getElementById('video-preview');
     if (videoPreview) {
         videoPreview.innerHTML = '';
