@@ -3,9 +3,18 @@
  * This script manages the encyclopedia page and ensures it loads robots from localStorage
  */
 
+// Clear localStorage data on encyclopedia page load to ensure no old robots are displayed
+localStorage.removeItem('tgen_robotics_data');
+
 // Initialize the encyclopedia when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Encyclopedia.js: Initializing encyclopedia page');
+    
+    // Force clear any example robots that might be in memory
+    if (window.robotsData) {
+        window.robotsData.robots = [];
+    }
+    
     initEncyclopedia();
 });
 
@@ -15,15 +24,15 @@ document.addEventListener('DOMContentLoaded', function() {
 function initEncyclopedia() {
     // Initialize the storage adapter
     if (window.robotStorage && typeof window.robotStorage.init === 'function') {
-        window.robotStorage.init();
+        window.robotStorage.init().then(() => {
+            loadRobots();
+        });
     } else {
         console.warn('Encyclopedia.js: Robot storage adapter not found or init function missing');
         // If robotStorage is not available, make sure robotsData exists
         ensureRobotsDataExists();
+        loadRobots();
     }
-    
-    // Load robots
-    loadRobots();
     
     // Set up search functionality
     const searchInput = document.getElementById('robot-search');
@@ -70,8 +79,17 @@ function ensureRobotsDataExists() {
                     ))
                     .sort(() => Math.random() - 0.5)
                     .slice(0, limit);
+            },
+            
+            clearRobots: function() {
+                this.robots = [];
+                console.log("Cleared all robots from memory");
+                return true;
             }
         };
+    } else {
+        // Ensure robots is an empty array
+        window.robotsData.robots = [];
     }
 }
 
@@ -85,8 +103,9 @@ function loadRobots() {
     // Clear loading spinner
     robotGrid.innerHTML = '';
     
-    // Get robots from various sources
-    let robots = getAllRobots();
+    // Get robots from GitHub/localStorage through the robotsData object
+    // This ensures we're using the same source of data across the site
+    let robots = window.robotsData.robots || [];
     console.log('Encyclopedia.js: Loaded', robots.length, 'robots');
     
     // No robots available
@@ -106,39 +125,6 @@ function loadRobots() {
     
     // Hide empty state
     document.getElementById('empty-state').style.display = 'none';
-}
-
-/**
- * Get all robots from all available sources
- */
-function getAllRobots() {
-    let robots = [];
-    
-    // Try to get robots from localStorage
-    try {
-        const mainStorage = localStorage.getItem('tgen_robotics_data');
-        if (mainStorage) {
-            try {
-                const data = JSON.parse(mainStorage);
-                if (data.robots && Array.isArray(data.robots)) {
-                    console.log('Encyclopedia.js: Found', data.robots.length, 'robots in localStorage main storage');
-                    robots = [...data.robots];
-                }
-            } catch (e) {
-                console.error('Encyclopedia.js: Error parsing main storage:', e);
-            }
-        }
-    } catch (e) {
-        console.error('Encyclopedia.js: Error accessing localStorage:', e);
-    }
-    
-    // If no robots were found in localStorage, try window.robotsData
-    if (robots.length === 0 && window.robotsData && window.robotsData.robots) {
-        console.log('Encyclopedia.js: No robots in localStorage, using robotsData');
-        robots = [...window.robotsData.robots];
-    }
-    
-    return robots;
 }
 
 /**
