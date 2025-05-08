@@ -102,11 +102,9 @@ window.githubStorage = (function() {
         
         console.log('Creating new data structure');
         
-        // Create a new data structure
+        // Create a new data structure with an empty robots array
         const newData = {
-            robots: window.robotsData && Array.isArray(window.robotsData.robots) 
-                ? window.robotsData.robots 
-                : [],
+            robots: [], // Force empty array instead of using window.robotsData.robots
             categories: window.robotsData?.categories || [],
             lastUpdated: new Date().toISOString()
         };
@@ -129,7 +127,7 @@ window.githubStorage = (function() {
     async function saveImage(imageData, fileName) {
         try {
             // Clean the data URL by removing the data:image/xxx;base64, part
-            const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
+            const base64Data = imageData.replace(/^data:image\\/\\w+;base64,/, '');
             
             // Prepare the request
             const requestBody = {
@@ -175,6 +173,11 @@ window.githubStorage = (function() {
     return {
         // Initialize data and sync with GitHub
         init: async function() {
+            // Clear any example robots immediately
+            if (window.robotsData && Array.isArray(window.robotsData.robots)) {
+                window.robotsData.robots = [];
+            }
+            
             // Initialize data
             const { data, sha } = await initializeData();
             
@@ -187,8 +190,8 @@ window.githubStorage = (function() {
                 };
             }
             
-            // Set the data
-            window.robotsData.robots = data.robots || [];
+            // Set the data, ensure robots is always an array
+            window.robotsData.robots = Array.isArray(data.robots) ? data.robots : [];
             window.robotsData.categories = data.categories || [];
             window.robotsData.lastUpdated = data.lastUpdated || new Date().toISOString();
             
@@ -223,6 +226,14 @@ window.githubStorage = (function() {
                         ))
                         .sort(() => Math.random() - 0.5)
                         .slice(0, limit);
+                };
+            }
+            
+            if (!window.robotsData.clearRobots) {
+                window.robotsData.clearRobots = function() {
+                    this.robots = [];
+                    console.log("Cleared all robots from memory");
+                    return true;
                 };
             }
             
@@ -391,5 +402,11 @@ window.githubStorage = (function() {
 // Initialize when the script loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('GitHub Storage: Initializing');
+    // Clear localStorage to prevent loading old robots
+    localStorage.removeItem('tgen_robotics_data');
+    // Clear any example robots in memory
+    if (window.robotsData) {
+        window.robotsData.robots = [];
+    }
     window.githubStorage.init();
 });
