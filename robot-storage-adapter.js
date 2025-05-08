@@ -4,8 +4,8 @@
  * It ensures compatibility between localStorage and GitHub storage
  */
 
-// Immediately clear any existing localStorage data on load to prevent old robots from appearing
-localStorage.removeItem('tgen_robotics_data');
+// Comment out this line to prevent clearing localStorage on every page load
+// localStorage.removeItem('tgen_robotics_data');
 
 // Initialize the window.robotStorage object
 window.robotStorage = (function() {
@@ -39,17 +39,16 @@ window.robotStorage = (function() {
                 throw new Error('No data found');
             }
         } catch (error) {
-            console.log('Initializing empty robot data structure');
+            console.log('Initializing default robot data structure');
             
-            // If loading fails or no data exists, use an empty robots array
-            // Important: Do NOT use the default robots from data.js
+            // If loading fails or no data exists, initialize with default robots
             data = {
-                robots: [], // Force an empty array instead of using any defaults
+                robots: window.defaultRobots || [], // Use default robots if available
                 categories: window.robotsData?.categories || [],
                 lastUpdated: new Date().toISOString()
             };
             
-            // Save the empty structure
+            // Save the structure
             saveData(data);
         }
         
@@ -82,6 +81,7 @@ window.robotStorage = (function() {
         // Save to localStorage as fallback
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            console.log('Saved data to localStorage');
             return true;
         } catch (error) {
             console.error('Error saving data:', error);
@@ -93,6 +93,69 @@ window.robotStorage = (function() {
     return {
         // Initialize data and make it available to the window.robotsData object
         init: async function() {
+            // Setup default robots if not available
+            if (!window.defaultRobots) {
+                window.defaultRobots = [
+                    {
+                        id: 1,
+                        name: "Spot",
+                        slug: "spot",
+                        manufacturer: {
+                            name: "Boston Dynamics",
+                            country: "USA",
+                            website: "https://www.bostondynamics.com"
+                        },
+                        yearIntroduced: 2019,
+                        categories: ["Quadruped", "Mobile Robot"],
+                        summary: "Nimble robot dog that can navigate terrain that wheeled robots cannot.",
+                        status: "published",
+                        createdAt: "2025-04-15T00:00:00.000Z",
+                        updatedAt: "2025-04-15T00:00:00.000Z",
+                        media: {
+                            featuredImage: "images/robots/spot.jpg"
+                        }
+                    },
+                    {
+                        id: 2,
+                        name: "Atlas",
+                        slug: "atlas",
+                        manufacturer: {
+                            name: "Boston Dynamics",
+                            country: "USA",
+                            website: "https://www.bostondynamics.com"
+                        },
+                        yearIntroduced: 2013,
+                        categories: ["Humanoid", "Bipedal"],
+                        summary: "Advanced humanoid robot designed to perform dynamic movements and tasks.",
+                        status: "published",
+                        createdAt: "2025-04-10T00:00:00.000Z",
+                        updatedAt: "2025-04-10T00:00:00.000Z",
+                        media: {
+                            featuredImage: "images/robots/atlas.jpg"
+                        }
+                    },
+                    {
+                        id: 3,
+                        name: "ANYmal",
+                        slug: "anymal",
+                        manufacturer: {
+                            name: "ANYbotics",
+                            country: "Switzerland",
+                            website: "https://www.anybotics.com"
+                        },
+                        yearIntroduced: 2016,
+                        categories: ["Quadruped", "Industrial"],
+                        summary: "Autonomous legged robot designed for industrial inspection tasks.",
+                        status: "published",
+                        createdAt: "2025-04-08T00:00:00.000Z",
+                        updatedAt: "2025-04-08T00:00:00.000Z",
+                        media: {
+                            featuredImage: "images/robots/anymal.jpg"
+                        }
+                    }
+                ];
+            }
+
             // Make sure window.robotsData exists
             if (!window.robotsData) {
                 console.warn('Robot Storage Adapter: robotsData is not defined, creating default');
@@ -102,9 +165,6 @@ window.robotStorage = (function() {
                     lastUpdated: new Date().toISOString()
                 };
             }
-            
-            // Always ensure robots array is empty at the start
-            window.robotsData.robots = [];
             
             // Load data from storage
             const data = await initializeData();
@@ -198,9 +258,11 @@ window.robotStorage = (function() {
             if (existingIndex !== -1) {
                 // Update existing robot
                 window.robotsData.robots[existingIndex] = robot;
+                console.log(`Updated robot: ${robot.name} (${robot.id})`);
             } else {
                 // Add the robot to the array
                 window.robotsData.robots.push(robot);
+                console.log(`Added new robot: ${robot.name} (${robot.id})`);
             }
             
             // Add any new categories
@@ -236,8 +298,11 @@ window.robotStorage = (function() {
             // Update the robot data
             window.robotsData.robots[index] = {
                 ...window.robotsData.robots[index],
-                ...updatedData
+                ...updatedData,
+                updatedAt: new Date().toISOString()
             };
+            
+            console.log(`Updated robot: ${window.robotsData.robots[index].name} (${robotId})`);
             
             // Update categories if needed
             if (updatedData.categories) {
@@ -269,8 +334,11 @@ window.robotStorage = (function() {
                 return false;
             }
             
+            const robotName = window.robotsData.robots[index].name;
+            
             // Remove the robot
             window.robotsData.robots.splice(index, 1);
+            console.log(`Deleted robot: ${robotName} (${robotId})`);
             
             // Save to storage
             return await this.save();
