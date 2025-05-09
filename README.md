@@ -1,81 +1,122 @@
-# Tgen Robotic HUB
+# Tgen Robotics Hub
 
-A comprehensive online encyclopedia for robotics enthusiasts, researchers, and professionals. This platform provides detailed information about various robots, their specifications, applications, and media content.
+A comprehensive web-based encyclopedia for robotics, where users can browse, search, and learn about various robots from around the world. The application includes an admin interface for adding, editing, and managing robot entries.
 
-## Website Structure
+## Features
 
-The platform consists of several key components:
+- **Robot Encyclopedia:** Browse through a catalog of robots with search and filter capabilities
+- **Detailed Robot Pages:** View comprehensive information about each robot including technical specifications, media galleries, and videos
+- **Admin Interface:** Add, edit, and delete robot entries through a user-friendly form
+- **GitHub Integration:** All content is stored in the GitHub repository, making it easy to manage and deploy
+- **Media Management:** Upload images and add video URLs to showcase robots
+- **Category System:** Organize robots by categories for better navigation
+- **Responsive Design:** Works on desktop, tablet, and mobile devices
 
-- **Encyclopedia**: Browse robots with filtering and search capabilities
-- **Robot Details**: In-depth information about each robot with media galleries
-- **User Authentication**: Secure login system with admin controls
-- **Responsive Design**: Mobile-friendly interface for all device types
+## How It Works
 
-## Recent Updates
+The Tgen Robotics Hub uses GitHub as its backend to store all robot data in JSON format. Here's how the system works:
 
-### Media Display Enhancement (May 7, 2025)
+1. **Data Storage**: All robot data is stored in `data/robots.json` in the GitHub repository
+2. **Media Files**: Images are stored in `images/robots/` directory in the repository
+3. **GitHub API**: The system uses GitHub API to read and write data and files
+4. **Web Interface**: The entire application runs in the browser with no server-side code needed
 
-We've addressed issues with image and video display for non-admin users by:
+## Adding Robots
 
-1. **Creating a dedicated robots directory** in the images folder to store robot images consistently
-2. **Implementing a robust media handler** that properly resolves image and video paths for both admin and non-admin users
-3. **Adding fallback placeholder images** to ensure robots without images still display properly
-4. **Fixing video path handling** for embedded videos and external video links
+To add a new robot to the encyclopedia:
 
-### Image Path Resolution
+1. **Navigate to the Admin Form**: Go to the `admin-form.html` page
+2. **Fill in Basic Information**: Enter the robot's name, manufacturer details, summary, and description
+3. **Add Specifications**: Provide technical specifications like dimensions, weight, and performance metrics
+4. **Upload Media**: Add a featured image, gallery images, and video URLs
+5. **Save**: Click the "Save Robot" button to add the robot to the encyclopedia
 
-The updated system now handles various image path formats:
+## Uploading Media
 
-- Absolute URLs (starting with `http://` or `https://`)
-- Relative paths within the robots folder (`images/robots/image.jpg`)
-- Partial paths that are automatically corrected (`image.jpg` → `images/robots/image.jpg`)
+The system supports two ways to add media:
 
-### Error Handling
+1. **Image Uploads**: 
+   - You can upload images directly from your computer by clicking on the upload area or dragging and dropping files.
+   - Supported formats: JPG, PNG, GIF
+   - Maximum file size: 5MB per image
 
-We've added robust error handling to catch and resolve:
+2. **Video URLs**:
+   - Add videos by entering their URLs (YouTube, Vimeo, etc.)
+   - You can add multiple videos with titles and descriptions
+   - Videos will be embedded in the robot detail page
 
-- Missing images (automatically replaced with placeholder)
-- Incorrect image paths (automatically corrected to the robots folder)
-- Invalid video URLs (providing links instead of embeds for unsupported formats)
+## Editing and Deleting Robots
 
-## Technical Details
+To edit or delete a robot:
 
-### File Structure
+1. **From Encyclopedia**: Click on the edit button on any robot card (admin only)
+2. **From Detail Page**: Use the edit/delete buttons on the robot detail page (admin only)
+3. **Edit Form**: Make your changes and save
+4. **Delete Confirmation**: Confirm deletion when prompted
 
-- **images/robots/** - Central storage location for all robot images
-- **robot-media-handler.js** - Core functionality for handling media across the application
-- **js/media-display.js** - Handles media display on detail pages with galleries and videos
-- **js/encyclopedia.js** - Manages the encyclopedia page and robot card generation
-- **js/data.js** - Contains sample robot data for demonstration
+## Technical Implementation
 
-### Key Functions
+The Tgen Robotics Hub is built using:
 
-The `robotMedia` object provides several important functions:
+- **HTML/CSS/JavaScript**: Frontend implementation
+- **GitHub API**: Backend data storage
+- **Font Awesome**: Icons
+- **CSS Grid/Flexbox**: Responsive layout
 
-- `getImageUrl(robot)` - Retrieves the appropriate image URL for a robot
-- `handleImageError(img)` - Handles image loading errors and uses fallbacks
-- `getVideoUrl(robot)` - Creates properly formatted video URLs for embedding
-- `fixImagePath(path)` - Corrects image paths to ensure compatibility
-- `renderGallery(robot, container)` - Renders a complete media gallery
+The application is structured into several modules:
 
-## Usage for Developers
+- **GitHub Storage Module**: Handles reading and writing to GitHub (`github-storage.js`)
+- **Admin Form**: Manages robot data entry (`improved-admin-form.js`)
+- **Media Upload Handler**: Manages file uploads (`admin-upload-handler.js`)
+- **Encyclopedia**: Displays robot cards and search functionality (`encyclopedia.js`)
+- **Robot Detail**: Shows detailed information about a robot (`update-robot-detail.js`)
 
-When adding new robots to the system:
+## Folder Structure
 
-1. Always upload images to the `images/robots/` directory
-2. Use the `robotMedia` helper functions to handle image and video URLs
-3. For videos, YouTube links are automatically converted to embed formats
-4. Ensure robots have fallback images in case the main image fails to load
+```
+Tgen-Robotic-HUB/
+├── css/
+│   └── main.css
+├── data/
+│   └── robots.json
+├── images/
+│   ├── logo.svg
+│   ├── robot-placeholder.jpg
+│   └── robots/
+│       └── [robot images]
+├── js/
+│   ├── admin-upload-handler.js
+│   ├── data.js
+│   ├── encyclopedia.js
+│   ├── github-storage.js
+│   └── main.js
+├── admin-form.html
+├── encyclopedia.html
+├── improved-admin-form.js
+├── index.html
+├── robot-detail.html
+└── update-robot-detail.js
+```
 
-## Next Steps
+## Getting Started
 
-Future enhancements may include:
+1. Clone the repository
+2. Open `index.html` in your web browser
+3. Navigate to the Encyclopedia to view robots
+4. Go to the Admin Form to add new robots
 
-- Improved image lazy-loading for better performance
-- Support for additional video providers beyond YouTube
-- Enhanced gallery view with better lightbox functionality
-- User image uploads with automatic optimization
+## GitHub Token
 
-## Contact
+To enable write operations (adding/editing robots), you need to:
 
-For any questions or issues related to the Tgen Robotic HUB, please reach out to our development team at contact@tgenrobotics.com.
+1. Generate a GitHub personal access token with repo scope
+2. Store it in your browser's local storage with the key `github_token`
+
+This can be done by adding the token through the browser console:
+```javascript
+localStorage.setItem('github_token', 'your-github-token');
+```
+
+## Credits
+
+This project was created by Taikibonnet. Feel free to contribute to this project by submitting pull requests or opening issues.
