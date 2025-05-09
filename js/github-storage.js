@@ -28,21 +28,34 @@ window.githubStorage = (function() {
      */
     async function getDataFile() {
         try {
+            console.log('Fetching data file from GitHub');
             const response = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${DATA_FILE_PATH}`);
+            
             if (!response.ok) {
                 if (response.status === 404) {
                     console.log('Data file not found. Will create a new one.');
                     return { content: null, sha: null };
                 }
-                throw new Error('Failed to fetch data file');
+                
+                const errorData = await response.json();
+                console.error('GitHub API error:', errorData);
+                throw new Error(`Failed to fetch data file: ${response.status} ${response.statusText}`);
             }
             
             const data = await response.json();
             const content = decodeContent(data.content);
-            return { 
-                content: JSON.parse(content), 
-                sha: data.sha 
-            };
+            
+            try {
+                const parsedContent = JSON.parse(content);
+                console.log('Data file fetched successfully:', parsedContent);
+                return { 
+                    content: parsedContent, 
+                    sha: data.sha 
+                };
+            } catch (parseError) {
+                console.error('Error parsing JSON from data file:', parseError);
+                return { content: null, sha: data.sha };
+            }
         } catch (error) {
             console.error('Error getting data file:', error);
             return { content: null, sha: null };
@@ -75,8 +88,14 @@ window.githubStorage = (function() {
             
             // Add auth token if available
             if (githubToken) {
-                headers['Authorization'] = `Bearer ${githubToken}`;
+                headers['Authorization'] = `token ${githubToken}`;
+            } else {
+                console.error('No GitHub token available for saving data');
+                alert('GitHub token is required to save changes. Please add a token in the settings.');
+                return false;
             }
+            
+            console.log('Saving data to GitHub');
             
             // Make the request
             const response = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${DATA_FILE_PATH}`, {
@@ -88,9 +107,24 @@ window.githubStorage = (function() {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('GitHub API error:', errorData);
+                
+                // Check for authentication issues
+                if (response.status === 401) {
+                    alert('GitHub authentication failed. Please check your token.');
+                    
+                    // Prompt for new token
+                    const newToken = prompt('Your GitHub token seems invalid. Please enter a new token:');
+                    if (newToken && newToken.trim() !== '') {
+                        githubToken = newToken;
+                        localStorage.setItem('github_token', newToken);
+                        return saveDataFile(data, sha); // Try again with new token
+                    }
+                }
+                
                 throw new Error(`Failed to save data file: ${response.status} ${response.statusText}`);
             }
             
+            console.log('Data saved successfully to GitHub');
             return true;
         } catch (error) {
             console.error('Error saving data file:', error);
@@ -118,7 +152,7 @@ window.githubStorage = (function() {
         // Create a new data structure with an empty robots array
         const newData = {
             robots: [], // Force empty array instead of using window.robotsData.robots
-            categories: window.robotsData?.categories || [],
+            categories: window.robotsData?.categories || ["Quadruped", "Humanoid", "Industrial", "Mobile Robot", "Bipedal"],
             lastUpdated: new Date().toISOString()
         };
         
@@ -140,7 +174,11 @@ window.githubStorage = (function() {
     async function saveImage(imageData, fileName) {
         try {
             // Clean the data URL by removing the data:image\/\\w+;base64, part
-            const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
+            let base64Data = imageData;
+            
+            if (typeof imageData === 'string' && imageData.startsWith('data:')) {
+                base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
+            }
             
             const headers = {
                 'Content-Type': 'application/json'
@@ -148,7 +186,11 @@ window.githubStorage = (function() {
             
             // Add auth token if available
             if (githubToken) {
-                headers['Authorization'] = `Bearer ${githubToken}`;
+                headers['Authorization'] = `token ${githubToken}`;
+            } else {
+                console.error('No GitHub token available for saving image');
+                alert('GitHub token is required to save images. Please add a token in the settings.');
+                return null;
             }
             
             // Prepare the request
@@ -170,6 +212,8 @@ window.githubStorage = (function() {
                 console.log('Image does not exist yet, will create new');
             }
             
+            console.log('Saving image to GitHub:', fileName);
+            
             // Make the request
             const response = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${IMAGES_PATH}${fileName}`, {
                 method: 'PUT',
@@ -180,10 +224,25 @@ window.githubStorage = (function() {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('GitHub API error:', errorData);
+                
+                // Check for authentication issues
+                if (response.status === 401) {
+                    alert('GitHub authentication failed. Please check your token.');
+                    
+                    // Prompt for new token
+                    const newToken = prompt('Your GitHub token seems invalid. Please enter a new token:');
+                    if (newToken && newToken.trim() !== '') {
+                        githubToken = newToken;
+                        localStorage.setItem('github_token', newToken);
+                        return saveImage(imageData, fileName); // Try again with new token
+                    }
+                }
+                
                 throw new Error(`Failed to save image: ${response.status} ${response.statusText}`);
             }
             
             const data = await response.json();
+            console.log('Image saved successfully to GitHub:', fileName);
             return `${IMAGES_PATH}${fileName}`;
         } catch (error) {
             console.error('Error saving image:', error);
@@ -196,6 +255,8 @@ window.githubStorage = (function() {
     return {
         // Initialize data and sync with GitHub
         init: async function() {
+            console.log('GitHub Storage: Initializing');
+            
             // Clear any example robots immediately
             if (window.robotsData && Array.isArray(window.robotsData.robots)) {
                 window.robotsData.robots = [];
@@ -209,6 +270,7 @@ window.githubStorage = (function() {
             
             // Update window.robotsData
             if (!window.robotsData) {
+                console.log('Creating new robotsData object');
                 window.robotsData = {
                     robots: [],
                     categories: [],
@@ -227,6 +289,8 @@ window.githubStorage = (function() {
             // Add helper methods to window.robotsData if they don't exist
             if (!window.robotsData.getRobotById) {
                 window.robotsData.getRobotById = function(id) {
+                    if (!id) return null;
+                    
                     const numId = parseInt(id);
                     return this.robots.find(robot => 
                         robot.id === numId || robot.id === id || robot.slug === id
@@ -236,6 +300,7 @@ window.githubStorage = (function() {
             
             if (!window.robotsData.getRobotBySlug) {
                 window.robotsData.getRobotBySlug = function(slug) {
+                    if (!slug) return null;
                     return this.robots.find(robot => robot.slug === slug);
                 };
             }
@@ -246,9 +311,9 @@ window.githubStorage = (function() {
                     if (!robot) return [];
                     
                     return this.robots
-                        .filter(r => r.id !== id && (
+                        .filter(r => r.id !== robot.id && (
                             r.manufacturer?.name === robot.manufacturer?.name ||
-                            r.applications?.some(app => robot.applications?.includes(app))
+                            r.categories?.some(cat => robot.categories?.includes(cat))
                         ))
                         .sort(() => Math.random() - 0.5)
                         .slice(0, limit);
@@ -270,6 +335,7 @@ window.githubStorage = (function() {
         
         // Save the current state of window.robotsData to GitHub
         save: async function() {
+            console.log('Saving robotsData to GitHub');
             const data = {
                 robots: window.robotsData.robots,
                 categories: window.robotsData.categories,
@@ -280,6 +346,7 @@ window.githubStorage = (function() {
             
             if (saved) {
                 // Update the SHA after saving
+                console.log('Updating SHA after save');
                 const { sha } = await getDataFile();
                 window.githubStorage.currentSha = sha;
             }
@@ -289,9 +356,15 @@ window.githubStorage = (function() {
         
         // Set GitHub token
         setToken: function(token) {
-            githubToken = token;
-            localStorage.setItem('github_token', token);
-            return true;
+            if (token && token.trim() !== '') {
+                githubToken = token;
+                localStorage.setItem('github_token', token);
+                console.log('GitHub token set');
+                return true;
+            } else {
+                console.error('Invalid GitHub token');
+                return false;
+            }
         },
         
         // Check if we have a token
@@ -301,10 +374,12 @@ window.githubStorage = (function() {
         
         // Add a new robot, save images, and then save data
         addRobotAndSave: async function(robot) {
+            console.log('Adding new robot:', robot.name);
+            
             // Process images to save them to GitHub if they are data URLs
             if (robot.media) {
                 // Process featured image
-                if (robot.media.featuredImage && robot.media.featuredImage.startsWith('data:')) {
+                if (robot.media.featuredImage && typeof robot.media.featuredImage === 'string' && robot.media.featuredImage.startsWith('data:')) {
                     const fileName = `${robot.slug}-featured-${Date.now()}.jpg`;
                     const imageUrl = await saveImage(robot.media.featuredImage, fileName);
                     if (imageUrl) {
@@ -320,7 +395,7 @@ window.githubStorage = (function() {
                     const savedImages = [];
                     for (let i = 0; i < robot.media.additionalImages.length; i++) {
                         const imageData = robot.media.additionalImages[i];
-                        if (imageData && imageData.startsWith('data:')) {
+                        if (imageData && typeof imageData === 'string' && imageData.startsWith('data:')) {
                             const fileName = `${robot.slug}-gallery-${i}-${Date.now()}.jpg`;
                             const imageUrl = await saveImage(imageData, fileName);
                             if (imageUrl) {
@@ -347,7 +422,7 @@ window.githubStorage = (function() {
                     
                     robot.media.videos.forEach(video => {
                         if (video && typeof video === 'object') {
-                            if (video.type === 'url' && video.url) {
+                            if ((video.type === 'url' || !video.type) && video.url) {
                                 savedVideos.push({
                                     type: 'url',
                                     url: video.url,
@@ -363,6 +438,8 @@ window.githubStorage = (function() {
                 }
             }
             
+            console.log('Processed media for robot:', robot.name);
+            
             // Check if robot already exists by ID or slug
             const existingIndex = window.robotsData.robots.findIndex(r => 
                 r.id === robot.id || r.slug === robot.slug
@@ -370,6 +447,7 @@ window.githubStorage = (function() {
             
             if (existingIndex !== -1) {
                 // Update existing robot
+                console.log('Updating existing robot:', robot.name);
                 window.robotsData.robots[existingIndex] = robot;
             } else {
                 // Generate a new ID if not provided
@@ -378,6 +456,7 @@ window.githubStorage = (function() {
                 }
                 
                 // Add the robot
+                console.log('Adding new robot to array:', robot.name);
                 window.robotsData.robots.push(robot);
             }
             
@@ -391,6 +470,7 @@ window.githubStorage = (function() {
             }
             
             // Save to GitHub
+            console.log('Saving updated data to GitHub');
             return await this.save();
         },
         
@@ -405,6 +485,8 @@ window.githubStorage = (function() {
                 console.error('Robot not found with ID:', robotId);
                 return false;
             }
+            
+            console.log('Updating robot with ID:', robotId);
             
             // Make a copy of the existing robot
             const robot = { ...window.robotsData.robots[index] };
@@ -438,7 +520,7 @@ window.githubStorage = (function() {
                     
                     for (let i = 0; i < updatedRobot.media.additionalImages.length; i++) {
                         const imageData = updatedRobot.media.additionalImages[i];
-                        if (imageData && imageData.startsWith('data:')) {
+                        if (imageData && typeof imageData === 'string' && imageData.startsWith('data:')) {
                             const fileName = `${updatedRobot.slug}-gallery-${i}-${Date.now()}.jpg`;
                             const imageUrl = await saveImage(imageData, fileName);
                             if (imageUrl) {
@@ -452,6 +534,22 @@ window.githubStorage = (function() {
                     }
                     updatedRobot.media.images = savedImages;
                     delete updatedRobot.media.additionalImages; // Cleanup
+                }
+                
+                // Process videos if needed
+                if (Array.isArray(updatedRobot.media.videos) && updatedRobot.media.videos.length > 0) {
+                    // No special processing needed for videos as they are just URLs
+                    updatedRobot.media.videos = updatedRobot.media.videos.map(video => {
+                        if (typeof video === 'object' && video.url) {
+                            return {
+                                type: 'url',
+                                url: video.url,
+                                title: video.title || updatedRobot.name,
+                                description: video.description || ''
+                            };
+                        }
+                        return video;
+                    });
                 }
             }
             
@@ -486,8 +584,21 @@ window.githubStorage = (function() {
                 return false;
             }
             
+            console.log('Deleting robot with ID:', robotId);
+            
             // Remove the robot
             window.robotsData.robots.splice(index, 1);
+            
+            // Save to GitHub
+            return await this.save();
+        },
+        
+        // Clear robots data
+        clearRobotsData: async function() {
+            console.log('Clearing all robots data');
+            
+            // Clear robots array
+            window.robotsData.robots = [];
             
             // Save to GitHub
             return await this.save();
@@ -497,12 +608,15 @@ window.githubStorage = (function() {
 
 // Initialize when the script loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('GitHub Storage: Initializing');
+    console.log('GitHub Storage: Initializing on page load');
+    
     // Clear localStorage to prevent loading old robots
-    localStorage.removeItem('tgen_robotics_data');
+    // localStorage.removeItem('tgen_robotics_data');
+    
     // Clear any example robots in memory
     if (window.robotsData) {
         window.robotsData.robots = [];
     }
+    
     window.githubStorage.init();
 });
