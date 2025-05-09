@@ -1,10 +1,7 @@
 /**
- * Encyclopedia functionality for Tgen Robotics Hub
- * This script manages the encyclopedia page and ensures it loads robots from localStorage
+ * Improved Encyclopedia Integration
+ * This file enhances the encyclopedia functionality for Tgen Robotics Hub
  */
-
-// Clear localStorage data on encyclopedia page load to ensure no old robots are displayed
-localStorage.removeItem('tgen_robotics_data');
 
 // Initialize the encyclopedia when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -23,7 +20,11 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function initEncyclopedia() {
     // Initialize the storage adapter
-    if (window.robotStorage && typeof window.robotStorage.init === 'function') {
+    if (window.githubStorage && typeof window.githubStorage.init === 'function') {
+        window.githubStorage.init().then(() => {
+            loadRobots();
+        });
+    } else if (window.robotStorage && typeof window.robotStorage.init === 'function') {
         window.robotStorage.init().then(() => {
             loadRobots();
         });
@@ -45,6 +46,9 @@ function initEncyclopedia() {
     if (resetButton) {
         resetButton.addEventListener('click', resetFilters);
     }
+    
+    // Check if user is an admin
+    checkAdminStatus();
 }
 
 /**
@@ -136,24 +140,27 @@ function createRobotCard(robot) {
     card.dataset.slug = robot.slug;
     card.dataset.id = robot.id;
     
-    // Use robotMedia handler to get the appropriate image URL if available
-    let imageUrl = 'images/robots/robot-placeholder.jpg';
+    // Get appropriate image URL
+    let imageUrl = 'images/robot-placeholder.jpg';
     
-    if (window.robotMedia && typeof window.robotMedia.getImageUrl === 'function') {
-        imageUrl = window.robotMedia.getImageUrl(robot);
-    } else if (robot.media) {
-        // Fallback if robotMedia is not available
-        if (robot.media.featuredImage && robot.media.featuredImage.url) {
-            imageUrl = robot.media.featuredImage.url;
-        } else if (robot.media.mainImage && robot.media.mainImage.url) {
-            imageUrl = robot.media.mainImage.url;
+    if (robot.media) {
+        if (robot.media.featuredImage) {
+            if (typeof robot.media.featuredImage === 'string') {
+                imageUrl = robot.media.featuredImage;
+            } else if (robot.media.featuredImage.url) {
+                imageUrl = robot.media.featuredImage.url;
+            }
         } else if (robot.media.images && robot.media.images.length > 0) {
-            imageUrl = robot.media.images[0].url;
+            if (typeof robot.media.images[0] === 'string') {
+                imageUrl = robot.media.images[0];
+            } else if (robot.media.images[0].url) {
+                imageUrl = robot.media.images[0].url;
+            }
         }
     }
     
     card.innerHTML = `
-        <img src="${imageUrl}" alt="${robot.media?.featuredImage?.alt || robot.name}" class="robot-image" onerror="if(window.robotMedia){window.robotMedia.handleImageError(this);}else{this.src='images/robots/robot-placeholder.jpg';}">
+        <img src="${imageUrl}" alt="${robot.name}" class="robot-image" onerror="this.src='images/robot-placeholder.jpg'">
         <div class="robot-content">
             <h3 class="robot-title">${robot.name || 'Unnamed Robot'}</h3>
             <p class="robot-desc">${robot.summary || 'No description available.'}</p>
@@ -233,4 +240,60 @@ function debounce(func, wait) {
             func.apply(context, args);
         }, wait);
     };
+}
+
+/**
+ * Check if the user is an admin
+ */
+function checkAdminStatus() {
+    // Get admin controls container
+    const adminControls = document.getElementById('admin-controls');
+    if (!adminControls) return;
+    
+    // Check if user is logged in and is an admin
+    const user = window.tgenApp?.getCurrentUser ? window.tgenApp.getCurrentUser() : null;
+    const isAdmin = user && user.role === 'admin';
+    
+    // Show admin controls only to admin users
+    adminControls.style.display = isAdmin ? 'block' : 'none';
+    
+    if (isAdmin) {
+        // Add an edit button on each robot card
+        const robotCards = document.querySelectorAll('.robot-card');
+        robotCards.forEach(card => {
+            const robotId = card.dataset.id;
+            const robotSlug = card.dataset.slug;
+            
+            // Create edit button
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-robot-button';
+            editButton.innerHTML = '<i class="fas fa-edit"></i>';
+            editButton.style.position = 'absolute';
+            editButton.style.top = '10px';
+            editButton.style.right = '10px';
+            editButton.style.background = 'var(--primary)';
+            editButton.style.color = 'var(--dark)';
+            editButton.style.border = 'none';
+            editButton.style.borderRadius = '50%';
+            editButton.style.width = '40px';
+            editButton.style.height = '40px';
+            editButton.style.display = 'flex';
+            editButton.style.alignItems = 'center';
+            editButton.style.justifyContent = 'center';
+            editButton.style.zIndex = '10';
+            editButton.title = 'Edit Robot';
+            
+            // Add click event
+            editButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent card click
+                window.location.href = `admin-form.html?id=${robotId || robotSlug}`;
+            });
+            
+            // Make card position relative to position the button
+            card.style.position = 'relative';
+            
+            // Add button to card
+            card.appendChild(editButton);
+        });
+    }
 }
