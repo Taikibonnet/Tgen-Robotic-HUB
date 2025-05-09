@@ -3,126 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robotic Encyclopedia - Tgen Robotics Hub</title>
+    <title>Robot Encyclopedia - Tgen Robotics Hub</title>
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/media-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Encyclopedia specific styles */
-        .filters {
-            margin-bottom: 40px;
-            padding: 20px;
-            background-color: rgba(30, 30, 30, 0.5);
-            border-radius: 10px;
+        /* Encyclopedia Styles */
+        .encyclopedia-header {
+            margin-bottom: 30px;
         }
         
-        .filter-group {
-            margin-bottom: 20px;
-        }
-        
-        .filter-group:last-child {
-            margin-bottom: 0;
-        }
-        
-        .filter-title {
-            font-size: 1.1rem;
-            font-weight: 600;
+        .encyclopedia-title {
+            font-size: 2.5rem;
             margin-bottom: 10px;
-            display: block;
         }
         
-        .filter-options {
+        .encyclopedia-description {
+            max-width: 700px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        
+        .filters-section {
+            background-color: var(--dark-2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .filter-checkbox {
-            display: none;
-        }
-        
-        .filter-label {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: rgba(18, 18, 18, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .filter-checkbox:checked + .filter-label {
-            background-color: var(--primary);
-            color: var(--dark);
-            border-color: var(--primary);
-        }
-        
-        .filter-label:hover {
-            background-color: rgba(32, 227, 178, 0.1);
-        }
-        
-        .search-bar {
-            width: 100%;
+            gap: 15px;
             margin-bottom: 20px;
+        }
+        
+        .search-control {
+            flex: 1;
+            min-width: 200px;
             position: relative;
         }
         
-        .search-input {
+        .search-control input {
             width: 100%;
-            padding: 15px 20px;
-            padding-right: 50px;
+            padding: 12px 40px 12px 15px;
             background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
             color: var(--light);
-            font-size: 1rem;
             transition: all 0.3s ease;
         }
         
-        .search-input:focus {
+        .search-control input:focus {
             outline: none;
             border-color: var(--primary);
-            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
         }
         
-        .search-icon {
+        .search-control .search-icon {
             position: absolute;
             right: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--gray);
-            font-size: 1.2rem;
-            cursor: pointer;
         }
         
-        .search-icon:hover {
-            color: var(--primary);
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
         }
         
         .robot-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
         
         .robot-card {
-            background: rgba(18, 18, 18, 0.9);
+            background-color: var(--dark-2);
             border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .robot-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(32, 227, 178, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
         
         .robot-image {
             width: 100%;
-            height: 220px;
+            height: 200px;
             object-fit: cover;
         }
         
@@ -131,68 +104,64 @@
         }
         
         .robot-title {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             margin-bottom: 10px;
-            color: var(--light);
         }
         
         .robot-desc {
-            font-size: 0.95rem;
-            color: var(--light);
-            opacity: 0.8;
+            color: var(--gray);
             margin-bottom: 15px;
-            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
         .robot-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: var(--gray);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
         }
         
         .empty-state {
             text-align: center;
             padding: 50px 20px;
+            color: var(--gray);
+            display: none;
         }
         
-        .empty-icon {
+        .empty-state-icon {
             font-size: 3rem;
-            color: var(--gray);
             margin-bottom: 20px;
         }
         
-        .empty-title {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+        /* Admin Controls */
+        .admin-section {
+            margin-bottom: 20px;
         }
         
-        .empty-desc {
-            color: var(--gray);
-            max-width: 500px;
-            margin: 0 auto 20px;
-        }
-
-        .loading-spinner {
+        .admin-controls {
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 200px;
+            justify-content: space-between;
+        }
+        
+        .admin-title {
+            font-size: 1rem;
+            font-weight: 600;
         }
         
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(32, 227, 178, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        /* Admin section styles */
-        .admin-controls {
-            margin-bottom: 20px;
-            display: none; /* Hidden by default, shown only to admins via JS */
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
         }
         
         @keyframes spin {
@@ -200,122 +169,22 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Robot article container for encyclopedia content */
-        .robot-article-container {
-            background-color: rgba(18, 18, 18, 0.9);
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .robot-article-header {
-            margin-bottom: 20px;
-        }
-        
-        .robot-article-title {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .robot-article-meta {
-            display: flex;
-            gap: 15px;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-        
-        .robot-article-content {
-            line-height: 1.8;
-        }
-        
-        /* User dropdown styles */
-        .user-dropdown {
-            position: relative;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 8px 16px;
-            background-color: rgba(32, 227, 178, 0.1);
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-        
-        .user-info:hover {
-            background-color: rgba(32, 227, 178, 0.2);
-        }
-        
-        .user-info span {
-            font-weight: 500;
-        }
-        
-        .user-info i {
-            transition: transform 0.3s;
-            font-size: 0.8rem;
-        }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 5px);
-            right: 0;
-            width: 200px;
-            background-color: rgba(25, 25, 25, 0.95);
-            border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            display: none;
-            z-index: 100;
-        }
-        
-        .dropdown-menu.active {
-            display: block;
-        }
-        
-        .dropdown-menu a {
-            display: block;
-            padding: 12px 16px;
-            color: var(--light);
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        
-        .dropdown-menu a:hover {
-            background-color: rgba(32, 227, 178, 0.1);
-        }
-        
-        .dropdown-menu a i {
-            margin-right: 8px;
-            width: 18px;
-            text-align: center;
-        }
-        
+        /* Responsive */
         @media (max-width: 768px) {
+            .encyclopedia-title {
+                font-size: 2rem;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
             .robot-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                grid-template-columns: 1fr;
             }
         }
     </style>
-    <!-- Immediate script to clear any example robots -->
-    <script>
-    // Clear localStorage data to remove any previously stored robots
-    localStorage.removeItem('tgen_robotics_data');
-    
-    // Define a global function to clean robots that can be called at different points
-    window.clearExampleRobots = function() {
-        console.log("Clearing example robots from encyclopedia.html at:", new Date().toISOString());
-        // Clear any example robots in memory if robotsData exists
-        if (window.robotsData) {
-            window.robotsData.robots = [];
-            console.log("Cleared robotsData.robots array");
-        }
-    };
-    
-    // Run it immediately
-    window.clearExampleRobots();
-    </script>
 </head>
 <body>
     <!-- Header -->
@@ -326,6 +195,7 @@
             </a>
             <nav class="nav-links">
                 <a href="encyclopedia.html" class="active">Encyclopedia</a>
+                <a href="admin-dashboard.html">Admin</a>
                 <a href="about.html">About</a>
                 <a href="contact.html">Contact</a>
             </nav>
@@ -341,206 +211,96 @@
     </header>
 
     <!-- Main Content -->
-    <section class="section main-content">
-        <div class="container">
-            <h1 class="section-title">Robotics Encyclopedia</h1>
-            <p class="section-subtitle">Explore our comprehensive database of robots from around the world</p>
-            
-            <!-- Search and Filters -->
-            <div class="filters">
-                <div class="search-bar">
-                    <input type="text" class="search-input" id="robot-search" placeholder="Search for robots by name, manufacturer, or features...">
-                    <div class="search-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                </div>
-                
-                <!-- Admin Controls (only visible to admins) -->
-                <div class="filter-group admin-controls" id="admin-controls">
-                    <span class="filter-title">Admin Actions</span>
-                    <div class="filter-options">
-                        <a href="admin-form.html" class="btn btn-primary btn-sm">Add New Robot</a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Robot Grid -->
-            <div class="robot-grid" id="robot-grid">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                </div>
-            </div>
-            
-            <!-- Empty State (will be shown if no robots match filters) -->
-            <div class="empty-state" id="empty-state" style="display: none;">
-                <div class="empty-icon">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <h2 class="empty-title">No robots found</h2>
-                <p class="empty-desc">Try adjusting your search or filters to find what you're looking for.</p>
-                <button class="btn btn-primary" id="reset-filters">Reset All Filters</button>
+    <div class="container">
+        <!-- Encyclopedia Header -->
+        <div class="encyclopedia-header">
+            <h1 class="encyclopedia-title">Robot Encyclopedia</h1>
+            <p class="encyclopedia-description">
+                Explore our comprehensive database of robots from around the world. Learn about their specifications, capabilities, and the amazing technology behind them.
+            </p>
+        </div>
+        
+        <!-- Admin Controls (visible only to admin users) -->
+        <div id="admin-controls" class="admin-section" style="display: none;">
+            <div class="admin-controls">
+                <span class="admin-title">Admin Controls</span>
+                <a href="admin-form.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Robot
+                </a>
             </div>
         </div>
-    </section>
-
-    <!-- AI Assistant Button -->
-    <div class="ai-assistant">
-        <div class="ai-button" id="ai-button">
-            <div class="ai-icon">🤖</div>
+        
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="filter-row">
+                <div class="search-control">
+                    <input type="text" id="robot-search" placeholder="Search robots by name, manufacturer, etc.">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button id="reset-filters" class="btn btn-outline">
+                    <i class="fas fa-sync-alt"></i> Reset Filters
+                </button>
+            </div>
+        </div>
+        
+        <!-- Robot Grid -->
+        <div id="robot-grid" class="robot-grid">
+            <!-- Loading spinner, will be replaced by robot cards -->
+            <div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 50px 0;">
+                <div class="spinner"></div>
+            </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h2>No Robots Found</h2>
+            <p>There are no robots that match your search criteria. Try adjusting your filters or add a new robot.</p>
+            <a href="admin-form.html" class="btn btn-primary" style="margin-top: 20px;">
+                <i class="fas fa-plus"></i> Add New Robot
+            </a>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>About</h3>
-                    <ul class="footer-links">
-                        <li><a href="about.html">Our Mission</a></li>
-                        <li><a href="about.html#team">The Team</a></li>
-                        <li><a href="about.html#partners">Partners</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
-                    </ul>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/logo.svg" alt="Tgen Robotics Hub Logo">
+                    <p>Exploring the world of robotics</p>
                 </div>
-                
-                <div class="footer-section">
-                    <h3>Resources</h3>
-                    <ul class="footer-links">
-                        <li><a href="encyclopedia.html">Robot Database</a></li>
-                        <li><a href="about.html#research">Research</a></li>
-                        <li><a href="about.html#education">Education</a></li>
-                    </ul>
+                <div class="footer-links">
+                    <h3>Quick Links</h3>
+                    <a href="encyclopedia.html">Encyclopedia</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
                 </div>
-                
-                <div class="footer-section">
-                    <h3>Connect</h3>
-                    <ul class="footer-links">
-                        <li><a href="contact.html">Contact Us</a></li>
-                        <li><a href="contact.html#newsletter">Newsletter</a></li>
-                        <li><a href="https://twitter.com/tgenrobotics" target="_blank">Twitter</a></li>
-                        <li><a href="https://linkedin.com/company/tgenrobotics" target="_blank">LinkedIn</a></li>
-                    </ul>
+                <div class="footer-social">
+                    <h3>Connect With Us</h3>
+                    <div class="social-icons">
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
+                    </div>
                 </div>
             </div>
-            
-            <div class="copyright">
-                &copy; 2025 Tgen Robotics Hub. All rights reserved.
+            <div class="footer-bottom">
+                <p>&copy; 2025 Tgen Robotics Hub. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
     <script src="js/data.js"></script>
-    <script>
-        // Clear immediately after data.js is loaded
-        window.clearExampleRobots();
-    </script>
     <script src="js/github-storage.js"></script>
-    <script>
-        // Clear again after github-storage.js is loaded
-        window.clearExampleRobots();
-    </script>
-    <script src="robot-storage-adapter.js"></script>
-    <script>
-        // Clear again after robot-storage-adapter.js is loaded
-        window.clearExampleRobots();
-    </script>
-    <script src="robot-media-handler.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/auth.js"></script>
     <script src="js/encyclopedia.js"></script>
-    <script src="js/media-display.js"></script>
-    <script>
-        // Force clear any example robots one more time
-        window.clearExampleRobots();
-        
-        // Show admin controls only to admin users
-        document.addEventListener('DOMContentLoaded', function() {
-            // One final cleanup after all scripts are loaded
-            window.clearExampleRobots();
-            
-            // Check if user is logged in and is an admin
-            const user = window.tgenApp?.getCurrentUser ? window.tgenApp.getCurrentUser() : null;
-            const isAdmin = user && user.role === 'admin';
-            
-            // Show admin controls only to admin users
-            const adminControls = document.getElementById('admin-controls');
-            if (adminControls) {
-                adminControls.style.display = isAdmin ? 'block' : 'none';
-            }
-            
-            // Initialize robot storage (this will load robots from GitHub)
-            if (window.robotStorage && typeof window.robotStorage.init === 'function') {
-                window.robotStorage.init().then(() => {
-                    // After initialization, filter out any example robots
-                    if (window.robotsData && Array.isArray(window.robotsData.robots)) {
-                        window.robotsData.robots = window.robotsData.robots.filter(robot => {
-                            // Keep only robots with proper ids added via the admin interface
-                            return robot && robot.id && robot.name && robot.slug;
-                        });
-                    }
-                    
-                    // Load the encyclopedia using our updated js/encyclopedia.js file
-                    // This is handled by the encyclopedia.js script which will initialize the page
-                });
-            }
-        });
-        
-        // Initialize search functionality
-        function initSearch() {
-            const searchInput = document.getElementById('robot-search');
-            if (!searchInput) return;
-            
-            searchInput.addEventListener('input', function() {
-                const query = this.value.trim().toLowerCase();
-                
-                // Get robot grid and robot cards
-                const robotGrid = document.getElementById('robot-grid');
-                const robotCards = robotGrid.querySelectorAll('.robot-card');
-                
-                // Filter cards based on search query
-                let hasVisibleRobots = false;
-                
-                robotCards.forEach(card => {
-                    const robotSlug = card.dataset.slug;
-                    const robot = window.robotsData?.getRobotBySlug ? window.robotsData.getRobotBySlug(robotSlug) : null;
-                    if (!robot) {
-                        card.style.display = 'none';
-                        return;
-                    }
-                    
-                    const robotName = robot.name?.toLowerCase() || '';
-                    const robotSummary = robot.summary?.toLowerCase() || '';
-                    const manufacturerName = robot.manufacturer?.name?.toLowerCase() || '';
-                    
-                    if (query === '' || 
-                        robotName.includes(query) || 
-                        robotSummary.includes(query) || 
-                        manufacturerName.includes(query)) {
-                        card.style.display = 'block';
-                        hasVisibleRobots = true;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-                
-                // Show empty state if no robots match
-                const emptyState = document.getElementById('empty-state');
-                if (emptyState) {
-                    emptyState.style.display = hasVisibleRobots ? 'none' : 'block';
-                }
-            });
-            
-            // Reset filters button
-            const resetFiltersBtn = document.getElementById('reset-filters');
-            if (resetFiltersBtn) {
-                resetFiltersBtn.addEventListener('click', function() {
-                    searchInput.value = '';
-                    searchInput.dispatchEvent(new Event('input'));
-                });
-            }
-        }
-    </script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
