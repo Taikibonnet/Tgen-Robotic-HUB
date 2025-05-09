@@ -6,9 +6,6 @@
 // Global variables to store form data
 let currentRobotId = null;
 let isEditMode = false;
-let featuredImageFile = null;
-let additionalImageFiles = [];
-let videoUrls = [];
 
 // Initialize when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -27,7 +24,38 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn('Admin Form: No storage adapter found, initializing form directly');
         initializeForm();
     }
+    
+    // Check if GitHub token is set
+    checkGitHubToken();
 });
+
+/**
+ * Check if GitHub token is set
+ */
+function checkGitHubToken() {
+    const token = localStorage.getItem('github_token');
+    
+    if (!token) {
+        const tokenInput = prompt('Please enter your GitHub token to enable adding/editing robots:');
+        
+        if (tokenInput && tokenInput.trim() !== '') {
+            localStorage.setItem('github_token', tokenInput);
+            
+            if (window.githubStorage && typeof window.githubStorage.setToken === 'function') {
+                window.githubStorage.setToken(tokenInput);
+            }
+            
+            alert('GitHub token set successfully!');
+        } else {
+            alert('No GitHub token provided. You will not be able to save changes.');
+        }
+    } else {
+        // Set the token in the storage module
+        if (window.githubStorage && typeof window.githubStorage.setToken === 'function') {
+            window.githubStorage.setToken(token);
+        }
+    }
+}
 
 /**
  * Initialize the form and check for edit mode
@@ -49,9 +77,6 @@ function initializeForm() {
             saveRobot();
         });
     }
-    
-    // Set up image uploads
-    initializeMediaUploads();
     
     // Add slug generator
     initializeSlugGenerator();
@@ -86,234 +111,17 @@ function generateSlug(text) {
         .toString()
         .toLowerCase()
         .trim()
-        .replace(/\s+/g, '-')       // Replace spaces with -
-        .replace(/[^\w-]+/g, '')    // Remove all non-word chars
+        .replace(/\\s+/g, '-')       // Replace spaces with -
+        .replace(/[^\\w-]+/g, '')    // Remove all non-word chars
         .replace(/--+/g, '-')       // Replace multiple - with single -
         .replace(/^-+/, '')         // Trim - from start of text
         .replace(/-+$/, '');        // Trim - from end of text
 }
 
 /**
- * Initialize media uploads
- */
-function initializeMediaUploads() {
-    // Featured image upload
-    const featuredImageUpload = document.getElementById('featured-image-upload');
-    const featuredImagePreview = document.getElementById('featured-image-preview');
-    
-    if (featuredImageUpload && featuredImagePreview) {
-        featuredImageUpload.addEventListener('click', function() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            
-            input.onchange = function(e) {
-                if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        featuredImageFile = e.target.result;
-                        
-                        // Show preview
-                        featuredImagePreview.innerHTML = '';
-                        const container = document.createElement('div');
-                        container.className = 'media-item';
-                        
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        
-                        const removeBtn = document.createElement('div');
-                        removeBtn.className = 'media-remove';
-                        removeBtn.innerHTML = '×';
-                        removeBtn.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            featuredImageFile = null;
-                            featuredImagePreview.innerHTML = '';
-                        });
-                        
-                        container.appendChild(img);
-                        container.appendChild(removeBtn);
-                        featuredImagePreview.appendChild(container);
-                    };
-                    
-                    reader.readAsDataURL(file);
-                }
-            };
-            
-            input.click();
-        });
-    }
-    
-    // Additional images upload
-    const additionalImagesUpload = document.getElementById('additional-images-upload');
-    const additionalImagesPreview = document.getElementById('additional-images-preview');
-    
-    if (additionalImagesUpload && additionalImagesPreview) {
-        additionalImagesUpload.addEventListener('click', function() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.multiple = true;
-            
-            input.onchange = function(e) {
-                if (e.target.files && e.target.files.length > 0) {
-                    for (const file of e.target.files) {
-                        const reader = new FileReader();
-                        
-                        reader.onload = function(e) {
-                            const imageData = e.target.result;
-                            additionalImageFiles.push(imageData);
-                            
-                            // Show preview
-                            const container = document.createElement('div');
-                            container.className = 'media-item';
-                            const imgId = 'img-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
-                            container.id = imgId;
-                            
-                            const img = document.createElement('img');
-                            img.src = imageData;
-                            
-                            const removeBtn = document.createElement('div');
-                            removeBtn.className = 'media-remove';
-                            removeBtn.innerHTML = '×';
-                            removeBtn.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                const index = additionalImageFiles.indexOf(imageData);
-                                if (index !== -1) {
-                                    additionalImageFiles.splice(index, 1);
-                                }
-                                container.remove();
-                            });
-                            
-                            container.appendChild(img);
-                            container.appendChild(removeBtn);
-                            additionalImagesPreview.appendChild(container);
-                        };
-                        
-                        reader.readAsDataURL(file);
-                    }
-                }
-            };
-            
-            input.click();
-        });
-    }
-    
-    // Video URL management
-    const addVideoUrlBtn = document.getElementById('add-video-url');
-    const videoUrlContainer = document.getElementById('video-url-container');
-    
-    if (addVideoUrlBtn && videoUrlContainer) {
-        // Initialize with one empty video URL form
-        if (videoUrls.length === 0) {
-            videoUrls.push({ url: '', title: '', description: '' });
-        }
-        
-        // Add button to add more video URLs
-        addVideoUrlBtn.addEventListener('click', function() {
-            const index = videoUrls.length;
-            videoUrls.push({ url: '', title: '', description: '' });
-            
-            const videoUrlGroup = document.createElement('div');
-            videoUrlGroup.className = 'video-url-group';
-            videoUrlGroup.dataset.index = index;
-            
-            videoUrlGroup.innerHTML = `
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <input type="url" class="form-control video-url-input" placeholder="e.g., https://www.youtube.com/watch?v=...">
-                    <button type="button" class="btn remove-video-url" style="background: rgba(255, 107, 107, 0.1); color: var(--accent); padding: 0 10px;">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-                <input type="text" class="form-control video-title-input" placeholder="Video Title" style="margin-bottom: 10px;">
-                <textarea class="form-control video-description-input" placeholder="Video Description (optional)" style="margin-bottom: 20px;"></textarea>
-            `;
-            
-            videoUrlContainer.appendChild(videoUrlGroup);
-            
-            // Add event listeners
-            const urlInput = videoUrlGroup.querySelector('.video-url-input');
-            const titleInput = videoUrlGroup.querySelector('.video-title-input');
-            const descInput = videoUrlGroup.querySelector('.video-description-input');
-            const removeBtn = videoUrlGroup.querySelector('.remove-video-url');
-            
-            if (urlInput) {
-                urlInput.addEventListener('input', function() {
-                    videoUrls[index].url = this.value;
-                });
-            }
-            
-            if (titleInput) {
-                titleInput.addEventListener('input', function() {
-                    videoUrls[index].title = this.value;
-                });
-            }
-            
-            if (descInput) {
-                descInput.addEventListener('input', function() {
-                    videoUrls[index].description = this.value;
-                });
-            }
-            
-            if (removeBtn) {
-                removeBtn.addEventListener('click', function() {
-                    videoUrls.splice(index, 1);
-                    videoUrlGroup.remove();
-                    
-                    // Update indexes
-                    const groups = videoUrlContainer.querySelectorAll('.video-url-group');
-                    groups.forEach((group, i) => {
-                        group.dataset.index = i;
-                    });
-                });
-            }
-        });
-        
-        // Initialize event listeners for existing video URL form
-        const firstGroup = videoUrlContainer.querySelector('.video-url-group');
-        if (firstGroup) {
-            const urlInput = firstGroup.querySelector('.video-url-input');
-            const titleInput = firstGroup.querySelector('.video-title-input');
-            const descInput = firstGroup.querySelector('.video-description-input');
-            const removeBtn = firstGroup.querySelector('.remove-video-url');
-            
-            if (urlInput) {
-                urlInput.addEventListener('input', function() {
-                    videoUrls[0].url = this.value;
-                });
-            }
-            
-            if (titleInput) {
-                titleInput.addEventListener('input', function() {
-                    videoUrls[0].title = this.value;
-                });
-            }
-            
-            if (descInput) {
-                descInput.addEventListener('input', function() {
-                    videoUrls[0].description = this.value;
-                });
-            }
-            
-            if (removeBtn) {
-                removeBtn.addEventListener('click', function() {
-                    // Clear the fields but don't remove the first group
-                    urlInput.value = '';
-                    titleInput.value = '';
-                    descInput.value = '';
-                    videoUrls[0] = { url: '', title: '', description: '' };
-                });
-            }
-        }
-    }
-}
-
-/**
  * Initialize category management
  */
 function initializeCategoryManagement() {
-    const categories = document.getElementById('robot-categories');
     const categoriesList = document.getElementById('categories-list');
     
     if (!categoriesList) return;
@@ -354,6 +162,11 @@ function updateCategoriesList() {
     
     // Clear the list
     categoriesList.innerHTML = '';
+    
+    // Initialize categories if not exist
+    if (!window.robotsData.categories) {
+        window.robotsData.categories = [];
+    }
     
     // Add each category
     window.robotsData.categories.forEach(category => {
@@ -477,7 +290,7 @@ function populateForm(robot) {
                     removeBtn.innerHTML = '×';
                     removeBtn.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        featuredImageFile = null;
+                        window.featuredImageFile = null;
                         featuredImagePreview.innerHTML = '';
                     });
                     
@@ -531,14 +344,14 @@ function populateForm(robot) {
         }
         
         // Videos
-        if (robot.media.videos && Array.isArray(robot.media.videos)) {
+        if (robot.media.videos && Array.isArray(robot.media.videos) && window.videoUrls) {
             // Filter out URL-based videos
             const urlVideos = robot.media.videos.filter(video => 
                 video.type === 'url' || video.type === 'youtube' || (video.url && !video.data)
             );
             
             if (urlVideos.length > 0) {
-                videoUrls = urlVideos.map(video => ({
+                window.videoUrls = urlVideos.map(video => ({
                     url: video.url || '',
                     title: video.title || '',
                     description: video.description || ''
@@ -549,7 +362,7 @@ function populateForm(robot) {
                 if (videoUrlContainer) {
                     videoUrlContainer.innerHTML = '';
                     
-                    videoUrls.forEach((video, index) => {
+                    window.videoUrls.forEach((video, index) => {
                         const videoUrlGroup = document.createElement('div');
                         videoUrlGroup.className = 'video-url-group';
                         videoUrlGroup.dataset.index = index;
@@ -575,25 +388,25 @@ function populateForm(robot) {
                         
                         if (urlInput) {
                             urlInput.addEventListener('input', function() {
-                                videoUrls[index].url = this.value;
+                                window.videoUrls[index].url = this.value;
                             });
                         }
                         
                         if (titleInput) {
                             titleInput.addEventListener('input', function() {
-                                videoUrls[index].title = this.value;
+                                window.videoUrls[index].title = this.value;
                             });
                         }
                         
                         if (descInput) {
                             descInput.addEventListener('input', function() {
-                                videoUrls[index].description = this.value;
+                                window.videoUrls[index].description = this.value;
                             });
                         }
                         
                         if (removeBtn) {
                             removeBtn.addEventListener('click', function() {
-                                videoUrls.splice(index, 1);
+                                window.videoUrls.splice(index, 1);
                                 videoUrlGroup.remove();
                                 
                                 // Update indexes
@@ -625,6 +438,21 @@ function setValue(id, value) {
  */
 async function saveRobot() {
     try {
+        // Check if GitHub token is set
+        const token = localStorage.getItem('github_token');
+        if (!token) {
+            alert('GitHub token is not set. Please set it to enable saving changes.');
+            const newToken = prompt('Please enter your GitHub token:');
+            if (newToken && newToken.trim() !== '') {
+                localStorage.setItem('github_token', newToken);
+                if (window.githubStorage && typeof window.githubStorage.setToken === 'function') {
+                    window.githubStorage.setToken(newToken);
+                }
+            } else {
+                return;
+            }
+        }
+        
         // Collect form data
         const robotData = collectFormData();
         
@@ -633,6 +461,9 @@ async function saveRobot() {
             alert('Please fill in all required fields (Name and Summary)');
             return;
         }
+        
+        // Get media data from upload handler
+        const mediaData = window.uploadHandler?.getFormData();
         
         // Create robot object
         const robot = {
@@ -651,41 +482,43 @@ async function saveRobot() {
             specifications: {
                 physical: {
                     height: {
-                        value: robotData.height || null,
+                        value: parseFloat(robotData.height) || null,
                         unit: robotData.heightUnit || 'm'
                     },
                     weight: {
-                        value: robotData.weight || null,
+                        value: parseFloat(robotData.weight) || null,
                         unit: robotData.weightUnit || 'kg'
                     }
                 },
                 performance: {
-                    batteryRuntime: robotData.batteryRuntime || null,
+                    batteryRuntime: parseInt(robotData.batteryRuntime) || null,
                     speed: {
-                        value: robotData.speed || null,
+                        value: parseFloat(robotData.speed) || null,
                         unit: robotData.speedUnit || 'm/s'
                     }
                 }
             },
             media: {
-                featuredImage: featuredImageFile || (isEditMode ? undefined : null),
-                additionalImages: additionalImageFiles || [],
-                videos: videoUrls.filter(v => v.url).map(v => ({
-                    type: 'url',
-                    url: v.url,
-                    title: v.title,
-                    description: v.description
-                }))
+                featuredImage: mediaData?.featuredImage || window.featuredImageFile || null,
+                additionalImages: mediaData?.additionalImages || window.additionalImageFiles || [],
+                videos: window.videoUrls?.filter(v => v.url) || []
             },
             status: robotData.status || 'published',
             createdAt: isEditMode ? undefined : new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
         
+        console.log('Saving robot:', robot);
+        
         // Use GitHub storage if available
         let success = false;
         
         if (window.githubStorage) {
+            // Set token again just to be sure
+            if (token && typeof window.githubStorage.setToken === 'function') {
+                window.githubStorage.setToken(token);
+            }
+            
             if (isEditMode) {
                 success = await window.githubStorage.updateRobotAndSave(currentRobotId, robot);
             } else {
