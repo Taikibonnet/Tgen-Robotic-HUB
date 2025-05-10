@@ -1,5 +1,186 @@
 {
-  "robots": [],
+  "robots": [
+    {
+      "id": 1683567312000,
+      "name": "Atlas",
+      "slug": "atlas",
+      "summary": "The most advanced humanoid robot designed for search and rescue operations. Atlas can walk, jump, and perform complex tasks in difficult environments.",
+      "description": "Atlas is a humanoid robot designed by Boston Dynamics, known for its remarkable agility and balance. It stands at approximately 1.5 meters tall and weighs around 80 kilograms. Atlas is powered by 28 hydraulically-actuated joints that give it an impressive range of motion and flexibility.\n\nThe robot is equipped with advanced sensors, including LIDAR and stereo vision, which enable it to navigate complex environments and interact with objects. Atlas is capable of walking on uneven terrain, climbing stairs, jumping, somersaulting, and even recovering from falls.\n\nOriginally developed for DARPA's Robotics Challenge, Atlas has evolved significantly over the years. The current generation can perform a variety of tasks, from simple object manipulation to complex parkour routines. This versatility makes it particularly valuable for scenarios that are too dangerous for humans, such as disaster response, search and rescue operations, and hazardous environment inspection.",
+      "manufacturer": {
+        "name": "Boston Dynamics",
+        "country": "USA",
+        "website": "https://www.bostondynamics.com"
+      },
+      "yearIntroduced": 2013,
+      "status": "published",
+      "categories": ["Humanoid", "Bipedal"],
+      "media": {
+        "featuredImage": {
+          "url": "images/robots/atlas-featured.jpg",
+          "alt": "Atlas Humanoid Robot"
+        },
+        "images": [
+          {
+            "url": "images/robots/atlas-action.jpg",
+            "alt": "Atlas performing parkour",
+            "caption": "Atlas demonstrating its parkour capabilities"
+          },
+          {
+            "url": "images/robots/atlas-team.jpg",
+            "alt": "Team of Atlas robots",
+            "caption": "Multiple Atlas robots working together"
+          }
+        ],
+        "videos": [
+          {
+            "type": "url",
+            "url": "https://www.youtube.com/watch?v=tF4DML7FIWk",
+            "title": "Atlas | Partners in Parkour",
+            "description": "Atlas robots demonstrate parkour abilities in this official Boston Dynamics video"
+          }
+        ]
+      },
+      "specifications": {
+        "height": {
+          "value": 1.5,
+          "unit": "m"
+        },
+        "weight": {
+          "value": 80,
+          "unit": "kg"
+        },
+        "batteryRuntime": 60,
+        "maxSpeed": {
+          "value": 5.3,
+          "unit": "km/h"
+        }
+      },
+      "stats": {
+        "views": 1243,
+        "likes": 432
+      },
+      "createdAt": "2023-05-08T10:55:12.000Z",
+      "updatedAt": "2024-05-01T14:32:16.000Z"
+    },
+    {
+      "id": 1683567312001,
+      "name": "Spot",
+      "slug": "spot",
+      "summary": "A nimble four-legged robot designed for industrial inspection and remote operation in environments where wheeled robots cannot go.",
+      "description": "Spot is a quadruped robot developed by Boston Dynamics, designed for industrial inspection and remote operation. With its four legs, Spot can navigate terrain that would be challenging for wheeled robots, making it ideal for applications in construction, oil and gas, mining, and public safety.\n\nSpot is equipped with a variety of sensors, including stereo cameras, depth sensors, and an inertial measurement unit, which enable it to perceive its environment and navigate autonomously. The robot can climb stairs, traverse rough terrain, and maintain its balance even when pushed or kicked.\n\nOne of Spot's key features is its modularity. The robot has a payload port on its back that allows for the attachment of various tools and sensors, such as additional cameras, gas detectors, or a robotic arm called Spot Arm. This flexibility makes Spot adaptable to a wide range of industrial applications.\n\nSpot can be controlled remotely via a tablet interface, or it can follow pre-programmed routes autonomously. The robot is capable of documenting job sites, monitoring progress, and detecting hazards or anomalies.",
+      "manufacturer": {
+        "name": "Boston Dynamics",
+        "country": "USA",
+        "website": "https://www.bostondynamics.com"
+      },
+      "yearIntroduced": 2019,
+      "status": "published",
+      "categories": ["Quadruped", "Mobile Robot"],
+      "media": {
+        "featuredImage": {
+          "url": "images/robots/spot-featured.jpg",
+          "alt": "Spot Quadruped Robot"
+        },
+        "images": [
+          {
+            "url": "images/robots/spot-work.jpg",
+            "alt": "Spot at work site",
+            "caption": "Spot robot performing inspection at a construction site"
+          }
+        ],
+        "videos": [
+          {
+            "type": "url",
+            "url": "https://www.youtube.com/watch?v=wlkCQXHEgjA",
+            "title": "Spot | Ready for Work",
+            "description": "See how Spot can be used in various industrial applications"
+          }
+        ]
+      },
+      "specifications": {
+        "height": {
+          "value": 0.84,
+          "unit": "m"
+        },
+        "weight": {
+          "value": 32.5,
+          "unit": "kg"
+        },
+        "batteryRuntime": 90,
+        "maxSpeed": {
+          "value": 4.8,
+          "unit": "km/h"
+        }
+      },
+      "stats": {
+        "views": 987,
+        "likes": 356
+      },
+      "createdAt": "2023-05-08T11:10:22.000Z",
+      "updatedAt": "2024-04-25T09:45:33.000Z"
+    },
+    {
+      "id": 1683567312002,
+      "name": "UR10e",
+      "slug": "ur10e",
+      "summary": "A versatile collaborative industrial robot arm with a long reach and high payload capacity, designed to work safely alongside humans.",
+      "description": "The UR10e is a collaborative robot (cobot) arm manufactured by Universal Robots. It is designed to work safely alongside humans without the need for safety barriers, making it ideal for a wide range of industrial applications.\n\nThe UR10e has a reach of 1300mm and a payload capacity of 12.5kg, making it the strongest and longest-reaching collaborative robot in the Universal Robots lineup. This extended reach allows it to perform tasks across large work areas, while its strength enables it to handle heavier objects than most cobots.\n\nAs a collaborative robot, the UR10e is equipped with built-in force sensing capabilities, which allow it to detect collisions and stop immediately, ensuring the safety of human workers. This feature, along with its rounded design and lack of pinch points, allows it to operate without safety cages in most applications.\n\nThe UR10e is highly programmable and can be easily reprogrammed for different tasks through its intuitive touchscreen interface or by manually guiding the arm through desired movements. This flexibility makes it suitable for a wide range of applications, including machine tending, packaging, palletizing, assembly, and quality inspection.\n\nThe robot is also compatible with a variety of end-effectors, such as grippers, vacuum cups, and screwdrivers, which can be easily attached to its tool flange.",
+      "manufacturer": {
+        "name": "Universal Robots",
+        "country": "Denmark",
+        "website": "https://www.universal-robots.com"
+      },
+      "yearIntroduced": 2018,
+      "status": "published",
+      "categories": ["Industrial"],
+      "media": {
+        "featuredImage": {
+          "url": "images/robots/ur10e-featured.jpg",
+          "alt": "UR10e Collaborative Robot Arm"
+        },
+        "images": [
+          {
+            "url": "images/robots/ur10e-assembly.jpg",
+            "alt": "UR10e in assembly line",
+            "caption": "UR10e robot working in an assembly line alongside humans"
+          }
+        ],
+        "videos": [
+          {
+            "type": "url",
+            "url": "https://www.youtube.com/watch?v=mh9RzP32XTo",
+            "title": "UR10e Collaborative Robot",
+            "description": "Overview of the UR10e collaborative robot and its applications"
+          }
+        ]
+      },
+      "specifications": {
+        "reach": {
+          "value": 1.3,
+          "unit": "m"
+        },
+        "weight": {
+          "value": 33.5,
+          "unit": "kg"
+        },
+        "payload": {
+          "value": 12.5,
+          "unit": "kg"
+        },
+        "joints": 6,
+        "repeatability": {
+          "value": 0.05,
+          "unit": "mm"
+        }
+      },
+      "stats": {
+        "views": 765,
+        "likes": 289
+      },
+      "createdAt": "2023-05-09T13:22:45.000Z",
+      "updatedAt": "2024-03-18T16:10:09.000Z"
+    }
+  ],
   "categories": ["Quadruped", "Humanoid", "Industrial", "Mobile Robot", "Bipedal"],
-  "lastUpdated": "2025-05-09T18:15:00.000Z"
+  "lastUpdated": "2025-05-10T07:26:00.000Z"
 }
